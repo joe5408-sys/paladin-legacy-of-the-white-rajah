@@ -11,7 +11,10 @@ export type StoryFlag =
   | 'passage_open'
   | 'entered_chamber'
   | 'guardian_defeated'
-  | 'read_message';
+  | 'read_message'
+  | 'daniel_arrived'
+  | 'met_daniel'
+  | 'prologue_complete';
 
 export type StoryFlags = Partial<Record<StoryFlag, true>>;
 

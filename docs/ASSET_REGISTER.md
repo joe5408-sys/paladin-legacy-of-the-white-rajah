@@ -11,6 +11,8 @@ Every asset in the game must be original, properly licensed, or explicitly autho
 | Family portrait | Pixel art (generated at runtime) | `FamilyHome.tsx` | Original, project code | Project-owned | |
 | Home interior and chamber geometry | Procedural low-poly | `FamilyHome.tsx`, `AncientChamber.tsx` | Original, project code | Project-owned | |
 | Covenant Guardian battle sprite | Pixel art (generated at runtime, 32×40) | `src/game/combat/guardianSprite.ts` | Original design | Project-owned | |
+| Daniel Rengas placeholder sprite sheet | Pixel art (generated at runtime) | `pixelSprite.ts` + `characters.ts` | Original, project code | Project-owned | |
+| Chamber inscription script | Abstract pixel glyphs (generated at runtime) | `AncientChamber.tsx` | Original | Project-owned | Not a real writing system |
 | Dialogue text | Writing | `src/data/dialogue.ts` | Original | Project-owned | |
 | Village buildings, props, terrain | Procedural low-poly geometry | `src/game/scenes/environment.tsx` | Original, project code | Project-owned | Three.js primitives only |
 | UI font | System monospace (`Courier New` / `ui-monospace`) | User's OS | — | System font, not bundled | Replace with a licensed pixel font later |

@@ -1,7 +1,32 @@
 # Progress
 
-**Current phase:** Phase 4 — Turn-Based Battle ✅ done → Phase 5 (Complete Prologue) next
+**Current phase:** Phase 5 — Complete Prologue ✅ done → Phase 6 (Save & Deployment) next
 **Last updated:** 2026-10-23
+
+### Phase 5 — Complete prologue ✅
+- **Scene 5, Revelation:** after the Guardian falls, abstract glowing script fades in on the chamber's back wall. "Inspect Glowing Inscription" plays the message:
+  - The required line appears exactly, in a centred gold inscription style: **"The oath was never sworn to the Crown alone."**
+  - It continues: the Vale Paladins refused a palace order to empty the river villages and were branded traitors for standing with the people, signed by Elias Vale (fictional).
+  - Sets `read_message`.
+- **Scene 6, Royal Attention:** the message chains straight into Daniel Rengas (Royal Security Office, fictional) coming down the stairs. His sprite appears on the first line (an NPC gated by `daniel_arrived`). He explains the old palace sensors detected the awakening, hints that some in the palace doubt the treason story, and points Adrian to **Kuching**.
+- **CHAPTER 0 COMPLETE:** the screen fades in with the chapter title, the key quote, the play time, a locked "Chapter 1 · Kuching" notice and **Play Again**, which starts a fresh New Game. All input is frozen in `mode: 'ending'`.
+- **Engine additions:**
+  - Dialogue `next` (chain conversations) and `endChapter`.
+  - Line `style: 'inscription'`.
+  - NPC `when` conditions.
+  - Store `endChapter()`, `newGame()`, and `startedAt` / `completedAt` for the play-time readout.
+- **Pacing pass:**
+  - Estimated from the actual dialogue (45 required lines, 575 words, at 200 wpm or typewriter speed plus key presses), walking routes and battle pacing: **about 4:00 rushing through required content, about 6:20 reading everything and exploring.**
+  - That sits at the low end of the 5–10 min target. I didn't pad it; a first-time player who reads and looks around should land around 5–6½ minutes. **This needs a real human play-through to confirm.** The end screen shows the measured time.
+  - Pacing changes made: the message flows straight into Daniel (no dead walk back), Daniel stands in view during his scene, and arrival points sit away from exits.
+
+**Phase 5 test results (2026-10-23):**
+- `npm test`: 85/85 pass, 8 new. One test plays the **entire prologue** from New Game to CHAPTER 0 COMPLETE and checks objectives in order. Others cover inscription gating, the exact required line, Daniel's visibility, chaining, input lock on the ending, and Play Again.
+- `npm run build`: OK.
+- **Full browser play-through** with keyboard and mouse input, from opening narration to the ending screen: every objective updated in order, the inscription and Daniel rendered, the ending card showed, and Play Again restarted cleanly. No console errors.
+- The automated run took 0:50 because it skips text instantly; that's only the mechanical floor.
+
+**Dev-server note:** on this Windows machine Vite's file watcher sometimes missed several quick back-to-back writes to one file (made by a script), so it served stale modules and caused errors that weren't really in the code. If the browser behaves differently from the tests, restart `npm run dev`. The production build is unaffected.
 
 ### Phase 4 — Turn-based battle ✅
 - **Rules** (`src/game/combat/battle.ts`): pure and deterministic. The player goes first; turns alternate; Attack 6, Radiant Strike 10 (2 charges), Defend halves the next hit; victory at enemy HP 0, defeat at player HP 0. HP never goes below 0. Numbers live in `src/data/encounters.ts`.

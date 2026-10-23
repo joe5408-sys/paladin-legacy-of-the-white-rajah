@@ -4,7 +4,7 @@
  */
 import type { CharacterFeatures, CharacterPalette } from '../game/player/pixelSprite';
 
-export type CharacterId = 'adrian' | 'lim' | 'mara' | 'guardian';
+export type CharacterId = 'adrian' | 'lim' | 'mara' | 'guardian' | 'daniel';
 
 export interface CharacterDef {
   id: CharacterId;
@@ -78,5 +78,23 @@ export const CHARACTERS: Record<CharacterId, CharacterDef> = {
     id: 'guardian',
     name: 'Covenant Guardian',
     // Custom battle sprite: see src/game/combat/guardianSprite.ts
+  },
+  daniel: {
+    id: 'daniel',
+    name: 'Daniel Rengas',
+    palette: {
+      outline: OUTLINE,
+      hair: '#141014', // short black hair
+      hairHi: '#2c2630',
+      skin: '#b07a52',
+      skinShade: '#8f5f3e',
+      eye: '#1b1420',
+      jacket: '#1f2633', // dark security-service suit
+      jacketShade: '#151a24',
+      trim: '#e8e6e0', // white shirt
+      belt: '#0e1016',
+      pants: '#1f2633',
+      boots: '#0e0c0c',
+    },
   },
 };

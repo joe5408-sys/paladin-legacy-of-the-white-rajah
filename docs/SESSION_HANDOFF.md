@@ -1,31 +1,28 @@
 # Session Handoff
 
-## Last session — 2026-10-23 (Claude Code), Phase 4: Turn-Based Battle
-**Result:** done. Inspecting the Paladin Sign in the chamber awakens the Covenant Guardian; the turn-based battle (Attack / Radiant Strike / Defend) can be won or lost; Retry fully resets; victory continues the story.
+## Last session — 2026-10-23 (Claude Code), Phase 5: Complete Prologue
+**Result:** done. The full Chapter 0 plays from New Game to **CHAPTER 0 COMPLETE**: arrival → family home → Aunt Mara → heirloom → passage → Guardian battle → ancestral message → Daniel Rengas → ending card → Play Again.
 
 ### Files added
-- `src/data/encounters.ts`: player battle stats and the `covenant_guardian` encounter
-- `src/game/combat/battle.ts`: pure battle rules, event text, command help
-- `src/game/combat/BattleArena.tsx`: 3D battle stage and animations
-- `src/game/combat/BattleHud.tsx`: battle UI and keyboard/mouse controls
-- `src/game/combat/guardianSprite.ts`: Guardian pixel art
-- `tests/unit/battle.test.ts`
+- `src/game/ui/ChapterComplete.tsx`: ending card with play time and Play Again
+- `tests/unit/ending.test.ts`: ending sequence and a whole-prologue run
 
 ### Files modified
-`gameStore.ts` (battle mode and stages, `startBattle` / `chooseCommand` / `advanceBattle` / `retryBattle`), `dialogue/types.ts` (`startBattle`), `dialogue.ts` (guardian lines), `characters.ts` (Guardian speaker; palette now optional), `ancientChamber.ts` (sign triggers the battle), `scenes.ts` (`after_battle` spawn), `SceneView.tsx`, `Hud.tsx`, `FollowCamera.tsx` (`viewHeight`), `AncientChamber.tsx` (exports Brazier), `pixelSprite.ts` (exports `addOutline`), `spriteBody.tsx`, `global.css`, docs.
+`flags.ts` (`daniel_arrived`, `met_daniel`, `prologue_complete`), `dialogue/types.ts` (`next`, `endChapter`, line `style`), `gameStore.ts` (`ending` mode, `endChapter`, `newGame`, `startedAt` / `completedAt`, dialogue chaining), `layout.ts` (NPC `when`), `ExplorationRig.tsx`, `characters.ts` (Daniel), `dialogue.ts` (message and Daniel), `ancientChamber.ts` (inscription interactable, Daniel placement), `AncientChamber.tsx` (glowing inscription), `DialogueBox.tsx` (inscription style), `Hud.tsx`, `global.css`, docs.
 
 ### Tests run
-`npm test` 77/77 · `npm run build` OK · browser play-through of both victory and defeat/retry (see PROGRESS.md).
+`npm test` 85/85 · `npm run build` OK · full browser play-through to the ending (see PROGRESS.md).
 
-### Dev shortcuts
-`window.__PALADIN_STORE__.getState().startBattle('covenant_guardian')` (from explore mode) jumps straight into the fight.
+### Open item
+**Real playtime is unverified.** The estimate is about 4:00–6:20, at the low end of the 5–10 minute target. Have a person play it once and read the time on the end screen.
 
-### Uncommitted work
-None after the Phase 4 commit.
+### Watch out
+Vite's watcher on this machine can miss fast scripted multi-writes to one file. If the browser disagrees with the tests, restart the dev server.
 
-### Next exact task — Phase 5 (Complete Prologue)
-1. Scene 5, Revelation: a glowing inscription on the chamber's back wall (interactable, `when: requires guardian_defeated`). Reading it shows **"The oath was never sworn to the Crown alone."** plus 2–3 lines suggesting the "betrayal" was protecting the people against a royal command. Sets `read_message`.
-2. Scene 6, Royal Attention: after `read_message`, Adrian's phone buzzes or Daniel Rengas arrives (new character and dialogue). He says the awakening was detected and points Adrian toward Kuching.
-3. A **CHAPTER 0 COMPLETE** screen (fade to black, title card, "Chapter 1 locked until developed").
-4. Pacing pass: time a full play-through (target 5–10 min) and trim dialogue if needed.
-5. Tests for the ending sequence; keep all earlier tests green.
+### Next exact task — Phase 6 (Save & Deployment)
+1. **Save system** (`src/game/save/`): a localStorage save with `schemaVersion`, scene, spawn or position, flags and `prologue_complete`. Validate on load; missing, invalid or incompatible saves fall back without crashing. No mid-battle saves: saving during or just before battle restores to the chamber checkpoint. Unit-test validation.
+2. **Main menu:** New Game (confirm if a save exists), Continue (only when a valid save exists), Settings (e.g. text speed or volume).
+3. **Pause menu** (Esc): Resume, Save, Return to Main Menu. Every button must work.
+4. **Basic audio:** original or properly licensed ambience and SFX (record them in ASSET_REGISTER), with a mute setting.
+5. Regression tests, plus optional Playwright e2e on the production build.
+6. GitHub repo plus Netlify deploy (`npm run build`, publish `dist`). Verify the deployed site by playing the full prologue there. **Pushing to GitHub and deploying need the user's go-ahead and accounts.**

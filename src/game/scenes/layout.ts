@@ -1,6 +1,6 @@
 import type { CharacterId } from '../../data/characters';
 import type { Box } from '../core/collision';
-import type { StoryFlags } from '../core/flags';
+import type { Condition, StoryFlags } from '../core/flags';
 import type { Direction } from '../core/input';
 import type { Interactable } from '../interaction/interaction';
 
@@ -10,6 +10,8 @@ export interface NpcPlacement {
   x: number;
   z: number;
   facing: Direction;
+  /** Only present while this story condition holds. */
+  when?: Condition;
 }
 
 /** Everything the exploration rig needs to run a scene. Pure data. */

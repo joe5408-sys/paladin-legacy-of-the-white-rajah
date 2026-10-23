@@ -152,6 +152,110 @@ body,
   color: #d9d0bc;
 }
 
+.dialogue-text.inscription {
+  text-align: center;
+  color: #ffe08a;
+  letter-spacing: 0.06em;
+  text-shadow: 0 0 10px rgba(255, 196, 90, 0.7);
+  font-size: 1.05em;
+}
+
+/* ── Chapter complete ───────────────────────────────────── */
+.chapter-complete {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6em;
+  text-align: center;
+  padding: 1em;
+  background: radial-gradient(ellipse at center, #1c1608 0%, #050403 70%);
+  pointer-events: auto;
+  animation: chapter-fade 1.8s ease-out both;
+}
+
+@keyframes chapter-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+.chapter-complete > * {
+  animation: chapter-rise 1.2s ease-out both;
+}
+
+.chapter-complete > :nth-child(2) {
+  animation-delay: 0.6s;
+}
+.chapter-complete > :nth-child(3) {
+  animation-delay: 0.9s;
+}
+.chapter-complete > :nth-child(4) {
+  animation-delay: 1.3s;
+}
+.chapter-complete > :nth-child(n + 5) {
+  animation-delay: 1.7s;
+}
+
+@keyframes chapter-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+.chapter-sign {
+  font-size: 2.2em;
+  color: #ffd27a;
+  text-shadow: 0 0 18px #ffb84a;
+}
+
+.chapter-kicker {
+  color: #c9bfa8;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  font-size: 0.85em;
+}
+
+.chapter-title {
+  margin: 0;
+  font-size: 2.6em;
+  color: #ffe08a;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-shadow: 0 0 16px rgba(255, 184, 74, 0.6);
+}
+
+.chapter-quote {
+  margin: 0.2em 0;
+  font-style: italic;
+  color: #f4ecd8;
+}
+
+.chapter-time {
+  margin: 0;
+  color: #c9bfa8;
+  font-size: 0.9em;
+}
+
+.chapter-next {
+  margin-top: 0.8em;
+  padding: 0.4em 0.9em;
+  border: 1px dashed #6b5420;
+  color: #8f8676;
+  font-size: 0.9em;
+}
+
+.chapter-button {
+  margin-top: 0.6em;
+}
+
+.chapter-button.waiting {
+  opacity: 0.4;
+}
+
 .dialogue-ghost {
   visibility: hidden;
 }

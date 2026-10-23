@@ -9,7 +9,7 @@ Goal: a complete, playable 5–10 minute prologue ("Chapter 0: The Forgotten Hei
 | 2 — NPC & Dialogue | One NPC, interaction prompt, dialogue box, story state | Approach NPC and complete a conversation | ✅ Done (Uncle Lim) |
 | 3 — Story Objectives | Family home interior, heirloom, quest state machine, scene transitions | Discovery sequence can be completed | ✅ Done (plus a minimal chamber room) |
 | 4 — Turn-Based Battle | Battle scene, Attack/Skill/Defend, HP, Guardian, win/lose, retry | Win or lose; retry works; victory advances story | ✅ Done |
-| 5 — Complete Prologue | Connect scenes, revelation, Daniel Rengas, completion screen, pacing | Full prologue playable in ~5–10 min | ⏭ Next |
-| 6 — Save & Deployment | localStorage save/load, pause menu, basic audio, polish, regression tests, Netlify | Deployed game runs; save/load works; no critical progression bugs | ⬜ |
+| 5 — Complete Prologue | Connect scenes, revelation, Daniel Rengas, completion screen, pacing | Full prologue playable in ~5–10 min | ✅ Done (est. 4–6½ min; confirm with a human play-through) |
+| 6 — Save & Deployment | localStorage save/load, pause menu, basic audio, polish, regression tests, Netlify | Deployed game runs; save/load works; no critical progression bugs | ⏭ Next |
 
 See `MASTER_PROMPT.md` §19 for the detailed pass/fail acceptance tests.

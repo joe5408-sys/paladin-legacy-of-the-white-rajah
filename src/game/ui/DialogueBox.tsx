@@ -52,8 +52,10 @@ function TypedLine({ line, revealed }: { line: DialogueLine; revealed: boolean }
   }, [line, revealed]);
 
   const text = revealed ? line.text : line.text.slice(0, shown);
+  const style =
+    line.style === 'inscription' ? ' inscription' : line.speaker ? '' : ' narration';
   return (
-    <p className={line.speaker ? 'dialogue-text' : 'dialogue-text narration'} data-testid="dialogue-text">
+    <p className={`dialogue-text${style}`} data-testid="dialogue-text">
       {text}
       {/* Reserve the full line's space so the box doesn't reflow while typing */}
       <span className="dialogue-ghost">{revealed ? '' : line.text.slice(text.length)}</span>

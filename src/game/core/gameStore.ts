@@ -28,7 +28,7 @@ import type { DialogueDef } from '../dialogue/types';
 import type { StoryFlag, StoryFlags } from './flags';
 import type { Interactable } from '../interaction/interaction';
 
-export type GameMode = 'explore' | 'dialogue' | 'transition' | 'battle';
+export type GameMode = 'explore' | 'dialogue' | 'transition' | 'battle' | 'ending';
 
 /**
  * UI pacing of a battle. The rules live in combat/battle.ts; stages only
@@ -80,6 +80,9 @@ export interface GameState {
   dialogue: ActiveDialogue | null;
   transition: SceneTransition | null;
   battle: ActiveBattle | null;
+  /** Wall-clock time (ms) when this playthrough started and when the chapter ended. */
+  startedAt: number;
+  completedAt: number | null;
 
   setNearby(target: Interactable | null): void;
   setFlags(flags: readonly StoryFlag[]): void;
@@ -106,6 +109,10 @@ export interface GameState {
   advanceBattle(): void;
   /** Restarts the encounter from full HP and charges after a defeat. */
   retryBattle(): boolean;
+  /** Ends the chapter: freezes play and shows the completion screen. */
+  endChapter(): void;
+  /** Fresh playthrough from the opening scene. */
+  newGame(): void;
   reset(): void;
 }
 
@@ -127,6 +134,8 @@ function initialState() {
     dialogue: null,
     transition: null,
     battle: null,
+    startedAt: Date.now(),
+    completedAt: null,
   };
 }
 
@@ -192,6 +201,8 @@ export const gameStore = createStore<GameState>()((set, get) => ({
     set({ mode: 'explore', dialogue: null });
     get().setFlags(d.def.setFlags ?? []);
     if (d.def.startBattle) get().startBattle(d.def.startBattle);
+    else if (d.def.next) get().startDialogue(d.def.next);
+    else if (d.def.endChapter) get().endChapter();
     d.onComplete?.();
   },
 
@@ -318,6 +329,17 @@ export const gameStore = createStore<GameState>()((set, get) => ({
       battle: freshBattle(b.encounter, 'command', `The ${b.encounter.enemyName} waits. Steady yourself and try again.`),
     });
     return true;
+  },
+
+  endChapter() {
+    if (get().mode === 'ending') return;
+    set({ mode: 'ending', nearby: null, completedAt: Date.now() });
+    get().setFlags(['prologue_complete']);
+  },
+
+  newGame() {
+    set(initialState());
+    get().arrive();
   },
 
   reset() {

@@ -1,16 +1,18 @@
 import { useFrame } from '@react-three/fiber';
-import { useRef } from 'react';
-import type * as THREE from 'three';
+import { useMemo, useRef } from 'react';
+import * as THREE from 'three';
 import {
   BRAZIERS,
   CHAMBER_BOUNDS,
   CHAMBER_LAYOUT,
   CHAMBER_WALL_HEIGHT,
   FLOOR_SIGN,
+  INSCRIPTION,
   PILLAR_SIZE,
   PILLARS,
 } from '../../data/ancientChamber';
 import type { SpawnPoint } from '../../data/scenes';
+import { useGame } from '../core/gameStore';
 import { ExplorationRig } from './ExplorationRig';
 import { getInsigniaTexture } from './insignia';
 
@@ -85,6 +87,7 @@ export function AncientChamber({ spawn }: { spawn: SpawnPoint }) {
       ))}
 
       <FloorSign />
+      <Inscription />
 
       <ExplorationRig layout={CHAMBER_LAYOUT} spawn={spawn} />
     </>
@@ -135,5 +138,79 @@ function FloorSign() {
       </mesh>
       <pointLight position={[FLOOR_SIGN.x, 0.6, FLOOR_SIGN.z]} color="#ffd27a" intensity={3} distance={5} />
     </>
+  );
+}
+
+/** Rows of carved script; drawn as abstract pixel glyphs (not a real writing system). */
+function createScriptTexture(seed: number): THREE.CanvasTexture {
+  const W = 48;
+  const H = 30;
+  const c = document.createElement('canvas');
+  c.width = W;
+  c.height = H;
+  const g = c.getContext('2d')!;
+  g.fillStyle = '#ffe08a';
+  let r = seed;
+  const rand = () => {
+    r = (r * 9301 + 49297) % 233280;
+    return r / 233280;
+  };
+  for (let row = 0; row < 5; row++) {
+    let x = 1 + Math.floor(rand() * 3);
+    const y = 2 + row * 6;
+    while (x < W - 4) {
+      const w = 2 + Math.floor(rand() * 3);
+      // A glyph: a stem plus one or two strokes
+      g.fillRect(x, y, 1, 4);
+      if (rand() > 0.3) g.fillRect(x, y + Math.floor(rand() * 3), w, 1);
+      if (rand() > 0.5) g.fillRect(x + w - 1, y + 1, 1, 3);
+      x += w + 2 + (rand() > 0.85 ? 3 : 0);
+    }
+  }
+  const tex = new THREE.CanvasTexture(c);
+  tex.magFilter = THREE.NearestFilter;
+  tex.minFilter = THREE.NearestFilter;
+  tex.generateMipmaps = false;
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+/** The ancestral message: glows into view once the Guardian is defeated. */
+function Inscription() {
+  const visible = useGame((s) => !!s.flags.guardian_defeated);
+  const textures = useMemo(() => [createScriptTexture(7), createScriptTexture(23)], []);
+  const mats = useRef<(THREE.MeshBasicMaterial | null)[]>([]);
+  const light = useRef<THREE.PointLight>(null);
+  const t = useRef(0);
+
+  useFrame((_, dt) => {
+    if (!visible) return;
+    t.current += Math.min(dt, 0.1);
+    const fadeIn = Math.min(1, t.current / 1.5);
+    const pulse = 0.85 + Math.sin(t.current * 2) * 0.15;
+    for (const m of mats.current) if (m) m.opacity = fadeIn * pulse;
+    if (light.current) light.current.intensity = fadeIn * 4;
+  });
+
+  if (!visible) return null;
+  return (
+    <group position={[INSCRIPTION.x, INSCRIPTION.y + 0.4, INSCRIPTION.wallZ + 0.03]}>
+      {[-1, 1].map((side, i) => (
+        <mesh key={side} position-x={side * 1.75}>
+          <planeGeometry args={[1.9, 1.2]} />
+          <meshBasicMaterial
+            ref={(m) => {
+              mats.current[i] = m;
+            }}
+            map={textures[i]}
+            transparent
+            opacity={0}
+            depthWrite={false}
+            toneMapped={false}
+          />
+        </mesh>
+      ))}
+      <pointLight ref={light} position={[0, 0, 1.2]} color="#ffd27a" intensity={0} distance={6} />
+    </group>
   );
 }

@@ -1,6 +1,7 @@
 import { SCENES } from '../../data/scenes';
 import { BattleHud } from '../combat/BattleHud';
 import { useGame } from '../core/gameStore';
+import { ChapterComplete } from './ChapterComplete';
 import { DialogueBox } from './DialogueBox';
 import { InteractionPrompt } from './InteractionPrompt';
 import { ObjectiveTracker } from './ObjectiveTracker';
@@ -10,6 +11,14 @@ import { SceneFade } from './SceneFade';
 export function Hud() {
   const mode = useGame((s) => s.mode);
   const scene = useGame((s) => s.scene);
+
+  if (mode === 'ending') {
+    return (
+      <div className="hud">
+        <ChapterComplete />
+      </div>
+    );
+  }
 
   if (mode === 'battle') {
     return (

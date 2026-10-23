@@ -2,6 +2,7 @@ import { useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import type { SpawnPoint } from '../../data/scenes';
 import { FollowCamera } from '../camera/FollowCamera';
+import { meetsCondition } from '../core/flags';
 import { useGame } from '../core/gameStore';
 import { InteractionSystem } from '../interaction/InteractionSystem';
 import { Npc } from '../npc/Npc';
@@ -27,7 +28,7 @@ export function ExplorationRig({ layout, spawn }: { layout: SceneLayout; spawn: 
         bounds={layout.bounds}
         positionRef={playerPos}
       />
-      {layout.npcs.map((n) => (
+      {layout.npcs.filter((n) => meetsCondition(n.when, flags)).map((n) => (
         <Npc key={n.id} placement={n} playerPos={playerPos} />
       ))}
       <InteractionSystem targets={layout.interactables} playerPos={playerPos} />

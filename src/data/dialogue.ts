@@ -150,6 +150,54 @@ const defs: DialogueDef[] = [
     id: 'chamber_sign_after',
     lines: [{ speaker: null, text: 'The sign is quiet now, its light steady and calm.' }],
   },
+
+  // ── Scene 5: Revelation ──────────────────────────────────────────
+  {
+    id: 'ancestral_message',
+    lines: [
+      { speaker: null, text: 'The carving is old, but the glowing words are perfectly clear.' },
+      { speaker: null, style: 'inscription', text: 'The oath was never sworn to the Crown alone.' },
+      {
+        speaker: null,
+        style: 'inscription',
+        text: 'When the palace ordered the river villages emptied, the Paladins of Vale refused. We stood with the people, and for that we were named traitors.',
+      },
+      {
+        speaker: null,
+        style: 'inscription',
+        text: 'Let the heir who reads this decide what loyalty means.  — Elias Vale',
+      },
+      { speaker: 'adrian', text: 'So that was the treason. They protected the people from the Crown\'s own order.' },
+      { speaker: 'adrian', text: 'And someone made sure nobody would ever find out.' },
+    ],
+    setFlags: ['read_message'],
+    next: 'daniel_arrives',
+  },
+
+  // ── Scene 6: Royal Attention ─────────────────────────────────────
+  {
+    id: 'daniel_arrives',
+    lines: [
+      {
+        speaker: null,
+        text: 'Footsteps echo down the stone stairs. A torch beam sweeps across the chamber.',
+        setFlags: ['daniel_arrived'],
+      },
+      { speaker: 'daniel', text: 'Easy. I am not here to hurt you. Daniel Rengas, Royal Security Office.' },
+      { speaker: 'adrian', text: 'Royal security? How did you even find this place?' },
+      {
+        speaker: 'daniel',
+        text: 'An hour ago, every old warding sensor in the palace lit up at once. They were built a century ago to watch for one thing: a Vale awakening.',
+      },
+      { speaker: 'daniel', text: 'Officially, I am here to bring you in. Unofficially... some of us never believed your family were traitors.' },
+      { speaker: 'adrian', text: 'Then read that wall. That is what really happened.' },
+      { speaker: 'daniel', text: 'I see it. And soon, people who would rather it stayed buried will know you saw it too.' },
+      { speaker: 'daniel', text: 'Come to Kuching. The answers, and whoever erased your name, are in the capital.' },
+      { speaker: 'adrian', text: 'Kuching, then. Aunt Mara will insist on coming. Good luck stopping her.' },
+    ],
+    setFlags: ['met_daniel'],
+    endChapter: true,
+  },
 ];
 
 export const DIALOGUES: Record<string, DialogueDef> = Object.fromEntries(defs.map((d) => [d.id, d]));
