@@ -1,33 +1,31 @@
 # Session Handoff
 
-## Last session — 2026-10-23 (Claude Code), Phase 3: Story Objectives
-**Result:** done. The discovery sequence plays end to end: village → family home → Aunt Mara → heirloom awakening → hidden passage → ancient chamber. Objectives update on screen at each step.
+## Last session — 2026-10-23 (Claude Code), Phase 4: Turn-Based Battle
+**Result:** done. Inspecting the Paladin Sign in the chamber awakens the Covenant Guardian; the turn-based battle (Attack / Radiant Strike / Defend) can be won or lost; Retry fully resets; victory continues the story.
 
 ### Files added
-- `src/game/core/flags.ts`: StoryFlag list, `Condition`, `meetsCondition`
-- `src/game/quests/quests.ts`, `src/data/quests.ts`
-- `src/data/scenes.ts`: scene registry (names, spawns, arrival dialogue)
-- `src/data/familyHome.ts`, `src/data/ancientChamber.ts`: layouts
-- `src/game/scenes/layout.ts` (SceneLayout, NpcPlacement), `ExplorationRig.tsx`, `SceneView.tsx`, `FamilyHome.tsx`, `AncientChamber.tsx`, `insignia.ts`
-- `src/game/ui/ObjectiveTracker.tsx`, `src/game/ui/SceneFade.tsx`
-- `tests/unit/story.test.ts`
+- `src/data/encounters.ts`: player battle stats and the `covenant_guardian` encounter
+- `src/game/combat/battle.ts`: pure battle rules, event text, command help
+- `src/game/combat/BattleArena.tsx`: 3D battle stage and animations
+- `src/game/combat/BattleHud.tsx`: battle UI and keyboard/mouse controls
+- `src/game/combat/guardianSprite.ts`: Guardian pixel art
+- `tests/unit/battle.test.ts`
 
 ### Files modified
-`gameStore.ts` (scene, spawn, transitions, arrival, per-line flags), `interaction.ts` (`when`, `enter`, `isAvailable`), `InteractionSystem.tsx`, `dialogue/types.ts`, `dialogue/rules.ts`, `villageSquare.ts` (VILLAGE_LAYOUT, door is now an exit), `VillageSquare.tsx`, `Player.tsx` (start facing), `Npc.tsx`, `pixelSprite.ts` (bun, long skirt), `characters.ts` (Mara), `dialogue.ts`, `Hud.tsx`, `App.tsx`, `global.css`, `tests/unit/dialogue.test.ts`, docs.
+`gameStore.ts` (battle mode and stages, `startBattle` / `chooseCommand` / `advanceBattle` / `retryBattle`), `dialogue/types.ts` (`startBattle`), `dialogue.ts` (guardian lines), `characters.ts` (Guardian speaker; palette now optional), `ancientChamber.ts` (sign triggers the battle), `scenes.ts` (`after_battle` spawn), `SceneView.tsx`, `Hud.tsx`, `FollowCamera.tsx` (`viewHeight`), `AncientChamber.tsx` (exports Brazier), `pixelSprite.ts` (exports `addOutline`), `spriteBody.tsx`, `global.css`, docs.
 
 ### Tests run
-`npm test` 60/60 · `npm run build` OK · full browser play-through (see PROGRESS.md).
+`npm test` 77/77 · `npm run build` OK · browser play-through of both victory and defeat/retry (see PROGRESS.md).
 
 ### Dev shortcuts
-In dev builds, `window.__PALADIN_STORE__.getState()` exposes the store. For example, `setFlags([...])` plus `requestScene('chamber','stairs')` jumps ahead for testing.
+`window.__PALADIN_STORE__.getState().startBattle('covenant_guardian')` (from explore mode) jumps straight into the fight.
 
 ### Uncommitted work
-None after the Phase 3 commit.
+None after the Phase 4 commit.
 
-### Next exact task — Phase 4 (Turn-Based Battle)
-1. `src/data/encounters.ts`: Covenant Guardian encounter (HP 24, attack 4) and player stats (HP 30, Attack 6, Radiant Strike 10 ×2, Defend halves the next hit).
-2. `src/game/combat/battle.ts`: pure deterministic battle state machine (player turn → enemy turn; victory and defeat checks; retry resets HP and charges). Unit-test every rule in MASTER_PROMPT §19 "Combat".
-3. Trigger: in the chamber, inspecting the Paladin Sign (after `entered_chamber`, unless `guardian_defeated`) plays a short Guardian intro, then switches the store to `mode: 'battle'`.
-4. Battle scene: a small 3D arena (reuse chamber pieces) with a battle camera framing, player and Guardian sprites (new placeholder Guardian sprite, larger), simple lunge/flash attack animations.
-5. Battle UI: HP bars, Attack / Skill (shows charges left) / Defend menu (arrow keys + E/Enter), message log, a first-turn tutorial tip, victory message and a defeat screen with Retry Battle.
-6. Victory sets `guardian_defeated` and returns to the chamber. The "Read the ancestral message" step belongs to Phase 5.
+### Next exact task — Phase 5 (Complete Prologue)
+1. Scene 5, Revelation: a glowing inscription on the chamber's back wall (interactable, `when: requires guardian_defeated`). Reading it shows **"The oath was never sworn to the Crown alone."** plus 2–3 lines suggesting the "betrayal" was protecting the people against a royal command. Sets `read_message`.
+2. Scene 6, Royal Attention: after `read_message`, Adrian's phone buzzes or Daniel Rengas arrives (new character and dialogue). He says the awakening was detected and points Adrian toward Kuching.
+3. A **CHAPTER 0 COMPLETE** screen (fade to black, title card, "Chapter 1 locked until developed").
+4. Pacing pass: time a full play-through (target 5–10 min) and trim dialogue if needed.
+5. Tests for the ending sequence; keep all earlier tests green.

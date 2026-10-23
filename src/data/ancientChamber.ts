@@ -1,7 +1,7 @@
 /**
  * Area C — the ancient chamber beneath the Vale house. Pure data.
  * Room: x -5..5, z -4..3.4. Stairs up at the south edge.
- * The Covenant Guardian encounter is added in Phase 4.
+ * Inspecting the floor sign awakens the Covenant Guardian (battle).
  */
 import { boxFromCenter, type Box } from '../game/core/collision';
 import type { Interactable } from '../game/interaction/interaction';
@@ -34,7 +34,10 @@ export const CHAMBER_INTERACTABLES: Interactable[] = [
     x: FLOOR_SIGN.x,
     z: FLOOR_SIGN.z,
     radius: 1.6,
-    dialogue: [{ dialogue: 'chamber_sign' }],
+    dialogue: [
+      { dialogue: 'guardian_awaken', unless: ['guardian_defeated'] },
+      { dialogue: 'chamber_sign_after' },
+    ],
   },
   {
     id: 'chamber-stairs',

@@ -91,7 +91,7 @@ export function AncientChamber({ spawn }: { spawn: SpawnPoint }) {
   );
 }
 
-function Brazier({ x, z }: { x: number; z: number }) {
+export function Brazier({ x, z }: { x: number; z: number }) {
   const light = useRef<THREE.PointLight>(null);
   useFrame(({ clock }) => {
     // Gentle flicker

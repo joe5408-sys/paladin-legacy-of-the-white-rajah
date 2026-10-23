@@ -19,6 +19,7 @@ export const SPRITE_WORLD_HEIGHT =
 /** Creates (once) a pixel-crisp sprite-sheet texture for a character. */
 export function useCharacterTexture(character: CharacterDef): THREE.CanvasTexture {
   const texture = useMemo(() => {
+    if (!character.palette) throw new Error(`Character "${character.id}" has no walking sprite`);
     const tex = new THREE.CanvasTexture(createCharacterSheet(character.palette, character.features));
     tex.magFilter = THREE.NearestFilter;
     tex.minFilter = THREE.NearestFilter;

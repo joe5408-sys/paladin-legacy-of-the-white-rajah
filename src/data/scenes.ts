@@ -46,6 +46,7 @@ export const SCENES: Record<SceneId, SceneDef> = {
     name: 'Ancient Chamber',
     spawns: {
       stairs: { x: 0, z: 1.9, facing: 'north' },
+      after_battle: { x: 0, z: 1.2, facing: 'north' },
     },
     arrival: [{ dialogue: 'chamber_arrival', unless: ['entered_chamber'] }],
   },

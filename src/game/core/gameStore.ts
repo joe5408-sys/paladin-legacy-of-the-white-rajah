@@ -13,12 +13,46 @@ import {
   type SceneId,
   type SpawnPoint,
 } from '../../data/scenes';
+import { ENCOUNTERS, PLAYER_BATTLE_STATS, type EncounterDef } from '../../data/encounters';
+import {
+  createBattle,
+  describeEvent,
+  enemyAction,
+  playerAction,
+  type BattleEvent,
+  type BattleState,
+  type Command,
+} from '../combat/battle';
 import { selectDialogue } from '../dialogue/rules';
 import type { DialogueDef } from '../dialogue/types';
 import type { StoryFlag, StoryFlags } from './flags';
 import type { Interactable } from '../interaction/interaction';
 
-export type GameMode = 'explore' | 'dialogue' | 'transition';
+export type GameMode = 'explore' | 'dialogue' | 'transition' | 'battle';
+
+/**
+ * UI pacing of a battle. The rules live in combat/battle.ts; stages only
+ * decide what the screen shows and when the next step runs.
+ */
+export type BattleStage =
+  | 'intro' // opening message
+  | 'command' // waiting for the player's choice
+  | 'player_action' // showing the player's action
+  | 'enemy_action' // showing the enemy's action
+  | 'victory'
+  | 'defeat';
+
+export interface ActiveBattle {
+  encounter: EncounterDef;
+  state: BattleState;
+  stage: BattleStage;
+  message: string;
+  /** Increments with every action so animations can detect new events. */
+  seq: number;
+  lastEvent: BattleEvent | null;
+}
+
+const PROMPT_MESSAGE = 'What will Adrian do?';
 
 export interface ActiveDialogue {
   def: DialogueDef;
@@ -45,6 +79,7 @@ export interface GameState {
   nearby: Interactable | null;
   dialogue: ActiveDialogue | null;
   transition: SceneTransition | null;
+  battle: ActiveBattle | null;
 
   setNearby(target: Interactable | null): void;
   setFlags(flags: readonly StoryFlag[]): void;
@@ -63,6 +98,14 @@ export interface GameState {
   finishTransition(): void;
   /** Plays the current scene's arrival conversation, if one applies. */
   arrive(): boolean;
+  /** Switches to battle mode for an encounter. */
+  startBattle(encounterId: string): boolean;
+  /** Player picks a command (only during the 'command' stage). */
+  chooseCommand(cmd: Command): boolean;
+  /** Moves the battle to its next stage (called by the UI's pacing timer or a key press). */
+  advanceBattle(): void;
+  /** Restarts the encounter from full HP and charges after a defeat. */
+  retryBattle(): boolean;
   reset(): void;
 }
 
@@ -83,6 +126,18 @@ function initialState() {
     nearby: null,
     dialogue: null,
     transition: null,
+    battle: null,
+  };
+}
+
+function freshBattle(encounter: EncounterDef, stage: BattleStage, message: string): ActiveBattle {
+  return {
+    encounter,
+    state: createBattle(PLAYER_BATTLE_STATS, encounter),
+    stage,
+    message,
+    seq: 0,
+    lastEvent: null,
   };
 }
 
@@ -136,6 +191,7 @@ export const gameStore = createStore<GameState>()((set, get) => ({
     // Finished: apply story effects, return to exploration, then notify.
     set({ mode: 'explore', dialogue: null });
     get().setFlags(d.def.setFlags ?? []);
+    if (d.def.startBattle) get().startBattle(d.def.startBattle);
     d.onComplete?.();
   },
 
@@ -174,6 +230,94 @@ export const gameStore = createStore<GameState>()((set, get) => ({
     const rules = SCENES[get().scene].arrival;
     const id = rules ? selectDialogue(rules, get().flags) : null;
     return id ? get().startDialogue(id) : false;
+  },
+
+  startBattle(encounterId) {
+    const encounter = ENCOUNTERS[encounterId];
+    if (!encounter || get().mode !== 'explore') return false;
+    set({
+      mode: 'battle',
+      nearby: null,
+      battle: freshBattle(encounter, 'intro', encounter.intro),
+      // Where the exploration scene resumes once the battle ends.
+      spawn: spawnPoint(encounter.returnTo.scene, encounter.returnTo.spawn),
+    });
+    return true;
+  },
+
+  chooseCommand(cmd) {
+    const b = get().battle;
+    if (!b || b.stage !== 'command') return false;
+    const result = playerAction(b.state, PLAYER_BATTLE_STATS, cmd);
+    if (!result) return false; // e.g. no Radiant Strike charges left
+    set({
+      battle: {
+        ...b,
+        state: result.state,
+        stage: 'player_action',
+        message: describeEvent(result.event, PLAYER_BATTLE_STATS, b.encounter),
+        seq: b.seq + 1,
+        lastEvent: result.event,
+      },
+    });
+    return true;
+  },
+
+  advanceBattle() {
+    const b = get().battle;
+    if (!b) return;
+    switch (b.stage) {
+      case 'intro':
+        set({ battle: { ...b, stage: 'command', message: PROMPT_MESSAGE } });
+        return;
+      case 'player_action': {
+        if (b.state.phase === 'victory') {
+          set({
+            battle: { ...b, stage: 'victory', message: `The ${b.encounter.enemyName} falls to one knee!` },
+          });
+          return;
+        }
+        const result = enemyAction(b.state, PLAYER_BATTLE_STATS, b.encounter);
+        if (!result) return;
+        set({
+          battle: {
+            ...b,
+            state: result.state,
+            stage: 'enemy_action',
+            message: describeEvent(result.event, PLAYER_BATTLE_STATS, b.encounter),
+            seq: b.seq + 1,
+            lastEvent: result.event,
+          },
+        });
+        return;
+      }
+      case 'enemy_action':
+        set({
+          battle:
+            b.state.phase === 'defeat'
+              ? { ...b, stage: 'defeat', message: 'Adrian collapses to the stone floor...' }
+              : { ...b, stage: 'command', message: PROMPT_MESSAGE },
+        });
+        return;
+      case 'victory': {
+        // Back to exploration, then the story continues.
+        set({ mode: 'explore', battle: null });
+        get().setFlags(b.encounter.victoryFlags);
+        if (b.encounter.victoryDialogue) get().startDialogue(b.encounter.victoryDialogue);
+        return;
+      }
+      default:
+        return; // 'command' waits for chooseCommand, 'defeat' waits for retryBattle
+    }
+  },
+
+  retryBattle() {
+    const b = get().battle;
+    if (!b || b.stage !== 'defeat') return false;
+    set({
+      battle: freshBattle(b.encounter, 'command', `The ${b.encounter.enemyName} waits. Steady yourself and try again.`),
+    });
+    return true;
   },
 
   reset() {

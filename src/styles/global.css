@@ -40,6 +40,7 @@ body,
 .hud {
   position: absolute;
   inset: 0;
+  z-index: 10; /* above 3D-anchored labels */
   pointer-events: none;
   font-size: clamp(11px, 1.4vw, 16px);
 }
@@ -166,6 +167,254 @@ body,
 @keyframes blink {
   to {
     visibility: hidden;
+  }
+}
+
+/* ── Battle ─────────────────────────────────────────────── */
+.battle-ui {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.battle-ui button {
+  pointer-events: auto;
+}
+
+.battle-flash {
+  position: absolute;
+  inset: 0;
+  background: #fff6d8;
+  animation: battle-flash 700ms ease-out forwards;
+}
+
+@keyframes battle-flash {
+  from {
+    opacity: 0.95;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.battle-status {
+  min-width: 15em;
+}
+
+.battle-status.enemy {
+  position: absolute;
+  top: 1em;
+  right: 1em;
+}
+
+.battle-name {
+  font-weight: bold;
+  color: #ffe08a;
+  margin-bottom: 0.3em;
+}
+
+.hp-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.hp-label {
+  font-size: 0.8em;
+  color: #c9bfa8;
+}
+
+.hp-bar {
+  flex: 1;
+  height: 0.7em;
+  background: #2a2230;
+  border: 1px solid #000;
+}
+
+.hp-fill {
+  height: 100%;
+  background: #5fd16a;
+  transition: width 400ms ease-out;
+}
+
+.hp-fill.enemy {
+  background: #e0574f;
+}
+
+.hp-fill.low:not(.enemy) {
+  background: #e8a83a;
+}
+
+.hp-num {
+  min-width: 3.6em;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.battle-charges {
+  margin-top: 0.35em;
+  font-size: 0.85em;
+  color: #d9d0bc;
+}
+
+.pip {
+  color: #4a4352;
+  margin-left: 0.15em;
+}
+
+.pip.on {
+  color: #ffd27a;
+  text-shadow: 0 0 6px #ffb84a;
+}
+
+.battle-guard {
+  margin-top: 0.3em;
+  font-size: 0.85em;
+  color: #7fc8ff;
+}
+
+.battle-bottom {
+  position: absolute;
+  left: 1em;
+  right: 1em;
+  bottom: 1em;
+  display: flex;
+  align-items: stretch;
+  gap: 0.8em;
+}
+
+.battle-message {
+  flex: 1;
+  min-height: 5.2em;
+  line-height: 1.45;
+}
+
+.battle-help {
+  margin-top: 0.5em;
+  font-size: 0.85em;
+  color: #c9bfa8;
+}
+
+.battle-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25em;
+  min-width: 11em;
+}
+
+.battle-cmd {
+  font: inherit;
+  color: var(--ui-text);
+  background: transparent;
+  border: none;
+  text-align: left;
+  padding: 0.2em 0.4em 0.2em 1.2em;
+  cursor: pointer;
+  position: relative;
+}
+
+.battle-cmd.selected::before {
+  content: '▶';
+  position: absolute;
+  left: 0.1em;
+  color: #ffe08a;
+}
+
+.battle-cmd.selected {
+  color: #ffe08a;
+}
+
+.battle-cmd:disabled {
+  color: #6b6474;
+  cursor: default;
+}
+
+.battle-tutorial {
+  position: absolute;
+  top: 1em;
+  left: 1em;
+  max-width: 46%;
+  font-size: 0.85em;
+  line-height: 1.5;
+}
+
+.battle-result {
+  position: absolute;
+  left: 50%;
+  top: 38%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  background: var(--ui-bg);
+  border: 2px solid var(--ui-border);
+  box-shadow: 0 0 0 2px var(--ui-border-dark);
+  padding: 1em 2em;
+  animation: prompt-in 250ms ease-out;
+}
+
+.battle-result-title {
+  font-size: 2em;
+  font-weight: bold;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  margin-bottom: 0.4em;
+}
+
+.battle-result.victory .battle-result-title {
+  color: #ffe08a;
+  text-shadow: 0 0 12px #ffb84a;
+}
+
+.battle-result.defeat .battle-result-title {
+  color: #e0574f;
+}
+
+.battle-result p {
+  margin: 0 0 0.8em;
+}
+
+.battle-popup {
+  font-family: var(--ui-font);
+  font-weight: bold;
+  font-size: 22px;
+  color: #fff;
+  text-shadow:
+    2px 2px 0 #000,
+    -1px -1px 0 #000;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: popup 1s ease-out 0.2s both;
+}
+
+.battle-popup.skill {
+  color: #ffe08a;
+  font-size: 28px;
+}
+
+.battle-popup.hurt {
+  color: #ff8a7a;
+}
+
+.battle-popup.guard {
+  color: #7fc8ff;
+  font-size: 18px;
+  animation-delay: 0s;
+}
+
+@keyframes popup {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.8);
+  }
+  15% {
+    opacity: 1;
+    transform: translateY(0) scale(1.15);
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-26px) scale(1);
   }
 }
 

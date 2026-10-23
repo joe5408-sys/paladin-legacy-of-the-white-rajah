@@ -10,6 +10,8 @@ import {
 
 interface FollowCameraProps {
   target: React.MutableRefObject<THREE.Vector3>;
+  /** World units visible vertically (smaller = closer). */
+  viewHeight?: number;
 }
 
 const pitch = THREE.MathUtils.degToRad(CAMERA_PITCH_DEG);
@@ -24,7 +26,7 @@ const LOOK_HEIGHT = 0.6;
  * Fixed-angle orthographic camera that smoothly tracks a target.
  * Uses frame-rate-independent exponential smoothing.
  */
-export function FollowCamera({ target }: FollowCameraProps) {
+export function FollowCamera({ target, viewHeight = CAMERA_VIEW_HEIGHT }: FollowCameraProps) {
   const camera = useThree((s) => s.camera);
   const size = useThree((s) => s.size);
   const focus = useRef(new THREE.Vector3());
@@ -39,10 +41,10 @@ export function FollowCamera({ target }: FollowCameraProps) {
   // Keep a constant number of world units visible vertically at any window size.
   useLayoutEffect(() => {
     if (camera instanceof THREE.OrthographicCamera) {
-      camera.zoom = size.height / CAMERA_VIEW_HEIGHT;
+      camera.zoom = size.height / viewHeight;
       camera.updateProjectionMatrix();
     }
-  }, [camera, size.height]);
+  }, [camera, size.height, viewHeight]);
 
   useFrame((_, rawDt) => {
     const dt = Math.min(rawDt, 0.1);

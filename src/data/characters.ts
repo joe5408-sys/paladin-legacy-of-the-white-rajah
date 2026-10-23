@@ -4,13 +4,14 @@
  */
 import type { CharacterFeatures, CharacterPalette } from '../game/player/pixelSprite';
 
-export type CharacterId = 'adrian' | 'lim' | 'mara';
+export type CharacterId = 'adrian' | 'lim' | 'mara' | 'guardian';
 
 export interface CharacterDef {
   id: CharacterId;
   /** Name shown in the dialogue box. */
   name: string;
-  palette: CharacterPalette;
+  /** Walking-sprite palette. Omitted for characters with custom sprites. */
+  palette?: CharacterPalette;
   features?: CharacterFeatures;
 }
 
@@ -72,5 +73,10 @@ export const CHARACTERS: Record<CharacterId, CharacterDef> = {
       boots: '#2a2018',
     },
     features: { hairBun: true, longSkirt: true },
+  },
+  guardian: {
+    id: 'guardian',
+    name: 'Covenant Guardian',
+    // Custom battle sprite: see src/game/combat/guardianSprite.ts
   },
 };

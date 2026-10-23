@@ -16,6 +16,8 @@ export interface DialogueDef {
   lines: DialogueLine[];
   /** Flags set when the conversation finishes. */
   setFlags?: StoryFlag[];
+  /** Encounter id to start when the conversation finishes. */
+  startBattle?: string;
 }
 
 /**

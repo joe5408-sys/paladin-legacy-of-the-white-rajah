@@ -126,12 +126,29 @@ const defs: DialogueDef[] = [
       { speaker: 'adrian', text: 'This place has been waiting. Just like Aunt Mara said.' },
     ],
   },
+  // ── Scene 4: First Battle ────────────────────────────────────────
   {
-    id: 'chamber_sign',
+    id: 'guardian_awaken',
     lines: [
-      { speaker: null, text: 'The sign pulses beneath Adrian\'s feet, slow as a heartbeat.' },
-      { speaker: null, text: 'Something vast is stirring below the stone.' },
+      { speaker: null, text: 'The sign blazes. Stone grinds on stone as a towering figure rises out of the light.' },
+      { speaker: 'guardian', text: 'BLOOD OF VALE. YOU CARRY THE OATH... BUT DO YOU UNDERSTAND IT?' },
+      { speaker: 'adrian', text: 'I don\'t even know what the oath is!' },
+      { speaker: 'guardian', text: 'THEN LEARN IT AS YOUR ANCESTORS DID. STAND, AND BE TESTED.' },
     ],
+    startBattle: 'covenant_guardian',
+  },
+  {
+    id: 'guardian_defeated',
+    lines: [
+      { speaker: null, text: 'The Guardian kneels. Cracks of gold light spread across its stone body.' },
+      { speaker: 'guardian', text: 'YOU STRUCK TO PROVE YOURSELF, NOT TO DESTROY. GOOD. THAT IS THE FIRST LESSON.' },
+      { speaker: 'guardian', text: 'READ WHAT YOUR ANCESTORS LEFT BEHIND, HEIR OF VALE.' },
+      { speaker: null, text: 'The Guardian crumbles into drifting motes of light. On the far wall, words begin to glow.' },
+    ],
+  },
+  {
+    id: 'chamber_sign_after',
+    lines: [{ speaker: null, text: 'The sign is quiet now, its light steady and calm.' }],
   },
 ];
 

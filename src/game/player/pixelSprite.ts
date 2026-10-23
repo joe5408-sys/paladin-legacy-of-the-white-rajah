@@ -130,7 +130,7 @@ function drawFrame(
 }
 
 /** Paints a 1px outline into transparent pixels that touch opaque ones. */
-function addOutline(ctx: Ctx, w: number, h: number, outline: string) {
+export function addOutline(ctx: Ctx, w: number, h: number, outline: string) {
   const img = ctx.getImageData(0, 0, w, h);
   const src = new Uint8ClampedArray(img.data);
   const r = parseInt(outline.slice(1, 3), 16);

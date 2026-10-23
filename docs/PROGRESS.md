@@ -1,7 +1,42 @@
 # Progress
 
-**Current phase:** Phase 3 — Story Objectives ✅ done → Phase 4 (Turn-Based Battle) next
+**Current phase:** Phase 4 — Turn-Based Battle ✅ done → Phase 5 (Complete Prologue) next
 **Last updated:** 2026-10-23
+
+### Phase 4 — Turn-based battle ✅
+- **Rules** (`src/game/combat/battle.ts`): pure and deterministic. The player goes first; turns alternate; Attack 6, Radiant Strike 10 (2 charges), Defend halves the next hit; victory at enemy HP 0, defeat at player HP 0. HP never goes below 0. Numbers live in `src/data/encounters.ts`.
+- **Store flow:** the `guardian_awaken` dialogue ends with `startBattle`, which switches to `mode: 'battle'`. Stages run intro → command → player_action → enemy_action → command…, then victory or defeat.
+  - Victory sets `guardian_defeated`, returns to the chamber (`after_battle` spawn) and plays `guardian_defeated`. The objective becomes "Read the ancestral message."
+  - Defeat offers Retry, which fully resets HP and charges. The retried battle is winnable, so defeat can't block the prologue.
+  - The Guardian never re-triggers after defeat.
+- **Arena** (`BattleArena.tsx`): a close fixed framing of the chamber with Adrian on the left and the Guardian on the right.
+  - Adrian lunges on Attack and Skill; the Guardian lunges on its attack.
+  - Whoever takes a hit shakes and flashes red.
+  - Radiant Strike adds a gold ring burst and a light flash.
+  - Defend shows a blue shield until the next hit.
+  - Floating damage numbers and "Guard!".
+  - On victory the Guardian sinks and fades; on defeat Adrian collapses.
+- **Guardian sprite:** original 32×40 stone sentinel drawn in code (`guardianSprite.ts`), with gold eyes and the sword-over-river emblem.
+- **Battle HUD** (`BattleHud.tsx`):
+  - Enemy and player HP bars, Radiant Strike charge pips and a "Guarding" status.
+  - A message log with help text for the highlighted command.
+  - Command menu: ↑/↓ or W/S and E/Enter/Space, or mouse. Radiant Strike is greyed out and skipped at 0 charges.
+  - A first-turn tutorial tip.
+  - A VICTORY banner with Continue, and a DEFEAT panel with Retry Battle.
+  - Automatic pacing (~1.1 s per action, which E can skip).
+
+**Phase 4 test results (2026-10-23):**
+- `npm test`: 77/77 pass, 17 new, covering every §19 Combat rule plus the in-game flow (start from story event, victory return, no re-trigger, defeat → retry → win).
+- `npm run build`: OK.
+- Browser play-through:
+  - The sign starts the Guardian's speech, then the battle.
+  - Radiant Strike showed the burst, "-10" and 14/24.
+  - The enemy hit for 4 (26/30). Defend showed the shield, then "guard holds: only 2 damage".
+  - The second Radiant Strike left ×0 and greyed out. Attack brought the Guardian to 0/24 → VICTORY → back to the chamber, farewell dialogue, objective "Read the ancestral message."
+  - Defeat path: defending repeatedly reached 0/30 → DEFEAT → Retry restored 30/30, 24/24 and ×2.
+  - No console errors after a clean reload.
+
+**Balance note:** with the master-prompt starting values, the battle is very forgiving. The Guardian deals 4 a turn against 30 HP, so you only lose by defending about 15 times in a row. Fine for a tutorial; tune in `encounters.ts` if desired.
 
 ### Phase 3 — Story objectives ✅
 - **Quests:** a linear objective list (`src/data/quests.ts`) derived from story flags (`src/game/quests/quests.ts`). The active objective is the first incomplete one, so there's no quest state to sync, completed steps can't re-trigger, and later flags can't skip earlier objectives. A HUD tracker sits top-right and flashes "New Objective" on change.
