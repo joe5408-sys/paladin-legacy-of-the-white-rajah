@@ -1,0 +1,15 @@
+# Roadmap
+
+Goal: a complete, playable 5–10 minute prologue ("Chapter 0: The Forgotten Heir"). No Chapter 1 work until Phase 6 is done.
+
+| Phase | Scope | Acceptance | Status |
+|---|---|---|---|
+| 0 — Foundation | Vite/React/TS/R3F project, scripts, docs, build | App launches, build succeeds, no critical startup errors | ✅ Done |
+| 1 — HD-2D Exploration | 3D test environment, 2D player sprite, fixed camera, movement, collision | Walk through a 3D environment; facing, camera follow and collision work | 🟡 First slice done (village square). Remaining: polish as needed |
+| 2 — NPC & Dialogue | One NPC, interaction prompt, dialogue box, story state | Approach NPC and complete a conversation | ⏭ Next |
+| 3 — Story Objectives | Family home interior, heirloom, quest state machine, scene transitions | Discovery sequence can be completed | ⬜ |
+| 4 — Turn-Based Battle | Battle scene, Attack/Skill/Defend, HP, Guardian, win/lose, retry | Win or lose; retry works; victory advances story | ⬜ |
+| 5 — Complete Prologue | Connect scenes, revelation, Daniel Rengas, completion screen, pacing | Full prologue playable in ~5–10 min | ⬜ |
+| 6 — Save & Deployment | localStorage save/load, pause menu, basic audio, polish, regression tests, Netlify | Deployed game runs; save/load works; no critical progression bugs | ⬜ |
+
+See `MASTER_PROMPT.md` §19 for the detailed pass/fail acceptance tests.

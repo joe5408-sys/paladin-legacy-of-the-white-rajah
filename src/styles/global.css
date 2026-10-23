@@ -1,0 +1,75 @@
+:root {
+  --ui-bg: rgba(18, 16, 30, 0.82);
+  --ui-border: #d8b24a;
+  --ui-border-dark: #6b5420;
+  --ui-text: #f4ecd8;
+  --ui-font: 'Courier New', ui-monospace, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+  background: #0b0a10;
+  color: var(--ui-text);
+  font-family: var(--ui-font);
+  overflow: hidden;
+}
+
+/* Letterboxed 16:9 frame, scaled to fit the window */
+.game-shell {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.game-frame {
+  position: relative;
+  width: min(100vw, calc(100vh * 16 / 9));
+  height: min(100vh, calc(100vw * 9 / 16));
+  overflow: hidden;
+}
+
+.hud {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  font-size: clamp(11px, 1.4vw, 16px);
+}
+
+.pixel-panel {
+  background: var(--ui-bg);
+  border: 2px solid var(--ui-border);
+  box-shadow:
+    0 0 0 2px var(--ui-border-dark),
+    4px 4px 0 rgba(0, 0, 0, 0.35);
+  padding: 0.4em 0.8em;
+  image-rendering: pixelated;
+  letter-spacing: 0.04em;
+}
+
+.hud-location {
+  position: absolute;
+  top: 1em;
+  left: 1em;
+  font-weight: bold;
+}
+
+.hud-controls {
+  position: absolute;
+  bottom: 1em;
+  right: 1em;
+  opacity: 0.9;
+}
+
+kbd {
+  font-family: inherit;
+  color: #ffe08a;
+}
