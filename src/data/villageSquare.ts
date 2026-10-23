@@ -4,9 +4,9 @@
  * nothing here imports React or Three.js.
  */
 import { boxFromCenter, type Box } from '../game/core/collision';
-import type { Direction } from '../game/core/input';
 import type { Interactable } from '../game/interaction/interaction';
-import type { CharacterId } from './characters';
+import { NPC_COLLIDER_SIZE, type NpcPlacement, type SceneLayout } from '../game/scenes/layout';
+import { SCENES } from './scenes';
 
 export interface BuildingDef {
   id: string;
@@ -37,7 +37,7 @@ export interface PropDef {
 /** Walkable rectangle. North edge stops at the boardwalk railing. */
 export const VILLAGE_BOUNDS: Box = { minX: -12, maxX: 12, minZ: -5.2, maxZ: 8 };
 
-export const PLAYER_START = { x: -6, z: 5.5 };
+export const PLAYER_START = SCENES.village.spawns.start;
 
 /** River runs along the north edge, behind the boardwalk. */
 export const RIVER = { minX: -40, maxX: 40, minZ: -14.5, maxZ: -6.2 };
@@ -101,20 +101,10 @@ export const PROPS: PropDef[] = [
   { kind: 'planter', x: 9.7, z: 1.6, collider: { width: 0.7, depth: 0.7 } },
 ];
 
-export interface NpcPlacement {
-  id: string;
-  character: CharacterId;
-  x: number;
-  z: number;
-  facing: Direction;
-}
-
 /** Uncle Lim minds his shop counter outside the kedai. */
 export const NPCS: NpcPlacement[] = [
   { id: 'npc-lim', character: 'lim', x: -6.2, z: 1.0, facing: 'south' },
 ];
-
-export const NPC_COLLIDER_SIZE = 0.6;
 
 export const INTERACTABLES: Interactable[] = [
   {
@@ -126,23 +116,23 @@ export const INTERACTABLES: Interactable[] = [
     radius: 1.4,
     npc: 'lim',
     dialogue: [
+      { dialogue: 'lim_after_home', requires: ['entered_home'] },
       { dialogue: 'lim_intro', unless: ['met_lim'] },
       { dialogue: 'lim_repeat' },
     ],
   },
   {
-    // Becomes an "enter" door in Phase 3, when the interior exists.
-    id: 'family-home-stairs',
-    kind: 'inspect',
+    id: 'family-home-door',
+    kind: 'enter',
     label: 'Vale Family Home',
     x: 6.8,
     z: 2.15,
     radius: 1.2,
-    dialogue: [{ dialogue: 'family_home_exterior' }],
+    enter: { scene: 'home', spawn: 'door' },
   },
 ];
 
-/** Stair footprint in front of a stilt house door (blocked until interiors exist). */
+/** Stair footprint in front of a stilt house door. */
 export function stairBox(b: BuildingDef): Box {
   return boxFromCenter(b.x, b.z + b.depth / 2 + 0.45, 1.2, 0.9);
 }
@@ -156,3 +146,12 @@ export function buildVillageColliders(): Box[] {
   for (const n of NPCS) boxes.push(boxFromCenter(n.x, n.z, NPC_COLLIDER_SIZE, NPC_COLLIDER_SIZE));
   return boxes;
 }
+
+const VILLAGE_COLLIDERS = buildVillageColliders();
+
+export const VILLAGE_LAYOUT: SceneLayout = {
+  bounds: VILLAGE_BOUNDS,
+  colliders: () => VILLAGE_COLLIDERS,
+  interactables: INTERACTABLES,
+  npcs: NPCS,
+};

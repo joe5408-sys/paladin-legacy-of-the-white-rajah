@@ -32,6 +32,10 @@ export interface CharacterPalette {
 
 export interface CharacterFeatures {
   glasses?: boolean;
+  /** Hair tied up in a bun. */
+  hairBun?: boolean;
+  /** Long skirt instead of trousers (legs hidden). */
+  longSkirt?: boolean;
 }
 
 type Ctx = CanvasRenderingContext2D;
@@ -56,7 +60,12 @@ function drawFrame(
   const legTop = 18;
 
   // Legs and boots
-  if (facing === 'east') {
+  if (f.longSkirt) {
+    rect(ctx, 4, legTop, 8, 5, C.pants);
+    rect(ctx, 4, legTop + 2, 8, 1, C.trim); // woven band
+    rect(ctx, 5, 23, 2, 1, C.boots);
+    rect(ctx, 9, 23, 2, 1, C.boots);
+  } else if (facing === 'east') {
     if (col === 2) {
       rect(ctx, 9, legTop, 2, 4, C.pants); rect(ctx, 9, 22, 3, 2, C.boots);
       rect(ctx, 5, legTop, 2, 4, C.pants); rect(ctx, 4, 22, 3, 2, C.boots);
@@ -94,6 +103,10 @@ function drawFrame(
   }
 
   // Head
+  if (f.hairBun) {
+    if (facing === 'east') rect(ctx, 3, hy + 1, 3, 3, C.hair);
+    else rect(ctx, 6, hy - 2, 4, 3, C.hair);
+  }
   rect(ctx, 5, hy, 6, 8, C.skin);
   if (facing === 'south') {
     rect(ctx, 5, hy, 6, 3, C.hair); rect(ctx, 6, hy, 3, 1, C.hairHi);

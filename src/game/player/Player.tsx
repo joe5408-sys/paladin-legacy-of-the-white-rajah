@@ -13,19 +13,20 @@ import { setSpriteFrame, SpriteBody, useCharacterTexture } from './spriteBody';
 
 interface PlayerProps {
   start: Vec2;
+  startFacing?: Direction;
   colliders: readonly Box[];
   bounds: Box;
   /** Shared, mutated every frame; the camera and interaction system read it. */
   positionRef: React.MutableRefObject<THREE.Vector3>;
 }
 
-export function Player({ start, colliders, bounds, positionRef }: PlayerProps) {
+export function Player({ start, startFacing = 'south', colliders, bounds, positionRef }: PlayerProps) {
   const input = useDirectionalInput();
   const texture = useCharacterTexture(CHARACTERS.adrian);
   const group = useRef<THREE.Group>(null);
   const state = useRef({
     pos: { ...start } as Vec2,
-    facing: 'south' as Direction,
+    facing: startFacing as Direction,
     moving: false,
     stateTime: 0,
   });

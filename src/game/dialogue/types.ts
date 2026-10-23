@@ -1,14 +1,14 @@
 import type { CharacterId } from '../../data/characters';
+import type { Condition, StoryFlag } from '../core/flags';
 
-/** Story flags record one-off events. Add new flags here so typos fail to compile. */
-export type StoryFlag = 'met_lim' | 'saw_family_home';
-
-export type StoryFlags = Partial<Record<StoryFlag, true>>;
+export type { StoryFlag, StoryFlags } from '../core/flags';
 
 export interface DialogueLine {
   /** Speaking character, or null for narration. */
   speaker: CharacterId | null;
   text: string;
+  /** Flags set the moment this line appears (e.g. trigger a visual effect mid-scene). */
+  setFlags?: StoryFlag[];
 }
 
 export interface DialogueDef {
@@ -22,10 +22,6 @@ export interface DialogueDef {
  * Picks a conversation based on story state. Rules are checked in order;
  * the first rule whose conditions pass wins.
  */
-export interface DialogueRule {
+export interface DialogueRule extends Condition {
   dialogue: string;
-  /** All of these flags must be set. */
-  requires?: StoryFlag[];
-  /** None of these flags may be set. */
-  unless?: StoryFlag[];
 }

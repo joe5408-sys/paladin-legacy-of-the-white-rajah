@@ -1,7 +1,30 @@
 # Progress
 
-**Current phase:** Phase 2 — NPC & Dialogue ✅ done → Phase 3 next
+**Current phase:** Phase 3 — Story Objectives ✅ done → Phase 4 (Turn-Based Battle) next
 **Last updated:** 2026-10-23
+
+### Phase 3 — Story objectives ✅
+- **Quests:** a linear objective list (`src/data/quests.ts`) derived from story flags (`src/game/quests/quests.ts`). The active objective is the first incomplete one, so there's no quest state to sync, completed steps can't re-trigger, and later flags can't skip earlier objectives. A HUD tracker sits top-right and flashes "New Objective" on change.
+- **Flags and conditions** (`src/game/core/flags.ts`): one typed list of flags, plus `requires` / `unless` conditions shared by dialogue rules and interactables.
+- **Scenes:** a registry (`src/data/scenes.ts`) with names, spawn points and arrival dialogue. The store handles `requestScene → swapScene → finishTransition` with a 350 ms black fade (`SceneFade`). Input is blocked mid-transition. The HUD location label follows the scene.
+- **Shared rig** (`ExplorationRig`): player, NPCs, interactions and camera for any scene. Colliders can depend on flags (the open hatch blocks the hole).
+- **Scene 1:** opening narration plays on load (`village_arrival`).
+- **Area B (family home):** plank floor, cut-away front wall, back wall with windows and the family portrait (blank nameplate, inspectable), table with teapot and stools, cabinet, bookshelf, plants.
+- **Aunt Mara:** a new sprite (white bun, maroon blouse, long skirt) with an intro, a repeat line and a post-awakening line.
+- **Heirloom:** a bronze medallion on a pedestal with three interactables gated by story state:
+  - Before Mara: inspect → "say hello first".
+  - After Mara: Touch → the awakening.
+  - After awakening: inspect.
+- **Awakening:** individual dialogue lines can set flags, so the medallion flares mid-conversation (pulsing glow, gold light, the sign traced on the floor). The final line opens the floor hatch (dark stairwell, steps, warm light from below).
+- **Paladin sign:** an original sword-over-river insignia drawn in code (`insignia.ts`), used on the medallion, the home floor and the chamber.
+- **Area C (ancient chamber), minimal:** stone floor, pillars, flickering braziers, a glowing floor sign, a wall relief and stairs back up. The arrival narration sets `entered_chamber`. The Guardian comes in Phase 4.
+- Uncle Lim gets a new line after you've been home.
+
+**Phase 3 test results (2026-10-23):**
+- `npm test`: 60/60 pass, 23 new. They cover the whole discovery sequence through store actions, objective order and no-skip, transitions, arrival-once, heirloom gating, spawn safety, exit targets, dialogue references, and on-foot reachability of every interactable in all 3 scenes.
+- `npm run build`: OK.
+- Browser play-through in the pane: opening narration → walk to the house → fade → home arrival (objective: Speak with Aunt Mara) → Mara intro (objective: Inspect the heirloom) → Touch Heirloom (glow and floor sign visible) → passage opens → Enter Hidden Passage → chamber arrival (objective: Defeat the Guardian) → stairs back up → exit to village.
+- No console errors after a clean reload.
 
 ### Phase 2 — NPC and dialogue ✅
 - Zustand store (`src/game/core/gameStore.ts`): mode (`explore` / `dialogue`), story flags, interactable in range, active dialogue. Exposed in dev as `window.__PALADIN_STORE__`.

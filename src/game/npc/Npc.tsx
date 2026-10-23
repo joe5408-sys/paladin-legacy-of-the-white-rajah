@@ -2,7 +2,7 @@ import { useFrame } from '@react-three/fiber';
 import { useRef } from 'react';
 import type * as THREE from 'three';
 import { CHARACTERS } from '../../data/characters';
-import type { NpcPlacement } from '../../data/villageSquare';
+import type { NpcPlacement } from '../scenes/layout';
 import { gameStore } from '../core/gameStore';
 import { directionToward } from '../core/input';
 import { frameColumn } from '../player/animation';

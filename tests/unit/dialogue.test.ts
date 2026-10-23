@@ -22,14 +22,14 @@ beforeEach(() => s().reset());
 describe('selectDialogue', () => {
   const rules = [
     { dialogue: 'first', unless: ['met_lim' as const] },
-    { dialogue: 'needs', requires: ['saw_family_home' as const] },
+    { dialogue: 'needs', requires: ['met_mara' as const] },
     { dialogue: 'fallback' },
   ];
 
   it('picks the first matching rule', () => {
     expect(selectDialogue(rules, {})).toBe('first');
     expect(selectDialogue(rules, { met_lim: true })).toBe('fallback');
-    expect(selectDialogue(rules, { met_lim: true, saw_family_home: true })).toBe('needs');
+    expect(selectDialogue(rules, { met_lim: true, met_mara: true })).toBe('needs');
   });
 
   it('returns null when nothing matches', () => {
@@ -84,6 +84,7 @@ describe('dialogue flow', () => {
     s().setNearby(lim);
     s().pressAction('KeyE');
     finishDialogue();
+    s().setNearby(lim); // the interaction system re-detects the NPC each frame
     s().pressAction('KeyE');
     expect(s().dialogue?.def.id).toBe('lim_repeat');
   });

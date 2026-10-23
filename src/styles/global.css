@@ -69,6 +69,42 @@ body,
   opacity: 0.9;
 }
 
+.hud-objective {
+  position: absolute;
+  top: 1em;
+  right: 1em;
+  max-width: 34%;
+  transition: background-color 200ms;
+}
+
+.hud-objective-title {
+  color: #ffe08a;
+  font-size: 0.8em;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 0.15em;
+}
+
+.hud-objective.updated {
+  background: rgba(90, 70, 20, 0.92);
+  animation: objective-pop 400ms ease-out;
+}
+
+@keyframes objective-pop {
+  0% {
+    transform: scale(1.08);
+  }
+}
+
+.scene-fade {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  transition-property: opacity;
+  transition-timing-function: ease-in-out;
+  pointer-events: none;
+}
+
 .interaction-prompt {
   position: absolute;
   left: 50%;

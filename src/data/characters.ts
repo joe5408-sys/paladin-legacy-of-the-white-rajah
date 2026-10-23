@@ -4,7 +4,7 @@
  */
 import type { CharacterFeatures, CharacterPalette } from '../game/player/pixelSprite';
 
-export type CharacterId = 'adrian' | 'lim';
+export type CharacterId = 'adrian' | 'lim' | 'mara';
 
 export interface CharacterDef {
   id: CharacterId;
@@ -53,5 +53,24 @@ export const CHARACTERS: Record<CharacterId, CharacterDef> = {
       boots: '#2e2620',
     },
     features: { glasses: true },
+  },
+  mara: {
+    id: 'mara',
+    name: 'Aunt Mara',
+    palette: {
+      outline: OUTLINE,
+      hair: '#dedad2', // white hair in a bun
+      hairHi: '#f4f1ea',
+      skin: '#c58f66',
+      skinShade: '#a5704c',
+      eye: '#1b1420',
+      jacket: '#7b2f3b', // deep maroon blouse
+      jacketShade: '#5c2029',
+      trim: '#d8b24a', // the family gold
+      belt: '#3b2b20',
+      pants: '#2f3a3a', // long dark skirt
+      boots: '#2a2018',
+    },
+    features: { hairBun: true, longSkirt: true },
   },
 };

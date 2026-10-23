@@ -1,21 +1,7 @@
-import { useMemo, useRef } from 'react';
-import * as THREE from 'three';
-import {
-  BOARDWALK,
-  BUILDINGS,
-  buildVillageColliders,
-  INTERACTABLES,
-  NPCS,
-  PLAYER_START,
-  PROPS,
-  RIVER,
-  VILLAGE_BOUNDS,
-} from '../../data/villageSquare';
-import { FollowCamera } from '../camera/FollowCamera';
-import { InteractionSystem } from '../interaction/InteractionSystem';
-import { Npc } from '../npc/Npc';
-import { Player } from '../player/Player';
+import type { SpawnPoint } from '../../data/scenes';
+import { BOARDWALK, BUILDINGS, PROPS, RIVER, VILLAGE_LAYOUT } from '../../data/villageSquare';
 import { Boardwalk, Building, GroundPatch, Prop, River } from './environment';
+import { ExplorationRig } from './ExplorationRig';
 
 /** Decorative tree line on the far bank: [x, z, scale]. Not walkable, no colliders. */
 const FAR_TREES: Array<[number, number, number]> = Array.from({ length: 22 }, (_, i) => {
@@ -26,10 +12,7 @@ const FAR_TREES: Array<[number, number, number]> = Array.from({ length: 22 }, (_
 });
 
 /** Area A — the riverside village square of Sungai Awan. */
-export function VillageSquare() {
-  const colliders = useMemo(() => buildVillageColliders(), []);
-  const playerPos = useRef(new THREE.Vector3(PLAYER_START.x, 0, PLAYER_START.z));
-
+export function VillageSquare({ spawn }: { spawn: SpawnPoint }) {
   return (
     <>
       <color attach="background" args={['#9fc6c9']} />
@@ -53,7 +36,6 @@ export function VillageSquare() {
         shadow-normalBias={0.02}
       />
 
-      {/* Ground: grass, then dirt paths linking the square to each building */}
       {/* Village ground stops at the boardwalk so the river shows behind it */}
       <GroundPatch x={0} z={4} width={60} depth={20.4} color="#6f9a52" y={0} />
       {/* Far riverbank and rainforest edge */}
@@ -64,6 +46,7 @@ export function VillageSquare() {
           <meshStandardMaterial color={i % 2 ? '#2e5a33' : '#3a6b3a'} flatShading />
         </mesh>
       ))}
+      {/* Dirt paths linking the square to each building */}
       <GroundPatch x={0} z={3.9} width={24} depth={1.6} color="#b99a6b" />
       <GroundPatch x={-6} z={6} width={1.6} depth={4.5} color="#b99a6b" />
       <GroundPatch x={6.8} z={2.4} width={1.6} depth={2.6} color="#b99a6b" />
@@ -81,17 +64,7 @@ export function VillageSquare() {
         <Prop key={i} def={p} />
       ))}
 
-      <Player
-        start={PLAYER_START}
-        colliders={colliders}
-        bounds={VILLAGE_BOUNDS}
-        positionRef={playerPos}
-      />
-      {NPCS.map((n) => (
-        <Npc key={n.id} placement={n} playerPos={playerPos} />
-      ))}
-      <InteractionSystem targets={INTERACTABLES} playerPos={playerPos} />
-      <FollowCamera target={playerPos} />
+      <ExplorationRig layout={VILLAGE_LAYOUT} spawn={spawn} />
     </>
   );
 }

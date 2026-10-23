@@ -1,8 +1,9 @@
 import { Canvas } from '@react-three/fiber';
+import { useEffect } from 'react';
 import * as THREE from 'three';
 import { gameStore } from '../game/core/gameStore';
 import { useActionKey } from '../game/interaction/useActionKey';
-import { VillageSquare } from '../game/scenes/VillageSquare';
+import { SceneView } from '../game/scenes/SceneView';
 import { Hud } from '../game/ui/Hud';
 
 if (import.meta.env.DEV) {
@@ -12,6 +13,13 @@ if (import.meta.env.DEV) {
 
 export function App() {
   useActionKey();
+
+  // Opening narration (Scene 1) once the game has mounted.
+  useEffect(() => {
+    const t = setTimeout(() => gameStore.getState().arrive(), 400);
+    return () => clearTimeout(t);
+  }, []);
+
   return (
     <div className="game-shell">
       <div className="game-frame">
@@ -22,9 +30,9 @@ export function App() {
           camera={{ near: 0.1, far: 100, position: [0, 15, 15] }}
           gl={{ antialias: true }}
         >
-          <VillageSquare />
+          <SceneView />
         </Canvas>
-        <Hud location="Sungai Awan — Village Square" />
+        <Hud />
       </div>
     </div>
   );

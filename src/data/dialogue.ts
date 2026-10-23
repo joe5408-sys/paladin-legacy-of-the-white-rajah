@@ -1,10 +1,21 @@
 /**
  * All dialogue text lives here, never inside scene components.
  * Keep lines short: the whole prologue should play in 5–10 minutes.
+ * The setting is fictional: the Paladin order, its oath and its history are invented.
  */
 import type { DialogueDef } from '../game/dialogue/types';
 
 const defs: DialogueDef[] = [
+  // ── Scene 1: Arrival ─────────────────────────────────────────────
+  {
+    id: 'village_arrival',
+    lines: [
+      { speaker: null, text: 'Sungai Awan. The longboat from Kapit pulls away, its engine fading upriver.' },
+      { speaker: 'adrian', text: 'Twelve years. Same river, same boardwalk... and I still feel like a visitor.' },
+      { speaker: 'adrian', text: 'Aunt Mara\'s message just said: "Come home. It is time." No explanation.' },
+    ],
+    setFlags: ['arrived'],
+  },
   {
     id: 'lim_intro',
     lines: [
@@ -23,13 +34,104 @@ const defs: DialogueDef[] = [
     ],
   },
   {
-    id: 'family_home_exterior',
+    id: 'lim_after_home',
     lines: [
-      { speaker: null, text: 'The old Vale house. Fresh gold paint gleams around the windows.' },
-      { speaker: 'adrian', text: 'Twelve years... It looks smaller than I remember.' },
-      { speaker: null, text: 'Floorboards creak somewhere inside. Someone is home.' },
+      { speaker: 'lim', text: 'You saw Mara already? Good. She has been keeping that house exactly the way your grandfather left it.' },
     ],
-    setFlags: ['saw_family_home'],
+  },
+
+  // ── Scene 2: The Family Secret ───────────────────────────────────
+  {
+    id: 'home_arrival',
+    lines: [
+      { speaker: null, text: 'Inside, the house smells of camphor and old wood.', setFlags: ['entered_home'] },
+      { speaker: 'adrian', text: 'Aunty? It\'s me. Adrian.' },
+      { speaker: 'mara', text: 'Over here, child. Come where these old eyes can see you.' },
+    ],
+  },
+  {
+    id: 'mara_intro',
+    lines: [
+      { speaker: 'mara', text: 'Adrian. You have your grandfather\'s stubborn jaw. Good. You will need it.' },
+      { speaker: 'adrian', text: 'Aunty, your message worried me. Are you unwell?' },
+      { speaker: 'mara', text: 'Unwell? I am eighty-one, not dying. Listen carefully.' },
+      { speaker: 'mara', text: 'Our family once served the White Rajah. Not as clerks or soldiers. As Paladins.' },
+      { speaker: 'mara', text: 'Sworn guardians of the Covenant. They protected the Crown, and the people beneath it.' },
+      { speaker: 'adrian', text: 'Paladins? I have never seen the Vale name in any history book.' },
+      { speaker: 'mara', text: 'Because it was removed. Your great-grandfather was accused of treason, and the palace struck our name from every record.' },
+      { speaker: 'mara', text: 'But one thing they could not take. The heirloom, on the pedestal by the window.' },
+      { speaker: 'mara', text: 'It has waited a long time for a Vale whose blood is awake. Go. Touch it.' },
+    ],
+    setFlags: ['met_mara'],
+  },
+  {
+    id: 'mara_repeat',
+    lines: [
+      { speaker: 'mara', text: 'Go on. The heirloom, by the window. It will not bite... I think.' },
+    ],
+  },
+  {
+    id: 'mara_after_awaken',
+    lines: [
+      { speaker: 'mara', text: 'So it is true. The oath still lives in you.' },
+      { speaker: 'mara', text: 'That passage has been sealed since before I was born. Whatever waits below, it waits for you.' },
+      { speaker: 'mara', text: 'Be careful, Adrian. The Covenant tested every Vale who came before you.' },
+    ],
+  },
+  {
+    id: 'portrait',
+    lines: [
+      { speaker: null, text: 'A faded photograph: a stern man in a white uniform, standing beside a young Rajah.' },
+      { speaker: null, text: 'The brass nameplate beneath it has been scratched completely blank.' },
+      { speaker: 'adrian', text: 'Someone really wanted his name gone.' },
+    ],
+  },
+
+  // ── Scene 3: The Awakening ───────────────────────────────────────
+  {
+    id: 'heirloom_locked',
+    lines: [
+      { speaker: null, text: 'A bronze medallion rests on a carved pedestal. A sword crosses a river on its face.' },
+      { speaker: 'adrian', text: 'I should say hello to Aunt Mara first. She is watching me like a hawk.' },
+    ],
+  },
+  {
+    id: 'heirloom_awaken',
+    lines: [
+      { speaker: null, text: 'Adrian\'s fingertips brush the cold bronze.' },
+      {
+        speaker: null,
+        text: 'The medallion flares white-gold. Light spills across the floor, tracing the sign of the sword and the river.',
+        setFlags: ['heirloom_awakened'],
+      },
+      { speaker: 'adrian', text: 'It\'s warm. It\'s... answering me.' },
+      {
+        speaker: null,
+        text: 'With a deep grinding sound, the floorboards by the west wall slide apart. Stone steps lead down into the dark.',
+        setFlags: ['passage_open'],
+      },
+    ],
+  },
+  {
+    id: 'heirloom_after',
+    lines: [{ speaker: null, text: 'The medallion hums softly, warm as a living thing.' }],
+  },
+
+  // ── Scene 4 (lead-in): The Ancient Chamber ───────────────────────
+  {
+    id: 'chamber_arrival',
+    lines: [
+      { speaker: null, text: 'The steps, far older than the house above, end in a round stone chamber.', setFlags: ['entered_chamber'] },
+      { speaker: null, text: 'At its centre, the sword-and-river sign glows in the floor.' },
+      { speaker: 'adrian', text: 'This place has been waiting. Just like Aunt Mara said.' },
+    ],
+  },
+  {
+    id: 'chamber_sign',
+    lines: [
+      { speaker: null, text: 'The sign pulses beneath Adrian\'s feet, slow as a heartbeat.' },
+      { speaker: null, text: 'Something vast is stirring below the stone.' },
+    ],
   },
 ];
 
