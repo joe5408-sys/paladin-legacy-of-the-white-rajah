@@ -1,9 +1,10 @@
 /**
- * Procedural placeholder pixel-art for the protagonist (Adrian Vale).
+ * Procedural placeholder pixel-art for characters.
  * Original art drawn in code: 16x24 frames, 4 columns x 4 rows.
  *   Columns: 0 idle-a, 1 idle-b, 2 walk-a, 3 walk-b
  *   Rows:    0 south, 1 north, 2 east, 3 west (west = mirrored east)
  * A 1px dark outline is added automatically around every shape.
+ * Characters differ by palette and a few optional features.
  */
 import type { Direction } from '../core/input';
 import { SPRITE_FRAME_H as FH, SPRITE_FRAME_W as FW } from '../core/constants';
@@ -12,20 +13,26 @@ export const SHEET_COLS = 4;
 export const SHEET_ROWS = 4;
 export const DIRECTION_ROW: Record<Direction, number> = { south: 0, north: 1, east: 2, west: 3 };
 
-const C = {
-  outline: '#16111c',
-  hair: '#2b1e18',
-  hairHi: '#4a342a',
-  skin: '#c98e62',
-  skinShade: '#a8714c',
-  eye: '#1b1420',
-  jacket: '#25386f',
-  jacketShade: '#1a2850',
-  trim: '#d8b24a',
-  belt: '#5a3b22',
-  pants: '#3a3a48',
-  boots: '#4a2e1f',
-};
+export interface CharacterPalette {
+  outline: string;
+  hair: string;
+  hairHi: string;
+  skin: string;
+  skinShade: string;
+  eye: string;
+  /** Top garment (jacket, shirt, blouse). */
+  jacket: string;
+  jacketShade: string;
+  /** Accent stripe down the front. */
+  trim: string;
+  belt: string;
+  pants: string;
+  boots: string;
+}
+
+export interface CharacterFeatures {
+  glasses?: boolean;
+}
 
 type Ctx = CanvasRenderingContext2D;
 type Facing = 'south' | 'north' | 'east';
@@ -36,7 +43,13 @@ function rect(ctx: Ctx, x: number, y: number, w: number, h: number, color: strin
 }
 
 /** Draws one 16x24 frame at the canvas origin. */
-function drawFrame(ctx: Ctx, facing: Facing, col: number) {
+function drawFrame(
+  ctx: Ctx,
+  C: CharacterPalette,
+  f: CharacterFeatures,
+  facing: Facing,
+  col: number,
+) {
   const bob = col === 0 ? 0 : 1; // body dips on breath and on each step
   const hy = 2 + bob; // head top
   const by = 10 + bob; // body top
@@ -60,7 +73,7 @@ function drawFrame(ctx: Ctx, facing: Facing, col: number) {
     rect(ctx, 8, legTop, 3, 4 - rUp, C.pants); rect(ctx, 8, 22 - rUp, 3, 2, C.boots);
   }
 
-  // Body: dark jacket with gold trim, a hint of the family lineage
+  // Body
   rect(ctx, 4, by, 8, 8 - bob, C.jacket);
   rect(ctx, 4, by + 6 - bob, 8, 1, C.belt);
   if (facing === 'south') {
@@ -86,6 +99,9 @@ function drawFrame(ctx: Ctx, facing: Facing, col: number) {
     rect(ctx, 5, hy, 6, 3, C.hair); rect(ctx, 6, hy, 3, 1, C.hairHi);
     rect(ctx, 5, hy + 3, 1, 2, C.hair); rect(ctx, 10, hy + 3, 1, 2, C.hair);
     rect(ctx, 6, hy + 4, 1, 2, C.eye); rect(ctx, 9, hy + 4, 1, 2, C.eye);
+    if (f.glasses) {
+      rect(ctx, 5, hy + 4, 3, 1, C.outline); rect(ctx, 8, hy + 4, 3, 1, C.outline);
+    }
     rect(ctx, 5, hy + 7, 6, 1, C.skinShade);
   } else if (facing === 'north') {
     rect(ctx, 5, hy, 6, 7, C.hair); rect(ctx, 6, hy, 3, 1, C.hairHi);
@@ -94,18 +110,19 @@ function drawFrame(ctx: Ctx, facing: Facing, col: number) {
     rect(ctx, 5, hy, 6, 3, C.hair); rect(ctx, 7, hy, 3, 1, C.hairHi);
     rect(ctx, 5, hy + 3, 3, 3, C.hair);
     rect(ctx, 9, hy + 4, 1, 2, C.eye);
+    if (f.glasses) rect(ctx, 8, hy + 4, 3, 1, C.outline);
     rect(ctx, 11, hy + 4, 1, 2, C.skin); // nose
     rect(ctx, 5, hy + 7, 6, 1, C.skinShade);
   }
 }
 
 /** Paints a 1px outline into transparent pixels that touch opaque ones. */
-function addOutline(ctx: Ctx, w: number, h: number) {
+function addOutline(ctx: Ctx, w: number, h: number, outline: string) {
   const img = ctx.getImageData(0, 0, w, h);
   const src = new Uint8ClampedArray(img.data);
-  const r = parseInt(C.outline.slice(1, 3), 16);
-  const g = parseInt(C.outline.slice(3, 5), 16);
-  const b = parseInt(C.outline.slice(5, 7), 16);
+  const r = parseInt(outline.slice(1, 3), 16);
+  const g = parseInt(outline.slice(3, 5), 16);
+  const b = parseInt(outline.slice(5, 7), 16);
   const alpha = (x: number, y: number) =>
     x < 0 || y < 0 || x >= w || y >= h ? 0 : src[(y * w + x) * 4 + 3];
   for (let y = 0; y < h; y++) {
@@ -123,8 +140,11 @@ function addOutline(ctx: Ctx, w: number, h: number) {
   ctx.putImageData(img, 0, 0);
 }
 
-/** Builds the full sprite sheet on a canvas. Browser-only. */
-export function createHeroSheet(): HTMLCanvasElement {
+/** Builds a full character sprite sheet on a canvas. Browser-only. */
+export function createCharacterSheet(
+  palette: CharacterPalette,
+  features: CharacterFeatures = {},
+): HTMLCanvasElement {
   const sheet = document.createElement('canvas');
   sheet.width = FW * SHEET_COLS;
   sheet.height = FH * SHEET_ROWS;
@@ -145,8 +165,8 @@ export function createHeroSheet(): HTMLCanvasElement {
   for (const [row, facing, mirror] of rows) {
     for (let col = 0; col < SHEET_COLS; col++) {
       fctx.clearRect(0, 0, FW, FH);
-      drawFrame(fctx, facing, col);
-      addOutline(fctx, FW, FH);
+      drawFrame(fctx, palette, features, facing, col);
+      addOutline(fctx, FW, FH, palette.outline);
       out.save();
       if (mirror) {
         out.translate((col + 1) * FW, row * FH);

@@ -29,6 +29,17 @@ export const DIRECTION_VECTORS: Record<Direction, { x: number; z: number }> = {
   west: { x: -1, z: 0 },
 };
 
+/** Four-way direction from one point toward another (dominant axis wins). */
+export function directionToward(
+  from: { x: number; z: number },
+  to: { x: number; z: number },
+): Direction {
+  const dx = to.x - from.x;
+  const dz = to.z - from.z;
+  if (Math.abs(dx) > Math.abs(dz)) return dx > 0 ? 'east' : 'west';
+  return dz > 0 ? 'south' : 'north';
+}
+
 /** Tracks held movement keys in press order. */
 export class DirectionalInput {
   private held: string[] = [];

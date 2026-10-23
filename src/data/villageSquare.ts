@@ -4,6 +4,9 @@
  * nothing here imports React or Three.js.
  */
 import { boxFromCenter, type Box } from '../game/core/collision';
+import type { Direction } from '../game/core/input';
+import type { Interactable } from '../game/interaction/interaction';
+import type { CharacterId } from './characters';
 
 export interface BuildingDef {
   id: string;
@@ -98,6 +101,47 @@ export const PROPS: PropDef[] = [
   { kind: 'planter', x: 9.7, z: 1.6, collider: { width: 0.7, depth: 0.7 } },
 ];
 
+export interface NpcPlacement {
+  id: string;
+  character: CharacterId;
+  x: number;
+  z: number;
+  facing: Direction;
+}
+
+/** Uncle Lim minds his shop counter outside the kedai. */
+export const NPCS: NpcPlacement[] = [
+  { id: 'npc-lim', character: 'lim', x: -6.2, z: 1.0, facing: 'south' },
+];
+
+export const NPC_COLLIDER_SIZE = 0.6;
+
+export const INTERACTABLES: Interactable[] = [
+  {
+    id: 'npc-lim',
+    kind: 'talk',
+    label: 'Uncle Lim',
+    x: -6.2,
+    z: 1.0,
+    radius: 1.4,
+    npc: 'lim',
+    dialogue: [
+      { dialogue: 'lim_intro', unless: ['met_lim'] },
+      { dialogue: 'lim_repeat' },
+    ],
+  },
+  {
+    // Becomes an "enter" door in Phase 3, when the interior exists.
+    id: 'family-home-stairs',
+    kind: 'inspect',
+    label: 'Vale Family Home',
+    x: 6.8,
+    z: 2.15,
+    radius: 1.2,
+    dialogue: [{ dialogue: 'family_home_exterior' }],
+  },
+];
+
 /** Stair footprint in front of a stilt house door (blocked until interiors exist). */
 export function stairBox(b: BuildingDef): Box {
   return boxFromCenter(b.x, b.z + b.depth / 2 + 0.45, 1.2, 0.9);
@@ -109,5 +153,6 @@ export function buildVillageColliders(): Box[] {
   for (const p of PROPS) {
     if (p.collider) boxes.push(boxFromCenter(p.x, p.z, p.collider.width, p.collider.depth));
   }
+  for (const n of NPCS) boxes.push(boxFromCenter(n.x, n.z, NPC_COLLIDER_SIZE, NPC_COLLIDER_SIZE));
   return boxes;
 }

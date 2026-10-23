@@ -5,6 +5,8 @@ Every asset in the game must be original, properly licensed, or explicitly autho
 | Asset | Type | Source | Author | License | Notes |
 |---|---|---|---|---|---|
 | Adrian Vale placeholder sprite sheet | Pixel art (generated at runtime) | `src/game/player/pixelSprite.ts` | Original, project code | Project-owned | 16×24 frames, 4×4 sheet |
+| Uncle Lim placeholder sprite sheet | Pixel art (generated at runtime) | `pixelSprite.ts` + palette in `src/data/characters.ts` | Original, project code | Project-owned | Same frame layout as hero |
+| Dialogue text | Writing | `src/data/dialogue.ts` | Original | Project-owned | |
 | Village buildings, props, terrain | Procedural low-poly geometry | `src/game/scenes/environment.tsx` | Original, project code | Project-owned | Three.js primitives only |
 | UI font | System monospace (`Courier New` / `ui-monospace`) | User's OS | — | System font, not bundled | Replace with a licensed pixel font later |
 

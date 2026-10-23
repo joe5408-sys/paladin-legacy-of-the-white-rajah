@@ -4,12 +4,16 @@ import {
   BOARDWALK,
   BUILDINGS,
   buildVillageColliders,
+  INTERACTABLES,
+  NPCS,
   PLAYER_START,
   PROPS,
   RIVER,
   VILLAGE_BOUNDS,
 } from '../../data/villageSquare';
 import { FollowCamera } from '../camera/FollowCamera';
+import { InteractionSystem } from '../interaction/InteractionSystem';
+import { Npc } from '../npc/Npc';
 import { Player } from '../player/Player';
 import { Boardwalk, Building, GroundPatch, Prop, River } from './environment';
 
@@ -83,6 +87,10 @@ export function VillageSquare() {
         bounds={VILLAGE_BOUNDS}
         positionRef={playerPos}
       />
+      {NPCS.map((n) => (
+        <Npc key={n.id} placement={n} playerPos={playerPos} />
+      ))}
+      <InteractionSystem targets={INTERACTABLES} playerPos={playerPos} />
       <FollowCamera target={playerPos} />
     </>
   );

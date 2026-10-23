@@ -69,6 +69,70 @@ body,
   opacity: 0.9;
 }
 
+.interaction-prompt {
+  position: absolute;
+  left: 50%;
+  bottom: 14%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  animation: prompt-in 120ms ease-out;
+}
+
+@keyframes prompt-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 6px);
+  }
+}
+
+.dialogue-box {
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  bottom: 4%;
+  min-height: 24%;
+  padding: 1.4em 1.6em 1.2em;
+  font-size: max(1.3em, 14px);
+  line-height: 1.5;
+}
+
+.dialogue-speaker {
+  position: absolute;
+  top: 0;
+  left: 1.2em;
+  transform: translateY(-60%);
+  padding: 0.2em 0.9em;
+  color: #ffe08a;
+  font-weight: bold;
+}
+
+.dialogue-text {
+  margin: 0;
+}
+
+.dialogue-text.narration {
+  font-style: italic;
+  color: #d9d0bc;
+}
+
+.dialogue-ghost {
+  visibility: hidden;
+}
+
+.dialogue-continue {
+  position: absolute;
+  right: 1em;
+  bottom: 0.5em;
+  color: #ffe08a;
+  animation: blink 0.9s steps(2, start) infinite;
+}
+
+@keyframes blink {
+  to {
+    visibility: hidden;
+  }
+}
+
 kbd {
   font-family: inherit;
   color: #ffe08a;
