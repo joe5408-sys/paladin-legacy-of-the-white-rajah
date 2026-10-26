@@ -19,6 +19,8 @@ Every asset in the game must be original, properly licensed, or explicitly autho
 | Title screen backdrop | CSS gradients | `src/styles/global.css` | Original | Project-owned | |
 | Kak Jamilah placeholder sprite sheet | Pixel art (generated at runtime) | `pixelSprite.ts` + `characters.ts` | Original, project code | Project-owned | Headscarf and long skirt via palette and features |
 | Kuching waterfront (shophouses, Archives, Palace, fort, stall, bandstand, pier, boat) | Procedural low-poly | `src/chapters/chapter1/Waterfront.tsx` | Original, project code | Project-owned | Fictional, alternate-history versions of recognisable waterfront features |
+| The Archivist placeholder sprite sheet | Pixel art (generated at runtime) | `pixelSprite.ts` + `characters.ts` | Original, project code | Project-owned | Glasses, bun, long skirt |
+| Royal Archives interior (bookcases, desk, iron door, light shafts) | Procedural low-poly | `src/chapters/chapter1/Archives.tsx` | Original, project code | Project-owned | |
 | Dialogue text | Writing | `src/data/dialogue.ts` | Original | Project-owned | |
 | Village buildings, props, terrain | Procedural low-poly geometry | `src/game/scenes/environment.tsx` | Original, project code | Project-owned | Three.js primitives only |
 | UI font | System monospace (`Courier New` / `ui-monospace`) | User's OS | — | System font, not bundled | Replace with a licensed pixel font later |

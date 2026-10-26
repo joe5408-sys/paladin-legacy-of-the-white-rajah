@@ -23,7 +23,7 @@ export type SfxName =
   | 'defeat'
   | 'save';
 
-export type AmbienceName = 'title' | 'village' | 'home' | 'chamber' | 'battle' | 'ending' | 'waterfront';
+export type AmbienceName = 'title' | 'village' | 'home' | 'chamber' | 'battle' | 'ending' | 'waterfront' | 'archives';
 
 type Ctx = AudioContext;
 
@@ -262,6 +262,13 @@ class AudioEngine {
           const t = ctx.currentTime;
           for (let i = 0; i < 6; i++) this.tone(4300, t + i * 0.05, 0.03, { gain: 0.012, dest: bus });
         });
+        break;
+      }
+      case 'archives': {
+        // A hushed hall: low warm pad and a slow clock
+        pad([110, 164.8, 220], 0.02);
+        wash(260, 0.025);
+        every(1000, 1000, () => this.tone(1800, ctx.currentTime, 0.04, { type: 'triangle', gain: 0.015, dest: bus }));
         break;
       }
       case 'home':

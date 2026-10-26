@@ -126,10 +126,22 @@ export const WF_INTERACTABLES: Interactable[] = [
     x: ARCHIVES.x,
     z: -1.25,
     radius: 1.1,
+    when: { unless: ['c1_archives_reached'] },
     dialogue: [
       { dialogue: 'c1_archives_door', requires: ['c1_met_daniel'] },
       { dialogue: 'c1_archives_early' },
     ],
+  },
+  {
+    // After the first dawn, the doors simply lead inside.
+    id: 'archives-enter',
+    kind: 'enter',
+    label: 'Royal Archives',
+    x: ARCHIVES.x,
+    z: -1.25,
+    radius: 1.1,
+    when: { requires: ['c1_archives_reached'] },
+    enter: { scene: 'archives', spawn: 'entrance' },
   },
 ];
 
@@ -156,6 +168,11 @@ export const WATERFRONT_LAYOUT: SceneLayout = {
 export const CHAPTER1_OBJECTIVES: Objective[] = [
   { id: 'c1_meet_daniel', text: 'Meet Daniel at the ferry pier.', completeWhen: 'c1_met_daniel' },
   { id: 'c1_archives', text: 'Go to the Royal Archives.', completeWhen: 'c1_archives_reached' },
+  // Milestone 1.2: inside the Archives
+  { id: 'c1_treason', text: 'Find the treason records.', completeWhen: 'c1_clue_gap' },
+  { id: 'c1_ask', text: 'Ask the Archivist about the missing folder.', completeWhen: 'c1_hint_household' },
+  { id: 'c1_ledgers', text: 'Search the household ledgers.', completeWhen: 'c1_file_found' },
+  { id: 'c1_vault', text: 'Investigate the iron door.', completeWhen: 'c1_vault_found' },
 ];
 
 export const CHAPTER1_DIALOGUE: DialogueDef[] = [
@@ -218,8 +235,9 @@ export const CHAPTER1_DIALOGUE: DialogueDef[] = [
       { speaker: 'adrian', text: 'The Paladin sign. Here, on the Crown\'s own archive.' },
       { speaker: null, text: 'The doors are locked until dawn.' },
       { speaker: 'adrian', text: 'Dawn, then. Whatever they buried in there, I am digging it up.' },
+      { speaker: null, text: 'A long night on a hard bench. Daniel keeps watch; Aunt Mara snores, gently.' },
+      { speaker: null, text: 'At first light, the carved doors creak open.', setFlags: ['c1_archives_reached'] },
     ],
-    setFlags: ['c1_archives_reached'],
-    endChapter: true,
+    enterScene: { scene: 'archives', spawn: 'entrance' },
   },
 ];

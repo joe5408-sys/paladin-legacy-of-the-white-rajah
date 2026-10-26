@@ -1,4 +1,5 @@
 import type { CharacterId } from '../../data/characters';
+import type { SceneId } from '../../data/scenes';
 import type { Condition, StoryFlag } from '../core/flags';
 
 export type { StoryFlag, StoryFlags } from '../core/flags';
@@ -24,6 +25,8 @@ export interface DialogueDef {
   next?: string;
   /** Finishing this conversation completes the chapter. */
   endChapter?: boolean;
+  /** Scene to move to when the conversation finishes (e.g. a time skip into a building). */
+  enterScene?: { scene: SceneId; spawn: string };
 }
 
 /**

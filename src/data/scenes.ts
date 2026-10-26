@@ -5,7 +5,7 @@
 import type { Direction } from '../game/core/input';
 import type { DialogueRule } from '../game/dialogue/types';
 
-export type SceneId = 'village' | 'home' | 'chamber' | 'waterfront';
+export type SceneId = 'village' | 'home' | 'chamber' | 'waterfront' | 'archives';
 
 export interface SpawnPoint {
   x: number;
@@ -56,8 +56,17 @@ export const SCENES: Record<SceneId, SceneDef> = {
     name: 'Kuching — Waterfront',
     spawns: {
       arrival: { x: 7, z: 4.5, facing: 'north' },
+      archives_door: { x: -1.5, z: 0.3, facing: 'south' },
     },
     arrival: [{ dialogue: 'c1_arrival', unless: ['c1_arrived'] }],
+  },
+  archives: {
+    id: 'archives',
+    name: 'Royal Archives',
+    spawns: {
+      entrance: { x: 0, z: 2.2, facing: 'north' },
+    },
+    arrival: [{ dialogue: 'c1_archives_arrival', unless: ['c1_entered_archives'] }],
   },
 };
 
@@ -67,6 +76,7 @@ export const SCENE_CHAPTER: Record<SceneId, number> = {
   home: 0,
   chamber: 0,
   waterfront: 1,
+  archives: 1,
 };
 
 export const NEW_GAME_SCENE: SceneId = 'village';

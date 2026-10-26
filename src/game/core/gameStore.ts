@@ -229,6 +229,7 @@ export const gameStore = createStore<GameState>()((set, get) => ({
     set({ mode: 'explore', dialogue: null });
     get().setFlags(d.def.setFlags ?? []);
     if (d.def.startBattle) get().startBattle(d.def.startBattle);
+    else if (d.def.enterScene) get().requestScene(d.def.enterScene.scene, d.def.enterScene.spawn);
     else if (d.def.next) get().startDialogue(d.def.next);
     else if (d.def.endChapter) get().endChapter();
     d.onComplete?.();

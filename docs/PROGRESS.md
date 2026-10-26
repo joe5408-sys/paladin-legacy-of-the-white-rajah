@@ -1,10 +1,19 @@
 # Progress
 
-**Current phase:** Phase 7 — Chapter 1. Milestone 1.1 (Arrival in Kuching) ✅ done; 1.2 (The Royal Archives) next. See `docs/CHAPTER_1.md`.
+**Current phase:** Phase 7 — Chapter 1. Milestones 1.1 (Arrival in Kuching) and 1.2 (The Royal Archives) ✅ done; 1.3 (The Hollow Sentinel) next. See `docs/CHAPTER_1.md`.
 **MVP:** ✅ complete (phases 0–6); Chapter 0 is live.
 **Live site:** https://legacyofwhiterajah.netlify.app
 **Repository:** https://github.com/joe5408-sys/paladin-legacy-of-the-white-rajah (public, `master`; Netlify auto-deploys on push)
 **Last updated:** 2026-10-26
+
+### Phase 7 — Chapter 1, Milestone 1.2: The Royal Archives (2026-10-26) ✅
+- The Archives door no longer ends the chapter: a night passes ("Aunt Mara snores, gently") and the doors open at dawn. Dialogue can now move the player to another scene when it ends (`enterScene`).
+- **Royal Archives interior** (`src/chapters/chapter1/Archives.tsx` + `archivesData.ts`, lazy-loaded): a checkered floor; four themed bookcases plus back-wall stacks; high windows with dawn light shafts; the Archivist's desk with a green lamp; and a riveted iron door bearing the Paladin sign, which glows faintly once the file is found and blazes when it wakes.
+- **New character:** the Archivist (grey bun, glasses, olive cardigan). Daniel guards the entrance.
+- **Investigation (4 new objectives):** Treason Proceedings (a gap under V) → ask the Archivist (embarrassments were filed with the household accounts) → Household Ledgers (the redacted file: Lord Chamberlain R. Harrow's order under the royal seal, with the Rajah's signature line blank) → the iron door wakes → "To Be Continued". Optional lore on the Land Grants shelf.
+- **Saves and migration:** after dawn the waterfront door becomes a plain "Enter Royal Archives". Saves from the old 1.1 cliffhanger now continue into the Archives instead of the ending card. The chapter end moved to `c1_vault_found`.
+- New ambience: a hushed hall with a slow clock tick.
+- **Test results:** `npm test` 123/123 (6 new, including the full 1.2 flow and old-save migration; the reachability and spawn checks now cover the Archives too). `npm run e2e` 3/3: the full-story test now plays Chapter 0 → waterfront → the whole Archives investigation → "To Be Continued" with real input (1.3 min). I checked the Archives visually with screenshots and added a front fill light so the book spines read clearly.
 
 ### Phase 7 — Chapter 1, Milestone 1.1: Arrival in Kuching (2026-10-26) ✅
 - **Chapter system:** chapter content is **lazy-loaded** (`src/chapters/loader.ts`), so Chapter 1's dialogue and 3D scene are separate downloads (about 4 KB gzip) fetched only when the player reaches Chapter 1 or continues a Chapter 1 save.

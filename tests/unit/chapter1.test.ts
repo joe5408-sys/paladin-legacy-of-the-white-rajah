@@ -1,5 +1,5 @@
 /**
- * Chapter 1, Milestone 1.1 (Arrival in Kuching): lazy loading, the transition
+ * Chapter 1, Milestones 1.1 (Arrival in Kuching) and 1.2 (The Royal Archives): lazy loading, the transition
  * from Chapter 0, the objective chain, saves and the "to be continued" ending.
  */
 import { beforeEach, describe, expect, it } from 'vitest';
@@ -120,8 +120,80 @@ describe('Chapter 1 flow', () => {
     expect(s().dialogue?.def.id).toBe('c1_archives_door');
     finishDialogue();
     expect(s().flags.c1_archives_reached).toBe(true);
+    // The night passes and the doors open: a scene change into the Archives, not an ending.
+    expect(s().mode).toBe('transition');
+    expect(s().transition?.to).toBe('archives');
+    expect(isAtChapterEnd(s().flags)).toBe(false);
+  });
+
+  it('plays through Milestone 1.2: the Archives investigation to the iron door', () => {
+    s().startChapter1();
+    s().dismissChapterCard();
+    finishDialogue();
+    use('npc-daniel-pier');
+    finishDialogue();
+    use('archives-door');
+    finishDialogue();
+    s().swapScene();
+    s().finishTransition();
+    expect(s().scene).toBe('archives');
+    expect(s().dialogue?.def.id).toBe('c1_archives_arrival');
+    finishDialogue();
+    const objective = () => currentObjective(objectivesFor(s().flags), s().flags)?.id;
+    expect(objective()).toBe('c1_treason');
+
+    // The ledgers and the iron door give nothing away yet.
+    use('shelf-household');
+    expect(s().dialogue?.def.id).toBe('c1_shelf_household_early');
+    finishDialogue();
+    use('vault-door');
+    expect(s().dialogue?.def.id).toBe('c1_vault_early');
+    finishDialogue();
+    expect(s().mode).toBe('explore');
+
+    use('npc-archivist');
+    expect(s().dialogue?.def.id).toBe('c1_archivist_intro');
+    finishDialogue();
+    use('shelf-grants'); // optional lore
+    expect(s().dialogue?.def.id).toBe('c1_shelf_grants');
+    finishDialogue();
+
+    use('shelf-treason');
+    expect(s().dialogue?.def.id).toBe('c1_shelf_treason');
+    finishDialogue();
+    expect(objective()).toBe('c1_ask');
+
+    use('npc-archivist');
+    expect(s().dialogue?.def.id).toBe('c1_archivist_hint');
+    finishDialogue();
+    expect(objective()).toBe('c1_ledgers');
+
+    use('shelf-household');
+    expect(s().dialogue?.def.id).toBe('c1_shelf_household_file');
+    expect(s().dialogue?.def.lines.some((l) => /Lord Chamberlain/.test(l.text))).toBe(true);
+    finishDialogue();
+    expect(objective()).toBe('c1_vault');
+
+    use('vault-door');
+    expect(s().dialogue?.def.id).toBe('c1_vault_door');
+    finishDialogue();
+    expect(s().flags.c1_vault_found).toBe(true);
     expect(s().mode).toBe('ending');
     expect(isAtChapterEnd(s().flags)).toBe(true);
+  });
+
+  it('after dawn, the Archives door leads straight inside (also for saves from the old 1.1 cliffhanger)', () => {
+    s().startChapter1();
+    s().dismissChapterCard();
+    finishDialogue();
+    s().setFlags(['c1_met_daniel', 'c1_archives_reached']);
+    const door = getLayout('waterfront')!.interactables;
+    expect(door.filter((t) => t.id.startsWith('archives-') && isAvailable(t, s().flags)).map((t) => t.id)).toEqual([
+      'archives-enter',
+    ]);
+    expect(isAtChapterEnd(s().flags)).toBe(false); // the old cliffhanger flag no longer ends the chapter
+    use('archives-enter');
+    expect(s().transition?.to).toBe('archives');
   });
 
   it('a mid-chapter save reloads into the waterfront, not the ending card', () => {
@@ -142,8 +214,11 @@ describe('Chapter 1 flow', () => {
 
   it('a save at the Chapter 1 cliffhanger reopens on the "to be continued" card', () => {
     s().startChapter1();
-    s().setFlags(['c1_arrived', 'c1_met_daniel', 'c1_archives_reached']);
-    const r = validateSave(JSON.parse(JSON.stringify(buildSave(s(), SCENES.waterfront.spawns.arrival))));
+    s().setFlags([
+      'c1_arrived', 'c1_met_daniel', 'c1_archives_reached', 'c1_entered_archives',
+      'c1_clue_gap', 'c1_hint_household', 'c1_file_found', 'c1_vault_found',
+    ]);
+    const r = validateSave(JSON.parse(JSON.stringify(buildSave({ ...s(), scene: 'archives' }, SCENES.archives.spawns.entrance))));
     expect(r.ok).toBe(true);
     if (r.ok) s().loadGame(r.data);
     expect(s().mode).toBe('ending');

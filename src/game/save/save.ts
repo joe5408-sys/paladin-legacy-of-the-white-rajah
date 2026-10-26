@@ -42,6 +42,8 @@ const ALL_FLAGS: readonly StoryFlag[] = [
   'arrived', 'met_lim', 'entered_home', 'met_mara', 'heirloom_awakened', 'passage_open',
   'entered_chamber', 'guardian_defeated', 'read_message', 'daniel_arrived', 'met_daniel',
   'prologue_complete', 'chapter1_started', 'c1_arrived', 'c1_met_daniel', 'c1_archives_reached',
+  'c1_entered_archives', 'c1_met_archivist', 'c1_clue_gap', 'c1_hint_household', 'c1_file_found',
+  'c1_vault_found',
 ];
 const DIRECTIONS: readonly Direction[] = ['north', 'south', 'east', 'west'];
 
@@ -51,6 +53,7 @@ const SCENE_REQUIRES: Record<SceneId, StoryFlag[]> = {
   home: ['entered_home'],
   chamber: ['passage_open'],
   waterfront: ['chapter1_started'],
+  archives: ['c1_archives_reached'],
 };
 
 /** Browser localStorage, or null where it's unavailable (private mode, blocked, tests). */

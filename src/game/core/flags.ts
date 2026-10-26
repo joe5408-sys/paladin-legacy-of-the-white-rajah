@@ -19,7 +19,13 @@ export type StoryFlag =
   | 'chapter1_started'
   | 'c1_arrived'
   | 'c1_met_daniel'
-  | 'c1_archives_reached';
+  | 'c1_archives_reached' // waited for dawn at the Archives door
+  | 'c1_entered_archives'
+  | 'c1_met_archivist'
+  | 'c1_clue_gap' // found the gap where the Vale folder should be
+  | 'c1_hint_household' // the Archivist pointed to the household ledgers
+  | 'c1_file_found' // read the redacted Vale file
+  | 'c1_vault_found'; // the sealed iron door woke (milestone 1.2 cliffhanger)
 
 export type StoryFlags = Partial<Record<StoryFlag, true>>;
 

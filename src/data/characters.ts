@@ -4,7 +4,7 @@
  */
 import type { CharacterFeatures, CharacterPalette } from '../game/player/pixelSprite';
 
-export type CharacterId = 'adrian' | 'lim' | 'mara' | 'guardian' | 'daniel' | 'jamilah';
+export type CharacterId = 'adrian' | 'lim' | 'mara' | 'guardian' | 'daniel' | 'jamilah' | 'archivist';
 
 export interface CharacterDef {
   id: CharacterId;
@@ -115,5 +115,24 @@ export const CHARACTERS: Record<CharacterId, CharacterDef> = {
       boots: '#2a2018',
     },
     features: { longSkirt: true },
+  },
+  archivist: {
+    id: 'archivist',
+    name: 'The Archivist',
+    palette: {
+      outline: OUTLINE,
+      hair: '#b9b4ab', // grey hair pinned up
+      hairHi: '#dcd8d0',
+      skin: '#d3a57c',
+      skinShade: '#b38660',
+      eye: '#1b1420',
+      jacket: '#5d6b45', // olive cardigan
+      jacketShade: '#465233',
+      trim: '#e8e2d0', // blouse collar
+      belt: '#3a3026',
+      pants: '#3a3530', // long dark skirt
+      boots: '#221c16',
+    },
+    features: { glasses: true, hairBun: true, longSkirt: true },
   },
 };

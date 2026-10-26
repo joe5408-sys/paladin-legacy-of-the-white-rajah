@@ -1,6 +1,6 @@
 # Chapter 1 — The Capital's Shadow (design draft)
 
-> Status: **Milestone 1.1 playable.** Story beats below are a working draft and can be changed. All dialogue lives in `src/chapters/chapter1/data.ts`.
+> Status: **Milestones 1.1–1.2 playable.** Story beats below are a working draft and can be changed. All dialogue lives in `src/chapters/chapter1/data.ts`.
 > Setting reminder: an imagined, alternate-history Kuching. The Palace, Royal Archives, Royal Security Office and all officials are invented and are not real institutions or people.
 
 ## Premise
@@ -15,8 +15,8 @@ Adrian, Aunt Mara and Daniel Rengas follow the trail of the erased treason recor
 | # | Milestone | Content | Status |
 |---|---|---|---|
 | 1.1 | **Arrival in Kuching** | Waterfront area at dusk (shophouses, Royal Archives, boardwalk and pier, the Palace and old fort across the river, kolo mee stall, bandstand). Chapter title card. Meet Daniel at the pier; find the Archives sealed until dawn → "To Be Continued". | ✅ Done |
-| 1.2 | **The Royal Archives** | Interior of the Archives at dawn. An archivist NPC. Investigation: inspect three record shelves to find the redacted Vale file (light puzzle using the existing inspect / flag system). | ⬜ Next |
-| 1.3 | **The Hollow Sentinel** | A palace construct (original design) guards the sealed vault. Second turn-based battle, reusing the battle system with new tuning, plus one new Paladin skill if it earns its place. | ⬜ |
+| 1.2 | **The Royal Archives** | A night passes; the Archives open at dawn. Interior with tall stacks, dawn light and the sealed iron door. The Archivist (new). Investigation: Treason Proceedings shows a gap where the Vale folder should be → the Archivist hints that embarrassments were filed with the household accounts → the Household Ledgers hold the redacted file: the 1921 order was signed by **Lord Chamberlain R. Harrow** under the royal seal, but the **Rajah's signature line is blank**. The iron door's Paladin sign wakes → "To Be Continued". | ✅ Done |
+| 1.3 | **The Hollow Sentinel** (next) | A palace construct (original design) guards the sealed vault. Second turn-based battle, reusing the battle system with new tuning, plus one new Paladin skill if it earns its place. | ⬜ |
 | 1.4 | **The Redacted Name** | The vault reveals who signed the 1920s order (fictional official), then a confrontation hook with palace security and a cliffhanger into Chapter 2. Chapter 1 complete card. | ⬜ |
 
 ## Characters (Chapter 1)
@@ -24,8 +24,15 @@ Adrian, Aunt Mara and Daniel Rengas follow the trail of the erased treason recor
 - **Aunt Mara**: comes along "whether you like it or not"; knows the city as it was.
 - **Daniel Rengas**: Royal Security Office; quietly helping, now cut off from his own systems.
 - **Kak Jamilah**: kolo mee stall owner on the waterfront (warm local colour, light humour).
-- *(1.2+)* **The Archivist**: neutral keeper of records; knows more than they say.
+- **The Archivist**: dry, exact keeper of the Royal Archives for thirty years. She knows more than she says, and the iron door has never made a sound for her.
+- *(mentioned)* **Lord Chamberlain R. Harrow** (1921): signed the order to empty the river villages under the royal seal, without the Rajah's signature. Fictional.
 
-## Objectives (Milestone 1.1)
+## Objectives (so far)
 1. Meet Daniel at the ferry pier. (`c1_met_daniel`)
-2. Go to the Royal Archives. (`c1_archives_reached`) → chapter pauses on "To Be Continued".
+2. Go to the Royal Archives. (`c1_archives_reached`): the night passes and the doors open at dawn.
+3. Find the treason records. (`c1_clue_gap`)
+4. Ask the Archivist about the missing folder. (`c1_hint_household`)
+5. Search the household ledgers. (`c1_file_found`)
+6. Investigate the iron door. (`c1_vault_found`) → "To Be Continued".
+
+Optional: Kak Jamilah, Aunt Mara's lines, the Land Grants shelf (an 1898 grant to the Vale family, struck out in 1921), and Daniel in the Archives.

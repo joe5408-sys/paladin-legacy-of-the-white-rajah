@@ -1,13 +1,13 @@
 /**
  * Plays the whole game as it stands, with real keyboard input in a real browser:
- * Chapter 0 from New Game to CHAPTER 0 COMPLETE, then Chapter 1 (Milestone 1.1)
- * to its "to be continued" card. Also checks that Chapter 1 is only downloaded
+ * Chapter 0 from New Game to CHAPTER 0 COMPLETE, then Chapter 1 (Milestones 1.1–1.2:
+ * the Kuching waterfront and the Royal Archives) to its "to be continued" card. Also checks that Chapter 1 is only downloaded
  * when the player reaches it.
  */
 import { expect, test } from '@playwright/test';
 import { arriveIn, expectLocation, finishDialogue, press, testId, trackErrors, walk } from './helpers';
 
-test('full story: Chapter 0 and Chapter 1 milestone 1.1', async ({ page }) => {
+test('full story: Chapter 0 and Chapter 1 milestones 1.1–1.2', async ({ page }) => {
   const errors = trackErrors(page);
   const requested: string[] = [];
   page.on('request', (r) => requested.push(r.url()));
@@ -107,6 +107,48 @@ test('full story: Chapter 0 and Chapter 1 milestone 1.1', async ({ page }) => {
   await walk(page, 'KeyA', 10.5);
   await walk(page, 'KeyW', 1.5);
   await expect(testId(page, 'interaction-prompt')).toContainText('Inspect Royal Archives');
+  await press(page, 'KeyE');
+  await finishDialogue(page);
+
+  // ── Chapter 1.2: inside the Royal Archives ─────────────
+  await arriveIn(page, 'Royal Archives');
+  await expect(testId(page, 'objective')).toContainText('Find the treason records.');
+
+  // The Archivist, across her desk
+  await walk(page, 'KeyW', 1.6);
+  await expect(testId(page, 'interaction-prompt')).toContainText('Talk to the Archivist');
+  await press(page, 'KeyE');
+  await finishDialogue(page);
+
+  // Treason Proceedings (east stacks, back)
+  await walk(page, 'KeyD', 3.4);
+  await walk(page, 'KeyW', 2.0);
+  await expect(testId(page, 'interaction-prompt')).toContainText('Inspect Treason Proceedings');
+  await press(page, 'KeyE');
+  await finishDialogue(page);
+  await expect(testId(page, 'objective')).toContainText('Ask the Archivist about the missing folder.');
+
+  // Back to the Archivist for the hint
+  await walk(page, 'KeyS', 1.75);
+  await walk(page, 'KeyA', 3.4);
+  await expect(testId(page, 'interaction-prompt')).toContainText('Talk to the Archivist');
+  await press(page, 'KeyE');
+  await finishDialogue(page);
+  await expect(testId(page, 'objective')).toContainText('Search the household ledgers.');
+
+  // Household Ledgers (west stacks, front): the hidden Vale file
+  await walk(page, 'KeyS', 1.6);
+  await walk(page, 'KeyA', 3.4);
+  await expect(testId(page, 'interaction-prompt')).toContainText('Inspect Household Ledgers');
+  await press(page, 'KeyE');
+  await finishDialogue(page);
+  await expect(testId(page, 'objective')).toContainText('Investigate the iron door.');
+
+  // The iron door at the back of the hall
+  await walk(page, 'KeyD', 1.9);
+  await walk(page, 'KeyW', 6.2);
+  await walk(page, 'KeyD', 1.5);
+  await expect(testId(page, 'interaction-prompt')).toContainText('Inspect Iron Door');
   await press(page, 'KeyE');
   await finishDialogue(page);
   await expect(testId(page, 'to-be-continued')).toBeVisible({ timeout: 10_000 });

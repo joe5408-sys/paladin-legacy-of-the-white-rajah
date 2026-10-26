@@ -13,6 +13,7 @@ import { VILLAGE_LAYOUT } from '../../src/data/villageSquare';
 import { HOME_LAYOUT } from '../../src/data/familyHome';
 import { CHAMBER_LAYOUT } from '../../src/data/ancientChamber';
 import { WATERFRONT_LAYOUT } from '../../src/chapters/chapter1/data';
+import { ARCHIVES_LAYOUT } from '../../src/chapters/chapter1/archivesData';
 import '../../src/chapters/chapter1/content'; // registers Chapter 1 dialogue and objectives
 import { findNearestInteractable, isAvailable } from '../../src/game/interaction/interaction';
 import { circleOverlapsBox, moveWithCollision } from '../../src/game/core/collision';
@@ -26,12 +27,14 @@ const LAYOUTS: Record<SceneId, SceneLayout> = {
   home: HOME_LAYOUT,
   chamber: CHAMBER_LAYOUT,
   waterfront: WATERFRONT_LAYOUT,
+  archives: ARCHIVES_LAYOUT,
 };
 const ALL_FLAGS = Object.fromEntries(
   ([
     'arrived', 'met_lim', 'entered_home', 'met_mara', 'heirloom_awakened',
     'passage_open', 'entered_chamber', 'guardian_defeated', 'read_message',
-    'chapter1_started', 'c1_arrived', 'c1_met_daniel',
+    'chapter1_started', 'c1_arrived', 'c1_met_daniel', 'c1_archives_reached', 'c1_entered_archives',
+    'c1_met_archivist', 'c1_clue_gap', 'c1_hint_household', 'c1_file_found',
   ] as StoryFlag[]).map((f) => [f, true]),
 ) as StoryFlags;
 
