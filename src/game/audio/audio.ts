@@ -23,7 +23,7 @@ export type SfxName =
   | 'defeat'
   | 'save';
 
-export type AmbienceName = 'title' | 'village' | 'home' | 'chamber' | 'battle' | 'ending' | 'waterfront' | 'archives' | 'vault';
+export type AmbienceName = 'title' | 'village' | 'home' | 'chamber' | 'battle' | 'ending' | 'waterfront' | 'archives' | 'vault' | 'records';
 
 type Ctx = AudioContext;
 
@@ -276,6 +276,12 @@ class AudioEngine {
         pad([49, 73.4, 98], 0.04, 'triangle');
         wash(200, 0.04);
         every(2200, 5200, () => this.tone(1400 + Math.random() * 500, ctx.currentTime, 0.12, { to: 700, gain: 0.02, dest: bus }));
+        break;
+      }
+      case 'records': {
+        // A dead-quiet paper room with the river murmuring somewhere beyond the walls
+        pad([65.4, 98, 130.8], 0.03, 'triangle');
+        wash(320, 0.05);
         break;
       }
       case 'home':

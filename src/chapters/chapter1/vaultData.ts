@@ -4,6 +4,7 @@
  * A narrow stone hall behind the iron door. Room: x -4..4, z -5..3.
  * The Hollow Sentinel stands before the inner gate at the north end;
  * sealed record cabinets line both walls. The iron door is at the south end.
+ * The inner gate leads to the sealed records room (milestone 1.4, recordsData.ts).
  */
 import { boxFromCenter, type Box } from '../../game/core/collision';
 import type { StoryFlags } from '../../game/core/flags';
@@ -48,10 +49,22 @@ export const VAULT_INTERACTABLES: Interactable[] = [
     x: INNER_GATE.x,
     z: VAULT_ROOM.minZ + 0.6,
     radius: 1.2,
+    when: { unless: ['c1_inner_gate_open'] },
     dialogue: [
       { dialogue: 'c1_inner_gate', requires: ['c1_sentinel_defeated'] },
       { dialogue: 'c1_inner_gate_early' },
     ],
+  },
+  {
+    // Once the gate is open (also for saves from the old 1.3 cliffhanger).
+    id: 'records-enter',
+    kind: 'enter',
+    label: 'Sealed Records',
+    x: INNER_GATE.x,
+    z: VAULT_ROOM.minZ + 0.6,
+    radius: 1.2,
+    when: { requires: ['c1_inner_gate_open'] },
+    enter: { scene: 'records', spawn: 'entrance' },
   },
   {
     id: 'vault-cabinets',
@@ -137,9 +150,7 @@ export const VAULT_DIALOGUE: DialogueDef[] = [
     lines: [
       { speaker: null, text: 'The inner gate is a lattice of black iron. In its centre is a square hollow, the size of the brass plate.' },
       { speaker: null, text: 'Adrian presses the plate into the hollow. It fits. With a long, grinding sigh, the bars sink into the floor.', setFlags: ['c1_inner_gate_open'] },
-      { speaker: null, text: 'Behind the gate, rows of sealed boxes run back into the dark. Each one bears a name: families, villages, whole river districts.' },
-      { speaker: 'adrian', text: 'And this one... VALE.' },
     ],
-    endChapter: true,
+    enterScene: { scene: 'records', spawn: 'entrance' },
   },
 ];

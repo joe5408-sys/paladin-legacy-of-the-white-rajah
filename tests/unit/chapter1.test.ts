@@ -1,6 +1,7 @@
 /**
- * Chapter 1, Milestones 1.1 (Arrival in Kuching), 1.2 (The Royal Archives) and 1.3 (The Hollow Sentinel):
- * lazy loading, the transition from Chapter 0, the objective chain, saves and the "to be continued" ending.
+ * Chapter 1, Milestones 1.1 (Arrival in Kuching), 1.2 (The Royal Archives), 1.3 (The Hollow Sentinel) and
+ * 1.4 (The Redacted Name): lazy loading, the transition from Chapter 0, the objective chain, saves and the
+ * Chapter 1 ending.
  */
 import { beforeEach, describe, expect, it } from 'vitest';
 import { gameStore } from '../../src/game/core/gameStore';
@@ -30,7 +31,9 @@ function finishDialogue() {
   for (let i = 0; i < 100 && s().dialogue; i++) s().pressAction('Enter');
 }
 /** Loads a save placed in a scene with the given flags (as if the player had played there). */
-function placeIn(scene: 'archives' | 'vault', flags: StoryFlag[]) {
+const UP_TO_GATE: StoryFlag[] = [...UP_TO_FILE, 'c1_vault_found', 'c1_entered_vault', 'c1_sentinel_defeated', 'c1_inner_gate_open'];
+
+function placeIn(scene: 'archives' | 'vault' | 'records', flags: StoryFlag[]) {
   s().setFlags(flags);
   const r = validateSave(JSON.parse(JSON.stringify(buildSave({ ...s(), scene }, SCENES[scene].spawns.entrance))));
   expect(r.ok).toBe(true);
@@ -256,8 +259,104 @@ describe('Chapter 1 flow', () => {
     expect(s().dialogue?.def.id).toBe('c1_inner_gate');
     finishDialogue();
     expect(s().flags.c1_inner_gate_open).toBe(true);
+    // The gate leads on into the sealed records (Milestone 1.4).
+    expect(s().mode).toBe('transition');
+    expect(s().transition?.to).toBe('records');
+    expect(isAtChapterEnd(s().flags)).toBe(false);
+  });
+
+  it('plays through Milestone 1.4: the VALE box, the Rajah\'s reply, Harrow and the flood door', () => {
+    s().startChapter1();
+    s().dismissChapterCard();
+    finishDialogue();
+    placeIn('vault', UP_TO_GATE);
+    use('records-enter');
+    s().swapScene();
+    s().finishTransition();
+    expect(s().scene).toBe('records');
+    expect(s().dialogue?.def.id).toBe('c1_records_arrival');
+    finishDialogue();
+    const objective = () => currentObjective(objectivesFor(s().flags), s().flags)?.id;
+    expect(objective()).toBe('c1_box');
+
+    // Before the box: the letters are just letters, and the flood door is rusted shut.
+    use('shelf-private-office');
+    expect(s().dialogue?.def.id).toBe('c1_private_office_early');
+    finishDialogue();
+    use('flood-door');
+    expect(s().dialogue?.def.id).toBe('c1_flood_door_early');
+    finishDialogue();
+    use('records-boxes');
+    finishDialogue();
+
+    use('vale-box');
+    expect(s().dialogue?.def.id).toBe('c1_vale_box');
+    expect(s().dialogue?.def.lines.some((l) => /ELIAS VALE/.test(l.text))).toBe(true);
+    finishDialogue();
+    expect(s().flags.c1_box_read).toBe(true);
+    expect(objective()).toBe('c1_reply');
+
+    // The Rajah's reply runs straight into Harrow's arrival.
+    use('shelf-private-office');
+    expect(s().dialogue?.def.id).toBe('c1_rajah_letter');
+    for (let i = 0; i < 50 && s().dialogue?.def.id === 'c1_rajah_letter'; i++) s().pressAction('Enter');
+    expect(s().dialogue?.def.id).toBe('c1_security');
+    finishDialogue();
+    expect(s().flags).toMatchObject({ c1_letter_found: true, c1_security_arrived: true, c1_lights_out: true });
+    expect(s().mode).toBe('explore');
+    expect(objective()).toBe('c1_escape');
+
+    // The way back is blocked; Harrow and Daniel have something to say in the dark.
+    const layout = getLayout('records')!;
+    expect(isAvailable(layout.interactables.find((t) => t.id === 'records-exit')!, s().flags)).toBe(false);
+    use('npc-harrow');
+    expect(s().dialogue?.def.id).toBe('c1_harrow_dark');
+    finishDialogue();
+    use('npc-daniel-records');
+    finishDialogue();
+
+    use('flood-door');
+    expect(s().dialogue?.def.id).toBe('c1_flood_door');
+    finishDialogue();
+    expect(s().flags.c1_escaped).toBe(true);
     expect(s().mode).toBe('ending');
     expect(isAtChapterEnd(s().flags)).toBe(true);
+  });
+
+  it('palace security stands in the room only once it has arrived', () => {
+    const layout = getLayout('records')!;
+    const before: Record<string, true> = Object.fromEntries(UP_TO_GATE.map((f) => [f, true as const]));
+    const people = (flags: Record<string, true>) =>
+      layout.npcs.filter((n) => !n.when || (n.when.requires ?? []).every((f) => flags[f])).map((n) => n.id);
+    expect(people(before)).toEqual([]);
+    const arrived = { ...before, c1_security_arrived: true as const };
+    expect(people(arrived)).toEqual(['npc-harrow', 'npc-officer-west', 'npc-officer-east', 'npc-daniel-records']);
+    expect(layout.colliders(arrived).length).toBe(layout.colliders(before).length + 4);
+    expect(people({ ...arrived, c1_lights_out: true })).toContain('npc-archivist-records');
+  });
+
+  it('a save from the old 1.3 cliffhanger reloads in the vault with the gate open', () => {
+    s().startChapter1();
+    s().dismissChapterCard();
+    finishDialogue();
+    placeIn('vault', UP_TO_GATE);
+    expect(s().mode).toBe('explore');
+    const ids = getLayout('vault')!.interactables.filter((t) => isAvailable(t, s().flags)).map((t) => t.id);
+    expect(ids).toContain('records-enter');
+    expect(ids).not.toContain('inner-gate');
+    use('records-enter');
+    expect(s().transition?.to).toBe('records');
+  });
+
+  it('a save taken in the dark reloads there, still able to escape', () => {
+    s().startChapter1();
+    s().dismissChapterCard();
+    finishDialogue();
+    placeIn('records', [...UP_TO_GATE, 'c1_entered_records', 'c1_box_read', 'c1_letter_found', 'c1_security_arrived', 'c1_lights_out']);
+    expect(s().scene).toBe('records');
+    expect(s().mode).toBe('explore');
+    use('flood-door');
+    expect(s().dialogue?.def.id).toBe('c1_flood_door');
   });
 
   it('the Sentinel blocks the way to the inner gate until it falls', () => {
@@ -359,12 +458,12 @@ describe('Chapter 1 flow', () => {
     expect(s().mode).toBe('explore'); // prologue_complete alone must not reopen the Chapter 0 card
   });
 
-  it('a save at the Chapter 1 cliffhanger reopens on the "to be continued" card', () => {
+  it('a save at the end of Chapter 1 reopens on the Chapter 1 Complete card', () => {
     s().startChapter1();
     s().setFlags([
-      ...UP_TO_FILE, 'c1_vault_found', 'c1_entered_vault', 'c1_sentinel_defeated', 'c1_inner_gate_open',
+      ...UP_TO_GATE, 'c1_entered_records', 'c1_box_read', 'c1_letter_found', 'c1_security_arrived', 'c1_lights_out', 'c1_escaped',
     ]);
-    const r = validateSave(JSON.parse(JSON.stringify(buildSave({ ...s(), scene: 'vault' }, SCENES.vault.spawns.after_battle))));
+    const r = validateSave(JSON.parse(JSON.stringify(buildSave({ ...s(), scene: 'records' }, SCENES.records.spawns.entrance))));
     expect(r.ok).toBe(true);
     if (r.ok) s().loadGame(r.data);
     expect(s().mode).toBe('ending');

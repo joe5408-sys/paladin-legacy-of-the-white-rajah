@@ -4,7 +4,7 @@
  */
 import type { CharacterFeatures, CharacterPalette } from '../game/player/pixelSprite';
 
-export type CharacterId = 'adrian' | 'lim' | 'mara' | 'guardian' | 'daniel' | 'jamilah' | 'archivist';
+export type CharacterId = 'adrian' | 'lim' | 'mara' | 'guardian' | 'daniel' | 'jamilah' | 'archivist' | 'harrow' | 'officer';
 
 export interface CharacterDef {
   id: CharacterId;
@@ -134,5 +134,41 @@ export const CHARACTERS: Record<CharacterId, CharacterDef> = {
       boots: '#221c16',
     },
     features: { glasses: true, hairBun: true, longSkirt: true },
+  },
+  harrow: {
+    id: 'harrow',
+    name: 'Lord Chamberlain Harrow',
+    palette: {
+      outline: OUTLINE,
+      hair: '#c9c6c0', // swept-back silver hair
+      hairHi: '#eceae4',
+      skin: '#e3bfa0',
+      skinShade: '#c49c7c',
+      eye: '#1b1420',
+      jacket: '#1c1a26', // dark morning coat
+      jacketShade: '#111019',
+      trim: '#e0b850', // gold chain of office
+      belt: '#3a3040',
+      pants: '#4a4650', // striped grey trousers
+      boots: '#0c0a0c',
+    },
+  },
+  officer: {
+    id: 'officer',
+    name: 'Security Officer',
+    palette: {
+      outline: OUTLINE,
+      hair: '#1a1416',
+      hairHi: '#30282c',
+      skin: '#b98a62',
+      skinShade: '#986c48',
+      eye: '#1b1420',
+      jacket: '#3b4a5e', // slate-blue Royal Security uniform
+      jacketShade: '#2b3747',
+      trim: '#c9a24a', // badge
+      belt: '#141414',
+      pants: '#2b3747',
+      boots: '#0e0c0c',
+    },
   },
 };

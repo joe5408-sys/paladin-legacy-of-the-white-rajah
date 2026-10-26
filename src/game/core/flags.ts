@@ -28,7 +28,13 @@ export type StoryFlag =
   | 'c1_vault_found' // the sealed iron door woke and opened
   | 'c1_entered_vault'
   | 'c1_sentinel_defeated' // won the battle against the Hollow Sentinel
-  | 'c1_inner_gate_open'; // opened the inner vault (milestone 1.3 cliffhanger)
+  | 'c1_inner_gate_open' // opened the inner vault
+  | 'c1_entered_records'
+  | 'c1_box_read' // read the VALE box: the concession and Elias Vale's charge sheet
+  | 'c1_letter_found' // found the Rajah's reply
+  | 'c1_security_arrived' // Lord Chamberlain Harrow and palace security arrive
+  | 'c1_lights_out'
+  | 'c1_escaped'; // escaped through the flood door (end of Chapter 1)
 
 export type StoryFlags = Partial<Record<StoryFlag, true>>;
 

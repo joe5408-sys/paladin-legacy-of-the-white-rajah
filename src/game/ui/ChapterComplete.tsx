@@ -14,7 +14,7 @@ export function formatPlaytime(ms: number): string {
 
 /**
  * Closing card for a chapter. Chapter 0 offers "Continue to Chapter 1";
- * the in-progress Chapter 1 ends on a "to be continued" card.
+ * Chapter 1 points ahead to Chapter 2 (not yet written).
  */
 export function ChapterComplete() {
   const startedAt = useGame((s) => s.startedAt);
@@ -51,10 +51,11 @@ export function ChapterComplete() {
       onSelect: () => void continueToChapter1(),
     });
   }
-  if (chapter === 0) {
-    items.push({ id: 'play-again', label: 'Play Again', disabled: !ready || loading, onSelect: () => gameStore.getState().newGame() });
-  }
-  items.push({ id: 'main-menu', label: 'Main Menu', disabled: !ready || loading, onSelect: () => gameStore.getState().returnToTitle() });
+  const playAgain: MenuItem = { id: 'play-again', label: 'Play Again', disabled: !ready || loading, onSelect: () => gameStore.getState().newGame() };
+  const mainMenu: MenuItem = { id: 'main-menu', label: 'Main Menu', disabled: !ready || loading, onSelect: () => gameStore.getState().returnToTitle() };
+  // After the last written chapter, default to the safe choice (Main Menu keeps the save).
+  if (chapter === 0) items.push(playAgain, mainMenu);
+  else items.push(mainMenu, playAgain);
 
   const playtime = completedAt !== null && (
     <p className="chapter-time" data-testid="playtime">
@@ -76,10 +77,10 @@ export function ChapterComplete() {
       ) : (
         <>
           <div className="chapter-kicker">Chapter 1 · The Capital's Shadow</div>
-          <h1 className="chapter-title" data-testid="to-be-continued">To Be Continued</h1>
-          <p className="chapter-quote">Every box has a name on it. One of them is yours.</p>
+          <h1 className="chapter-title" data-testid="chapter1-complete">Chapter 1 Complete</h1>
+          <p className="chapter-quote">“Keep the sign safe until the Crown deserves it again.”</p>
           {playtime}
-          <div className="chapter-next">The rest of Chapter 1 arrives in a future update. Your progress is saved.</div>
+          <div className="chapter-next">Next: Chapter 2 · The river, and what Elias hid. Arrives in a future update; your progress is saved.</div>
         </>
       )}
       <div className={`chapter-menu${ready ? '' : ' waiting'}`}>

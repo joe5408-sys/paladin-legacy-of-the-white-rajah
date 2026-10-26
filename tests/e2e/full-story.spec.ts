@@ -1,13 +1,13 @@
 /**
  * Plays the whole game as it stands, with real keyboard input in a real browser:
  * Chapter 0 from New Game to CHAPTER 0 COMPLETE, then Chapter 1 (Milestones 1.1–1.2:
- * the Kuching waterfront, the Royal Archives and the vault battle) to its "to be continued" card. Also checks that Chapter 1 is only downloaded
+ * the Kuching waterfront, the Royal Archives, the vault battle and the sealed records) to the Chapter 1 Complete card. Also checks that Chapter 1 is only downloaded
  * when the player reaches it.
  */
 import { expect, test } from '@playwright/test';
 import { arriveIn, expectLocation, finishDialogue, press, testId, trackErrors, walk } from './helpers';
 
-test('full story: Chapter 0 and Chapter 1 milestones 1.1–1.3', async ({ page }) => {
+test('full story: Chapter 0 and all of Chapter 1', async ({ page }) => {
   const errors = trackErrors(page);
   const requested: string[] = [];
   page.on('request', (r) => requested.push(r.url()));
@@ -180,7 +180,31 @@ test('full story: Chapter 0 and Chapter 1 milestones 1.1–1.3', async ({ page }
   await expect(testId(page, 'interaction-prompt')).toContainText('Inspect Inner Gate');
   await press(page, 'KeyE');
   await finishDialogue(page);
-  await expect(testId(page, 'to-be-continued')).toBeVisible({ timeout: 10_000 });
+
+  // ── Chapter 1.4: the sealed records ────────────────────
+  await arriveIn(page, 'Royal Archives — Sealed Records');
+  await expect(testId(page, 'objective')).toContainText('Open the VALE box.');
+  await walk(page, 'KeyW', 0.8);
+  await expect(testId(page, 'interaction-prompt')).toContainText('Inspect VALE Box');
+  await press(page, 'KeyE');
+  await finishDialogue(page);
+  await expect(testId(page, 'objective')).toContainText("Find the Rajah's reply.");
+
+  // The Private Office shelf on the east wall; the letter leads straight into Harrow's arrival.
+  await walk(page, 'KeyD', 2.8);
+  await walk(page, 'KeyW', 1.3);
+  await expect(testId(page, 'interaction-prompt')).toContainText('Inspect Private Office Records');
+  await press(page, 'KeyE');
+  await finishDialogue(page);
+  await expect(testId(page, 'objective')).toContainText('Escape through the flood door.');
+
+  // In the dark: along the back of the room to the flood door.
+  await walk(page, 'KeyW', 2.3);
+  await walk(page, 'KeyA', 5.6);
+  await expect(testId(page, 'interaction-prompt')).toContainText('Inspect Flood Door');
+  await press(page, 'KeyE');
+  await finishDialogue(page);
+  await expect(testId(page, 'chapter1-complete')).toBeVisible({ timeout: 10_000 });
 
   // The cliffhanger is saved; after a refresh, Continue says so.
   await page.waitForTimeout(500);

@@ -1,10 +1,18 @@
 # Progress
 
-**Current phase:** Phase 7 — Chapter 1. Milestones 1.1 (Arrival in Kuching), 1.2 (The Royal Archives) and 1.3 (The Hollow Sentinel) ✅ done; 1.4 (The Redacted Name) next. See `docs/CHAPTER_1.md`.
+**Current phase:** Phase 7 — Chapter 1 ✅ complete (milestones 1.1–1.4). Chapter 2 not started; it needs a design pass first (see `SESSION_HANDOFF.md`). See `docs/CHAPTER_1.md`.
 **MVP:** ✅ complete (phases 0–6); Chapter 0 is live.
 **Live site:** https://legacyofwhiterajah.netlify.app
 **Repository:** https://github.com/joe5408-sys/paladin-legacy-of-the-white-rajah (public, `master`; Netlify auto-deploys on push)
 **Last updated:** 2026-10-26
+
+### Phase 7 — Chapter 1, Milestone 1.4: The Redacted Name (2026-10-26) ✅ Chapter 1 complete
+- The vault's inner gate now leads on (no ending): **the sealed records** (`src/chapters/chapter1/Records.tsx` + `recordsData.ts`, lazy-loaded), a low room of wooden floorboards, hanging bulbs, shelves of stencilled tin record boxes, a reading table with the VALE box, and a rusted flood door. Saves from the old 1.3 cliffhanger get "Enter Sealed Records" at the open gate.
+- **The reveal:** the VALE box (lid opens, wax seal breaks) holds the river-lands timber concession, Harrow's half-share, and the one unredacted charge sheet naming **Elias Vale**. The Private Office shelf holds the Rajah's misfiled reply refusing to sign. All names, companies and documents are fictional; the Rajah is never named.
+- **The confrontation:** reading the letter runs straight into Harrow's arrival. **New characters:** Lord Chamberlain Edmund Harrow (silver hair, dark morning coat, gold chain of office) and two Royal Security officers, who appear in the room and block the way back. The medallion flares and the lights fade out: only the Archivist's lantern by the now-open flood door and the officers' torchlight from the vault remain. Harrow and Daniel have short lines in the dark.
+- **Ending:** the Archivist reveals she knew Elias's name all along; Daniel stays behind; Mara waits in a sampan → **Chapter 1 Complete** card ("Keep the sign safe until the Crown deserves it again"), pointing to Chapter 2. On this card Main Menu is the default choice, so a stray key press can't start a new game. The title screen's Continue hint reads "Chapter 1 complete".
+- New ambience for the records room. People only count as obstacles while they are in the room (colliders follow story flags).
+- **Test results:** `npm test` 151/151 (8 new: the full 1.4 flow, who stands in the room when, old-save migration, a save taken in the dark, and the Chapter 1 Complete save; the spawn and reachability checks cover the new room and caught a spawn point sitting on the exit prompt). `npm run e2e` 3/3: the full-story test now plays **the whole game**, Chapter 0 through Chapter 1 Complete, with real input (2.1 min). Visual check by screenshots: fixed box labels glowing in the dark and Harrow facing away from Adrian.
 
 ### Phase 7 — Chapter 1, Milestone 1.3: The Hollow Sentinel (2026-10-26) ✅
 - The iron door now opens (no ending): **the vault** (`src/chapters/chapter1/Vault.tsx` + `vaultData.ts`, lazy-loaded), a narrow stone hall with sealed cabinets, flickering oil lamps and a barred inner gate. After the door opens, the Archives offer a plain "Enter Vault"; saves from the old 1.2 cliffhanger continue from there.

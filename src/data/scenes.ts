@@ -5,7 +5,7 @@
 import type { Direction } from '../game/core/input';
 import type { DialogueRule } from '../game/dialogue/types';
 
-export type SceneId = 'village' | 'home' | 'chamber' | 'waterfront' | 'archives' | 'vault';
+export type SceneId = 'village' | 'home' | 'chamber' | 'waterfront' | 'archives' | 'vault' | 'records';
 
 export interface SpawnPoint {
   x: number;
@@ -75,8 +75,17 @@ export const SCENES: Record<SceneId, SceneDef> = {
     spawns: {
       entrance: { x: 0, z: 1.9, facing: 'north' },
       after_battle: { x: 0, z: 0.2, facing: 'north' },
+      inner_gate: { x: 1.0, z: -3.4, facing: 'south' },
     },
     arrival: [{ dialogue: 'c1_vault_arrival', unless: ['c1_entered_vault'] }],
+  },
+  records: {
+    id: 'records',
+    name: 'Royal Archives — Sealed Records',
+    spawns: {
+      entrance: { x: 0, z: 1.8, facing: 'north' },
+    },
+    arrival: [{ dialogue: 'c1_records_arrival', unless: ['c1_entered_records'] }],
   },
 };
 
@@ -88,6 +97,7 @@ export const SCENE_CHAPTER: Record<SceneId, number> = {
   waterfront: 1,
   archives: 1,
   vault: 1,
+  records: 1,
 };
 
 export const NEW_GAME_SCENE: SceneId = 'village';

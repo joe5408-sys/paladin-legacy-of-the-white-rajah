@@ -29,6 +29,6 @@ export function objectivesFor(flags: StoryFlags): readonly Objective[] {
 
 /** True when the story sits on a chapter's closing card. */
 export function isAtChapterEnd(flags: StoryFlags): boolean {
-  if (flags.chapter1_started) return !!flags.c1_inner_gate_open;
+  if (flags.chapter1_started) return !!flags.c1_escaped;
   return !!flags.prologue_complete;
 }

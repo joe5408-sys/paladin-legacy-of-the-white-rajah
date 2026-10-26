@@ -13,6 +13,7 @@ import { VILLAGE_LAYOUT } from '../../src/data/villageSquare';
 import { HOME_LAYOUT } from '../../src/data/familyHome';
 import { CHAMBER_LAYOUT } from '../../src/data/ancientChamber';
 import { WATERFRONT_LAYOUT } from '../../src/chapters/chapter1/data';
+import { RECORDS_LAYOUT } from '../../src/chapters/chapter1/recordsData';
 import { VAULT_LAYOUT } from '../../src/chapters/chapter1/vaultData';
 import { ARCHIVES_LAYOUT } from '../../src/chapters/chapter1/archivesData';
 import '../../src/chapters/chapter1/content'; // registers Chapter 1 dialogue and objectives
@@ -30,6 +31,7 @@ const LAYOUTS: Record<SceneId, SceneLayout> = {
   waterfront: WATERFRONT_LAYOUT,
   archives: ARCHIVES_LAYOUT,
   vault: VAULT_LAYOUT,
+  records: RECORDS_LAYOUT,
 };
 const ALL_FLAGS = Object.fromEntries(
   ([
