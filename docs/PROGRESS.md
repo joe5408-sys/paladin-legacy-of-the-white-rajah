@@ -13,6 +13,7 @@
 - **New characters:** Captain Ah Hock, a university student and an auntie with rambutans.
 - **Story:** four objectives in a fixed order (Mara → the news on the student's phone → the captain → the cabin), ending at the Sungai Awan jetty with fresh survey pegs on the bank → "To Be Continued".
 - **Test results:** `npm test` 161/161. The new `chapter2.test.ts` (6 tests) covers lazy loading, the hand-off from Chapter 1, the boat conversations and their locks, saves, and a save claiming the boat too early. The shared layout, spawn and dialogue checks now include the boat. `npm run e2e` 3/3: the full-story test continues from Chapter 1 Complete into Chapter 2, checks its files download only then, and plays 2.1 to the card (2.4 min for the whole game). Visual check by screenshots: removed fog that washed the scene out, brought the far bank into view, and replaced a slab-like wake with foam lines.
+- **Live:** deployed as `b0ced46`; `E2E_BASE_URL=https://legacyofwhiterajah.netlify.app npx playwright test` 3/3 against the live site (2.5 min).
 
 ### Phase 7 — Chapter 1, Milestone 1.4: The Redacted Name (2026-10-26) ✅ Chapter 1 complete
 - The vault's inner gate now leads on (no ending): **the sealed records** (`src/chapters/chapter1/Records.tsx` + `recordsData.ts`, lazy-loaded), a low room of wooden floorboards, hanging bulbs, shelves of stencilled tin record boxes, a reading table with the VALE box, and a rusted flood door. Saves from the old 1.3 cliffhanger get "Enter Sealed Records" at the open gate.
