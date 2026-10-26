@@ -1,7 +1,19 @@
 # Progress
 
-**Current phase:** Phase 6 — Save & Deployment 🟡 everything except the live deploy is done; deploy is waiting on the owner's go-ahead
+**Current phase:** ✅ MVP complete. All phases 0–6 done; Chapter 0 is live.
+**Live site:** https://legacyofwhiterajah.netlify.app
+**Repository:** https://github.com/joe5408-sys/paladin-legacy-of-the-white-rajah (public, `master`; Netlify auto-deploys on push)
 **Last updated:** 2026-10-26
+
+### Deployment verification (2026-10-26, live site) ✅
+- HTTP 200. The JS and CSS files are byte-identical to the local production build (same content hashes). Hashed assets are served with `max-age=31536000, immutable`; the favicon loads.
+- **The full prologue was played on the live site:**
+  - New Game → opening narration → walk to the house → home (autosaved) → Aunt Mara → heirloom awakening → hidden passage → chamber → Guardian battle.
+  - Pausing mid-battle shows Save greyed out. Resume continued the fight.
+  - VICTORY (Guardian 0/24, Adrian 22/30) → back in the chamber, objective "Read the ancestral message" → inscription → Daniel Rengas → **CHAPTER 0 COMPLETE** (automated run 0:55, text skipped instantly).
+- **Save/load on the live site:** the completed game was autosaved. After a browser refresh the title showed "Continue · Chapter 0 complete · 0:55"; Continue reopened the completion card, and Main Menu returned to the title.
+- **Console:** no errors; only the known harmless `THREE.Clock` deprecation warning from React Three Fiber.
+- **Still for a human to check:** sound by ear, and a real-speed play-through to measure true play time (estimate 4–6½ min).
 
 ### Phase 6 — Save, menus, audio, deploy prep 🟡
 - **Save system** (`src/game/save/save.ts`): localStorage key `paladin.save`, schema v1. It stores scene, position and facing, story flags (quest state is derived from them), play time and prologue completion.

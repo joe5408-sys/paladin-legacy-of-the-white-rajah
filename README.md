@@ -1,6 +1,8 @@
 # Paladin: Legacy of the White Rajah
 
-A small HD-2D browser RPG set in a fictional alternate-history Sarawak. The current goal is a 5–10 minute playable prologue.
+A small HD-2D browser RPG set in a fictional alternate-history Sarawak.
+
+**Play Chapter 0 (The Forgotten Heir): https://legacyofwhiterajah.netlify.app**
 
 ## Run
 ```bash
