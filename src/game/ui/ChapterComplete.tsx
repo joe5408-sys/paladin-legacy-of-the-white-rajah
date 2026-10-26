@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { gameStore, useGame } from '../core/gameStore';
+import { MenuList } from './MenuList';
 
 /** Formats milliseconds as m:ss. */
 export function formatPlaytime(ms: number): string {
@@ -21,19 +22,6 @@ export function ChapterComplete() {
     return () => clearTimeout(t);
   }, []);
 
-  useEffect(() => {
-    if (!ready) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.repeat) return;
-      if (e.code === 'KeyE' || e.code === 'Enter' || e.code === 'Space') {
-        e.preventDefault();
-        gameStore.getState().newGame();
-      }
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [ready]);
-
   return (
     <div className="chapter-complete" data-testid="chapter-complete" role="dialog" aria-label="Chapter complete">
       <div className="chapter-sign" aria-hidden="true">✦</div>
@@ -46,16 +34,18 @@ export function ChapterComplete() {
         </p>
       )}
       <div className="chapter-next">
-        <span className="chapter-lock" aria-hidden="true">🔒</span> Chapter 1 · Kuching — locked until it is developed
+        <span aria-hidden="true">🔒</span> Chapter 1 · Kuching — locked until it is developed
       </div>
-      <button
-        className={`battle-cmd selected chapter-button${ready ? '' : ' waiting'}`}
-        disabled={!ready}
-        onClick={() => gameStore.getState().newGame()}
-        data-testid="play-again"
-      >
-        Play Again <kbd>E</kbd>
-      </button>
+      <div className={`chapter-menu${ready ? '' : ' waiting'}`}>
+        <MenuList
+          label="Chapter complete"
+          active={ready}
+          items={[
+            { id: 'play-again', label: 'Play Again', disabled: !ready, onSelect: () => gameStore.getState().newGame() },
+            { id: 'main-menu', label: 'Main Menu', disabled: !ready, onSelect: () => gameStore.getState().returnToTitle() },
+          ]}
+        />
+      </div>
     </div>
   );
 }

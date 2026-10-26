@@ -1,7 +1,44 @@
 # Progress
 
-**Current phase:** Phase 5 — Complete Prologue ✅ done → Phase 6 (Save & Deployment) next
-**Last updated:** 2026-10-23
+**Current phase:** Phase 6 — Save & Deployment 🟡 everything except the live deploy is done; deploy is waiting on the owner's go-ahead
+**Last updated:** 2026-10-26
+
+### Phase 6 — Save, menus, audio, deploy prep 🟡
+- **Save system** (`src/game/save/save.ts`): localStorage key `paladin.save`, schema v1. It stores scene, position and facing, story flags (quest state is derived from them), play time and prologue completion.
+  - Everything loaded is validated: corrupt JSON, other schema versions, unknown scenes, unknown flags, NaN or out-of-bounds positions, positions inside furniture, and scenes the story hasn't unlocked are all rejected or repaired. Nothing throws, even if storage is blocked or full.
+  - No mid-battle saves: manual Save works only while exploring, and battle state is never stored.
+- **Autosave checkpoints** (`AutoSave.tsx`): on arriving in a scene (after arrival dialogue sets its flags), after beating the Guardian, and at chapter end. A small "✦ Saved" toast shows each time.
+- **Title screen:** New Game; Continue only when a valid save exists, showing location and play time; Settings. New Game asks before erasing an existing save. Invalid saves show a warning instead of crashing. A footer states the setting is fiction and alternate history.
+- **Pause menu** (Esc): Resume, Save (greyed out with a reason during dialogue or battle), Settings, Return to Main Menu (asks first; Cancel is the default). Pausing freezes movement, dialogue keys and battle pacing.
+- **Settings** (persisted separately): text speed (Slow / Normal / Fast / Instant), volume, sound on/off.
+- **Chapter complete card:** Play Again and Main Menu.
+- **Audio** (`src/game/audio/`): synthesized at runtime with Web Audio, so no files and no licensing.
+  - Ambience per scene: river and birds in the village, a warm pad at home, a low drone in the chamber, a heartbeat pulse in battle, plus title and ending pads.
+  - SFX for menu moves, dialogue lines, doors, objectives, the heirloom awakening, every battle action, victory, defeat and saving.
+  - Starts on the first key or click (browser autoplay rules). `AudioDirector` listens to game state, so gameplay code knows nothing about sound.
+- **Robustness:** an error boundary offers "Return to Main Menu" instead of a blank page.
+- **Deploy prep:**
+  - `netlify.toml`: build `npm run build`, publish `dist`, Node 22, immutable caching for hashed assets, revalidated HTML, basic security headers.
+  - SVG favicon, meta description, `<noscript>` message.
+  - `.claude/launch.json` gains `paladin-prod` (vite preview on :4173).
+
+**Phase 6 test results (2026-10-26):**
+- `npm test`: 105/105 pass, 20 new. They cover save validation and repair, corrupt, incompatible and blocked storage, the save → "refresh" → Continue round trip, completed saves reopening on the ending card, pre-battle checkpoint restore, pause rules and settings validation.
+- `npm run build`: OK.
+- **Verified in the browser on the production build** (`vite preview`, the same files Netlify would serve):
+  - Title with no save (Continue hidden).
+  - Settings change saved to storage.
+  - New Game: the confirming E didn't skip the first line.
+  - Walked into the house: autosave toast, save written.
+  - Esc → pause → Save ("Game saved.") → Return to Main Menu → confirm (default Cancel) → title shows Continue with "Vale Family Home · 0:19".
+  - **Browser refresh → Continue** restored the home at the exact saved position, with the correct objective and no arrival-scene replay.
+  - Corrupted save and incompatible-version save: no crash, Continue hidden, warning shown.
+- **Not yet verified in the browser on the production build:**
+  - Pausing mid-battle (Save greyed out) and the finished-game save reopening on the ending card. Both pass unit tests.
+  - Audio is untested by ear: I can't hear the browser. Needs a quick listen.
+  - The automated run stopped because the app window went out of view, which throttles the page to about 1 frame/s.
+  - The battle and ending were fully browser-tested in Phases 4–5 on the dev build.
+- **Not done:** GitHub push and Netlify deploy (waiting for the owner's go-ahead), and Playwright e2e (not installed, to avoid a large browser download).
 
 ### Phase 5 — Complete prologue ✅
 - **Scene 5, Revelation:** after the Guardian falls, abstract glowing script fades in on the chamber's back wall. "Inspect Glowing Inscription" plays the message:

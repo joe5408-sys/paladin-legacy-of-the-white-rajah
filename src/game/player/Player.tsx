@@ -6,6 +6,7 @@ import type { Box, Vec2 } from '../core/collision';
 import { moveWithCollision } from '../core/collision';
 import { PLAYER_RADIUS, PLAYER_SPEED } from '../core/constants';
 import { gameStore } from '../core/gameStore';
+import { playerTracker } from '../core/playerTracker';
 import { DIRECTION_VECTORS, type Direction } from '../core/input';
 import { useDirectionalInput } from '../core/useDirectionalInput';
 import { frameColumn } from './animation';
@@ -34,8 +35,9 @@ export function Player({ start, startFacing = 'south', colliders, bounds, positi
   useFrame((_, rawDt) => {
     const dt = Math.min(rawDt, 0.1); // clamp long frames (tab switch) to avoid big jumps
     const s = state.current;
-    // No movement while a conversation is open.
-    const dir = gameStore.getState().mode === 'explore' ? input.current() : null;
+    // No movement while a conversation, menu or anything else has control.
+    const g = gameStore.getState();
+    const dir = g.mode === 'explore' && !g.paused ? input.current() : null;
     const wasMoving = s.moving;
 
     if (dir) {
@@ -57,6 +59,9 @@ export function Player({ start, startFacing = 'south', colliders, bounds, positi
     setSpriteFrame(texture, s.facing, frameColumn(s.moving, s.stateTime));
     group.current?.position.set(s.pos.x, 0, s.pos.z);
     positionRef.current.set(s.pos.x, 0, s.pos.z);
+    playerTracker.x = s.pos.x;
+    playerTracker.z = s.pos.z;
+    playerTracker.facing = s.facing;
 
     if (import.meta.env.DEV) {
       (window as unknown as Record<string, unknown>).__PALADIN__ = {

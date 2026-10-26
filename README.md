@@ -11,7 +11,7 @@ npm run build      # production build into dist/
 npm run preview    # serve the production build
 ```
 
-**Controls:** WASD or arrow keys to move · E to interact · E / Enter / Space to advance dialogue · in battle, ↑/↓ (or W/S) to pick a command and E / Enter / Space to confirm (mouse also works).
+**Controls:** Esc opens the pause menu (Resume, Save, Settings, Main Menu) · WASD or arrow keys to move · E to interact · E / Enter / Space to advance dialogue · in battle, ↑/↓ (or W/S) to pick a command and E / Enter / Space to confirm (mouse also works).
 
 ## Docs
 - `docs/MASTER_PROMPT.md`: full project spec (authoritative)
@@ -19,5 +19,16 @@ npm run preview    # serve the production build
 - `docs/SESSION_HANDOFF.md`: last session and next exact task
 - `docs/ROADMAP.md`, `docs/ARCHITECTURE.md`, `docs/GAME_DESIGN.md`, `docs/ASSET_REGISTER.md`
 
-## Deploy
-Netlify: build command `npm run build`, publish directory `dist` (see `netlify.toml`).
+## Deploy (Netlify)
+Everything Netlify needs is in `netlify.toml` (build `npm run build`, publish `dist`, Node 22).
+1. Push this repository to GitHub.
+2. In Netlify: **Add new site → Import an existing project → GitHub**, pick the repo. The build settings are read from `netlify.toml`.
+3. After the first deploy, open the site and play the prologue end to end, including Save → refresh → Continue.
+
+To test the production build locally first:
+```bash
+npm run build
+npm run preview    # http://localhost:4173
+```
+
+Saves and settings live in the browser's localStorage (`paladin.save`, `paladin.settings`).

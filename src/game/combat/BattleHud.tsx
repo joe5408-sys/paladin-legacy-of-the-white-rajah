@@ -19,6 +19,7 @@ const DOWN_KEYS = new Set(['ArrowDown', 'KeyS']);
 /** Battle interface: status panels, command menu, battle log, result screens. */
 export function BattleHud() {
   const battle = useGame((s) => s.battle);
+  const paused = useGame((s) => s.paused);
   const [selected, setSelected] = useState<Command>('attack');
   const selectedRef = useRef(selected);
   selectedRef.current = selected;
@@ -26,13 +27,13 @@ export function BattleHud() {
   const stage = battle?.stage;
   const state = battle?.state;
 
-  // Automatic pacing of non-interactive stages.
+  // Automatic pacing of non-interactive stages (held while paused).
   useEffect(() => {
     const delay = stage ? STAGE_DELAY[stage] : undefined;
-    if (delay === undefined) return;
+    if (delay === undefined || paused) return;
     const t = setTimeout(() => gameStore.getState().advanceBattle(), delay);
     return () => clearTimeout(t);
-  }, [stage, battle?.seq]);
+  }, [stage, battle?.seq, paused]);
 
   // Never leave the cursor on a command that has become unavailable.
   useEffect(() => {
@@ -45,7 +46,7 @@ export function BattleHud() {
       if (e.repeat) return;
       const s = gameStore.getState();
       const b = s.battle;
-      if (!b) return;
+      if (!b || s.paused) return;
       const usable = COMMANDS.filter((c) => canUse(b.state, c));
 
       if (b.stage === 'command') {

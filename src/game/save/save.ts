@@ -1,0 +1,206 @@
+/**
+ * Save system (browser localStorage). Everything loaded from storage is treated
+ * as untrusted: it is validated, repaired where safe, or rejected with a reason,
+ * and nothing here ever throws to the caller.
+ *
+ * Battles are never saved mid-turn: saving is only allowed while exploring, and
+ * the automatic checkpoints are taken on scene arrival and after a victory.
+ */
+import { LAYOUTS } from '../../data/layouts';
+import { SCENES, type SceneId, type SpawnPoint } from '../../data/scenes';
+import { circleOverlapsBox } from '../core/collision';
+import { PLAYER_RADIUS } from '../core/constants';
+import type { StoryFlag, StoryFlags } from '../core/flags';
+import type { Direction } from '../core/input';
+
+export const SAVE_KEY = 'paladin.save';
+export const SCHEMA_VERSION = 1;
+
+export interface SaveData {
+  schemaVersion: typeof SCHEMA_VERSION;
+  /** ISO timestamp. */
+  savedAt: string;
+  scene: SceneId;
+  position: SpawnPoint;
+  flags: StoryFlag[];
+  playTimeMs: number;
+  prologueComplete: boolean;
+}
+
+export type LoadResult =
+  | { ok: true; data: SaveData; repaired: boolean }
+  | { ok: false; reason: 'missing' | 'corrupt' | 'incompatible' | 'invalid' | 'unavailable' };
+
+/** Minimal storage interface so tests can use an in-memory fake. */
+export interface SaveStorage {
+  getItem(key: string): string | null;
+  setItem(key: string, value: string): void;
+  removeItem(key: string): void;
+}
+
+const ALL_FLAGS: readonly StoryFlag[] = [
+  'arrived', 'met_lim', 'entered_home', 'met_mara', 'heirloom_awakened', 'passage_open',
+  'entered_chamber', 'guardian_defeated', 'read_message', 'daniel_arrived', 'met_daniel',
+  'prologue_complete',
+];
+const DIRECTIONS: readonly Direction[] = ['north', 'south', 'east', 'west'];
+
+/** A scene is only reachable once these flags exist; anything else is a tampered save. */
+const SCENE_REQUIRES: Record<SceneId, StoryFlag[]> = {
+  village: [],
+  home: ['entered_home'],
+  chamber: ['passage_open'],
+};
+
+/** Browser localStorage, or null where it's unavailable (private mode, blocked, tests). */
+export function defaultStorage(): SaveStorage | null {
+  try {
+    if (typeof localStorage === 'undefined') return null;
+    const probe = '__paladin_probe__';
+    localStorage.setItem(probe, '1');
+    localStorage.removeItem(probe);
+    return localStorage;
+  } catch {
+    return null;
+  }
+}
+
+function isObject(v: unknown): v is Record<string, unknown> {
+  return typeof v === 'object' && v !== null && !Array.isArray(v);
+}
+
+function firstSpawn(scene: SceneId): SpawnPoint {
+  return Object.values(SCENES[scene].spawns)[0];
+}
+
+/** Is this a legal standing spot in the scene (in bounds and not inside an obstacle)? */
+export function isStandable(scene: SceneId, p: { x: number; z: number }, flags: StoryFlags): boolean {
+  const layout = LAYOUTS[scene];
+  const b = layout.bounds;
+  if (
+    p.x < b.minX + PLAYER_RADIUS - 1e-6 ||
+    p.x > b.maxX - PLAYER_RADIUS + 1e-6 ||
+    p.z < b.minZ + PLAYER_RADIUS - 1e-6 ||
+    p.z > b.maxZ - PLAYER_RADIUS + 1e-6
+  ) {
+    return false;
+  }
+  return !layout.colliders(flags).some((box) => circleOverlapsBox(p, PLAYER_RADIUS, box));
+}
+
+/** Validates (and where safe, repairs) untrusted save data. */
+export function validateSave(raw: unknown): LoadResult {
+  if (!isObject(raw)) return { ok: false, reason: 'invalid' };
+  if (raw.schemaVersion !== SCHEMA_VERSION) {
+    return { ok: false, reason: typeof raw.schemaVersion === 'number' ? 'incompatible' : 'invalid' };
+  }
+  if (typeof raw.scene !== 'string' || !(raw.scene in SCENES)) return { ok: false, reason: 'invalid' };
+  if (!Array.isArray(raw.flags)) return { ok: false, reason: 'invalid' };
+
+  let repaired = false;
+  let scene = raw.scene as SceneId;
+
+  // Keep only known flags (drop anything unrecognised).
+  const flags = [...new Set(raw.flags.filter((f): f is StoryFlag => ALL_FLAGS.includes(f as StoryFlag)))];
+  if (flags.length !== raw.flags.length) repaired = true;
+  const flagSet: StoryFlags = Object.fromEntries(flags.map((f) => [f, true]));
+
+  // A scene the story hasn't unlocked yet → back to the village.
+  if (!SCENE_REQUIRES[scene].every((f) => flagSet[f])) {
+    scene = 'village';
+    repaired = true;
+  }
+
+  // Position must be finite numbers on a walkable spot; otherwise use the scene's spawn.
+  let position = firstSpawn(scene);
+  const pos = raw.position;
+  if (
+    scene === raw.scene &&
+    isObject(pos) &&
+    Number.isFinite(pos.x) &&
+    Number.isFinite(pos.z) &&
+    isStandable(scene, { x: pos.x as number, z: pos.z as number }, flagSet)
+  ) {
+    const facing = DIRECTIONS.includes(pos.facing as Direction) ? (pos.facing as Direction) : 'south';
+    if (facing !== pos.facing) repaired = true;
+    position = { x: pos.x as number, z: pos.z as number, facing };
+  } else {
+    repaired = true;
+  }
+
+  const playTimeMs =
+    typeof raw.playTimeMs === 'number' && Number.isFinite(raw.playTimeMs) && raw.playTimeMs >= 0
+      ? raw.playTimeMs
+      : 0;
+  if (playTimeMs !== raw.playTimeMs) repaired = true;
+
+  const prologueComplete = raw.prologueComplete === true && !!flagSet.prologue_complete;
+
+  return {
+    ok: true,
+    repaired,
+    data: {
+      schemaVersion: SCHEMA_VERSION,
+      savedAt: typeof raw.savedAt === 'string' ? raw.savedAt : new Date(0).toISOString(),
+      scene,
+      position,
+      flags,
+      playTimeMs,
+      prologueComplete,
+    },
+  };
+}
+
+export function loadSave(storage: SaveStorage | null = defaultStorage()): LoadResult {
+  if (!storage) return { ok: false, reason: 'unavailable' };
+  let text: string | null;
+  try {
+    text = storage.getItem(SAVE_KEY);
+  } catch {
+    return { ok: false, reason: 'unavailable' };
+  }
+  if (text === null) return { ok: false, reason: 'missing' };
+  let raw: unknown;
+  try {
+    raw = JSON.parse(text);
+  } catch {
+    return { ok: false, reason: 'corrupt' };
+  }
+  return validateSave(raw);
+}
+
+/** Writes a save. Returns false if storage is unavailable or full. */
+export function writeSave(data: SaveData, storage: SaveStorage | null = defaultStorage()): boolean {
+  if (!storage) return false;
+  try {
+    storage.setItem(SAVE_KEY, JSON.stringify(data));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function deleteSave(storage: SaveStorage | null = defaultStorage()): void {
+  try {
+    storage?.removeItem(SAVE_KEY);
+  } catch {
+    // Nothing useful to do; a stale save is still validated on load.
+  }
+}
+
+/** Builds save data from game state plus a player position. */
+export function buildSave(
+  state: { scene: SceneId; flags: StoryFlags; startedAt: number; completedAt: number | null },
+  position: SpawnPoint,
+  now = Date.now(),
+): SaveData {
+  return {
+    schemaVersion: SCHEMA_VERSION,
+    savedAt: new Date(now).toISOString(),
+    scene: state.scene,
+    position: { x: position.x, z: position.z, facing: position.facing },
+    flags: ALL_FLAGS.filter((f) => state.flags[f]),
+    playTimeMs: Math.max(0, (state.completedAt ?? now) - state.startedAt),
+    prologueComplete: !!state.flags.prologue_complete,
+  };
+}

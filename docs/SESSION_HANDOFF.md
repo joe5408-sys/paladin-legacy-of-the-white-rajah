@@ -1,28 +1,30 @@
 # Session Handoff
 
-## Last session — 2026-10-23 (Claude Code), Phase 5: Complete Prologue
-**Result:** done. The full Chapter 0 plays from New Game to **CHAPTER 0 COMPLETE**: arrival → family home → Aunt Mara → heirloom → passage → Guardian battle → ancestral message → Daniel Rengas → ending card → Play Again.
+## Last session — 2026-10-26 (Claude Code), Phase 6: Save, menus, audio, deploy prep
+**Result:** save/load, title and pause menus, settings and synthesized audio are done and tested; deployment config is ready. **Nothing has been pushed or deployed**: the owner asked to approve that first.
 
 ### Files added
-- `src/game/ui/ChapterComplete.tsx`: ending card with play time and Play Again
-- `tests/unit/ending.test.ts`: ending sequence and a whole-prologue run
+- `src/game/save/save.ts` (validation, load/write/delete, buildSave), `src/game/save/AutoSave.tsx`
+- `src/game/settings/settings.ts`
+- `src/game/audio/audio.ts` (Web Audio synth engine), `src/game/audio/AudioDirector.tsx`
+- `src/game/ui/TitleScreen.tsx`, `PauseMenu.tsx` (+ `usePauseKey`, `saveCurrentGame`), `SettingsPanel.tsx`, `ConfirmDialog.tsx`, `MenuList.tsx`
+- `src/app/ErrorBoundary.tsx`, `src/data/layouts.ts`, `src/game/core/playerTracker.ts`
+- `public/favicon.svg`, `tests/unit/save.test.ts`
 
 ### Files modified
-`flags.ts` (`daniel_arrived`, `met_daniel`, `prologue_complete`), `dialogue/types.ts` (`next`, `endChapter`, line `style`), `gameStore.ts` (`ending` mode, `endChapter`, `newGame`, `startedAt` / `completedAt`, dialogue chaining), `layout.ts` (NPC `when`), `ExplorationRig.tsx`, `characters.ts` (Daniel), `dialogue.ts` (message and Daniel), `ancientChamber.ts` (inscription interactable, Daniel placement), `AncientChamber.tsx` (glowing inscription), `DialogueBox.tsx` (inscription style), `Hud.tsx`, `global.css`, docs.
+`gameStore.ts` (screen, paused, `startNewGame` / `loadGame` / `returnToTitle` / `canPause` / `setPaused`), `Player.tsx` (pause freeze, writes playerTracker), `BattleHud.tsx` (pause-aware), `DialogueBox.tsx` (text speed), `ChapterComplete.tsx` (menu), `Hud.tsx`, `App.tsx`, `global.css`, `index.html`, `netlify.toml`, `.claude/launch.json`, docs.
 
 ### Tests run
-`npm test` 85/85 · `npm run build` OK · full browser play-through to the ending (see PROGRESS.md).
+`npm test` 105/105 · `npm run build` OK · production-build browser checks (see PROGRESS.md for what was and wasn't covered).
 
-### Open item
-**Real playtime is unverified.** The estimate is about 4:00–6:20, at the low end of the 5–10 minute target. Have a person play it once and read the time on the end screen.
+### Remaining for Phase 6 acceptance
+1. **Owner go-ahead**, then: create the GitHub repo (`gh repo create`, public or private?) and push `master`.
+2. Connect the repo in Netlify (app.netlify.com → Add new site → Import from GitHub). Build settings come from `netlify.toml`. This needs the owner's Netlify login.
+3. On the deployed URL: play the full prologue, check save/load across a refresh, and check the console. Record the results here.
+4. Listen to the audio once (I couldn't verify sound by ear).
+5. Optional: Playwright smoke test against `npm run preview`.
 
 ### Watch out
-Vite's watcher on this machine can miss fast scripted multi-writes to one file. If the browser disagrees with the tests, restart the dev server.
-
-### Next exact task — Phase 6 (Save & Deployment)
-1. **Save system** (`src/game/save/`): a localStorage save with `schemaVersion`, scene, spawn or position, flags and `prologue_complete`. Validate on load; missing, invalid or incompatible saves fall back without crashing. No mid-battle saves: saving during or just before battle restores to the chamber checkpoint. Unit-test validation.
-2. **Main menu:** New Game (confirm if a save exists), Continue (only when a valid save exists), Settings (e.g. text speed or volume).
-3. **Pause menu** (Esc): Resume, Save, Return to Main Menu. Every button must work.
-4. **Basic audio:** original or properly licensed ambience and SFX (record them in ASSET_REGISTER), with a mute setting.
-5. Regression tests, plus optional Playwright e2e on the production build.
-6. GitHub repo plus Netlify deploy (`npm run build`, publish `dist`). Verify the deployed site by playing the full prologue there. **Pushing to GitHub and deploying need the user's go-ahead and accounts.**
+- The Vite dev watcher on this machine can miss fast scripted multi-writes; restart `npm run dev` if the browser disagrees with the tests.
+- Real-time checks in the desktop app's browser pane need the app window in view, otherwise the page is throttled to about 1 fps.
+- Dev-only hooks (`window.__PALADIN_STORE__`, `window.__PALADIN__`) don't exist in production builds.

@@ -526,3 +526,208 @@ kbd {
   font-family: inherit;
   color: #ffe08a;
 }
+
+/* ── Menus (title, pause, settings, confirm) ───────────────── */
+.menu-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(5, 4, 10, 0.62);
+  animation: prompt-in 150ms ease-out;
+}
+
+.menu-panel {
+  min-width: 17em;
+  max-width: 90%;
+  padding: 1em 1.4em;
+}
+
+.menu-title {
+  font-weight: bold;
+  color: #ffe08a;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 0.6em;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15em;
+}
+
+.menu-item {
+  font: inherit;
+  color: var(--ui-text);
+  background: transparent;
+  border: none;
+  text-align: left;
+  padding: 0.3em 0.5em 0.3em 1.4em;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  gap: 2em;
+}
+
+.menu-item.selected {
+  color: #ffe08a;
+}
+
+.menu-item.selected::before {
+  content: '▶';
+  position: absolute;
+  left: 0.2em;
+}
+
+.menu-item:disabled {
+  color: #6b6474;
+  cursor: default;
+}
+
+.menu-value {
+  color: #c9bfa8;
+}
+
+.menu-hint {
+  min-height: 1.4em;
+  margin-top: 0.5em;
+  font-size: 0.8em;
+  color: #c9bfa8;
+}
+
+.menu-status {
+  margin: 0.4em 0 0;
+  color: #9be3a4;
+  font-size: 0.9em;
+}
+
+.confirm-message {
+  margin: 0 0 0.8em;
+  max-width: 24em;
+  line-height: 1.5;
+}
+
+.autosave {
+  position: absolute;
+  left: 1em;
+  bottom: 1em;
+  z-index: 15;
+  font-size: clamp(11px, 1.3vw, 14px);
+  color: #ffe08a;
+  animation: prompt-in 200ms ease-out;
+}
+
+.chapter-menu {
+  margin-top: 0.4em;
+  font-size: 1.05em;
+}
+
+.chapter-menu.waiting {
+  opacity: 0.35;
+}
+
+/* ── Title screen ──────────────────────────────────────── */
+.title-screen {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(11px, 1.5vw, 17px);
+}
+
+.title-sky {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, #121a33 0%, #2c3557 38%, #a35d4b 66%, #e3a35f 74%, #1b2a2c 75%);
+}
+
+.title-river {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 25%;
+  background: repeating-linear-gradient(180deg, #1d3236 0 6px, #24413f 6px 8px);
+  opacity: 0.9;
+  animation: river 6s linear infinite;
+}
+
+@keyframes river {
+  to {
+    background-position: 0 32px;
+  }
+}
+
+.title-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35em;
+  margin-top: -4%;
+}
+
+.title-emblem {
+  width: 4.5em;
+  height: 4.5em;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 0 10px #ffb84a);
+}
+
+.title-name {
+  margin: 0;
+  font-size: 4.2em;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #ffe08a;
+  text-shadow:
+    3px 3px 0 #3a2410,
+    0 0 24px rgba(255, 184, 74, 0.5);
+}
+
+.title-sub {
+  font-size: 1.25em;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #f4ecd8;
+}
+
+.title-chapter {
+  color: #c9bfa8;
+  font-style: italic;
+  margin-bottom: 1.2em;
+}
+
+.title-menu {
+  min-width: 15em;
+}
+
+.title-warning {
+  margin: 0.4em 0 0;
+  max-width: 18em;
+  font-size: 0.8em;
+  color: #e8a83a;
+}
+
+.title-footer {
+  position: absolute;
+  left: 1em;
+  right: 1em;
+  bottom: 0.8em;
+  text-align: center;
+  font-size: 0.72em;
+  color: #9aa3a6;
+  line-height: 1.5;
+}
+
+.title-controls {
+  display: block;
+  color: #c9bfa8;
+}

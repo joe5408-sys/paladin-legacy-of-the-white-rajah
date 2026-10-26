@@ -27,6 +27,7 @@ import { selectDialogue } from '../dialogue/rules';
 import type { DialogueDef } from '../dialogue/types';
 import type { StoryFlag, StoryFlags } from './flags';
 import type { Interactable } from '../interaction/interaction';
+import type { SaveData } from '../save/save';
 
 export type GameMode = 'explore' | 'dialogue' | 'transition' | 'battle' | 'ending';
 
@@ -71,7 +72,13 @@ export interface SceneTransition {
   spawn: string;
 }
 
+export type Screen = 'title' | 'game';
+
 export interface GameState {
+  /** Title screen or in-game. */
+  screen: Screen;
+  /** Pause menu open (game logic and input frozen). */
+  paused: boolean;
   scene: SceneId;
   spawn: SpawnPoint;
   mode: GameMode;
@@ -113,6 +120,16 @@ export interface GameState {
   endChapter(): void;
   /** Fresh playthrough from the opening scene. */
   newGame(): void;
+  /** From the title screen: start a new game. */
+  startNewGame(): void;
+  /** From the title screen: resume a validated save. */
+  loadGame(save: SaveData): void;
+  /** Back to the title screen (unsaved progress is discarded). */
+  returnToTitle(): void;
+  /** Whether the pause menu may open right now. */
+  canPause(): boolean;
+  /** Opens/closes the pause menu. Returns the new paused state. */
+  setPaused(paused: boolean): boolean;
   reset(): void;
 }
 
@@ -126,6 +143,8 @@ function spawnPoint(scene: SceneId, spawn: string): SpawnPoint {
 
 function initialState() {
   return {
+    screen: 'game' as Screen,
+    paused: false,
     scene: NEW_GAME_SCENE,
     spawn: spawnPoint(NEW_GAME_SCENE, NEW_GAME_SPAWN),
     mode: 'explore' as GameMode,
@@ -152,6 +171,7 @@ function freshBattle(encounter: EncounterDef, stage: BattleStage, message: strin
 
 export const gameStore = createStore<GameState>()((set, get) => ({
   ...initialState(),
+  screen: 'title',
 
   setNearby(target) {
     if (get().nearby?.id !== target?.id) set({ nearby: target });
@@ -208,6 +228,7 @@ export const gameStore = createStore<GameState>()((set, get) => ({
 
   pressAction(code) {
     const s = get();
+    if (s.paused || s.screen !== 'game') return false;
     if (s.mode === 'dialogue') {
       if (!DIALOGUE_KEYS.has(code)) return false;
       if (s.dialogue?.revealed) s.advanceDialogue();
@@ -340,6 +361,40 @@ export const gameStore = createStore<GameState>()((set, get) => ({
   newGame() {
     set(initialState());
     get().arrive();
+  },
+
+  startNewGame() {
+    get().newGame(); // initialState() puts us on the game screen
+  },
+
+  loadGame(save) {
+    const flags: StoryFlags = Object.fromEntries(save.flags.map((f) => [f, true]));
+    const now = Date.now();
+    set({
+      ...initialState(),
+      scene: save.scene,
+      spawn: { ...save.position },
+      flags,
+      startedAt: now - save.playTimeMs,
+      // A finished save reopens on the completion card.
+      mode: save.prologueComplete ? 'ending' : 'explore',
+      completedAt: save.prologueComplete ? now : null,
+    });
+  },
+
+  returnToTitle() {
+    set({ ...initialState(), screen: 'title' });
+  },
+
+  canPause() {
+    const s = get();
+    return s.screen === 'game' && (s.mode === 'explore' || s.mode === 'dialogue' || s.mode === 'battle');
+  },
+
+  setPaused(paused) {
+    if (paused && !get().canPause()) return get().paused;
+    set({ paused });
+    return paused;
   },
 
   reset() {

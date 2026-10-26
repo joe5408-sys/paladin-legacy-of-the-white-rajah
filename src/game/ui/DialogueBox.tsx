@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { CHARACTERS } from '../../data/characters';
 import { gameStore, useGame } from '../core/gameStore';
+import { TEXT_SPEED_CPS, useSettings } from '../settings/settings';
 import type { DialogueLine } from '../dialogue/types';
 
-const CHARS_PER_SECOND = 45;
 
 /** Classic bottom-of-screen RPG dialogue box with a typewriter effect. */
 export function DialogueBox() {
@@ -33,13 +33,18 @@ export function DialogueBox() {
 
 function TypedLine({ line, revealed }: { line: DialogueLine; revealed: boolean }) {
   const [shown, setShown] = useState(0);
+  const cps = TEXT_SPEED_CPS[useSettings((s) => s.textSpeed)];
 
   useEffect(() => {
     if (revealed) return;
+    if (!Number.isFinite(cps)) {
+      gameStore.getState().revealLine(); // "instant" text speed
+      return;
+    }
     const start = performance.now();
     let raf = 0;
     const tick = () => {
-      const n = Math.floor(((performance.now() - start) / 1000) * CHARS_PER_SECOND);
+      const n = Math.floor(((performance.now() - start) / 1000) * cps);
       if (n >= line.text.length) {
         gameStore.getState().revealLine();
         return;
@@ -49,7 +54,7 @@ function TypedLine({ line, revealed }: { line: DialogueLine; revealed: boolean }
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [line, revealed]);
+  }, [line, revealed, cps]);
 
   const text = revealed ? line.text : line.text.slice(0, shown);
   const style =

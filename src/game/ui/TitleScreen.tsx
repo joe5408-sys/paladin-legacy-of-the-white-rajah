@@ -1,0 +1,90 @@
+import { useMemo, useState } from 'react';
+import { SCENES } from '../../data/scenes';
+import { gameStore } from '../core/gameStore';
+import { deleteSave, loadSave } from '../save/save';
+import { getInsigniaTexture } from '../scenes/insignia';
+import { formatPlaytime } from './ChapterComplete';
+import { ConfirmDialog } from './ConfirmDialog';
+import { MenuList } from './MenuList';
+import { SettingsPanel } from './SettingsPanel';
+
+const LOAD_PROBLEM: Record<string, string> = {
+  corrupt: 'A saved game was found but could not be read.',
+  incompatible: 'A saved game from an incompatible version was found.',
+  invalid: 'A saved game was found but its data was invalid.',
+};
+
+/** Main menu: New Game, Continue (only with a valid save), Settings. */
+export function TitleScreen() {
+  const [view, setView] = useState<'menu' | 'settings' | 'confirm-new'>('menu');
+  // Re-read the save whenever we come back to the main menu view.
+  const save = useMemo(() => loadSave(), [view]);
+  const emblem = useMemo(() => (getInsigniaTexture('#ffe08a').image as HTMLCanvasElement).toDataURL(), []);
+
+  const hasSave = save.ok;
+  const newGame = () => {
+    if (hasSave) setView('confirm-new');
+    else gameStore.getState().startNewGame();
+  };
+
+  return (
+    <div className="title-screen" data-testid="title-screen">
+      <div className="title-sky" aria-hidden="true" />
+      <div className="title-river" aria-hidden="true" />
+      <div className="title-content">
+        <img className="title-emblem" src={emblem} alt="" aria-hidden="true" />
+        <h1 className="title-name">Paladin</h1>
+        <div className="title-sub">Legacy of the White Rajah</div>
+        <div className="title-chapter">Chapter 0 · The Forgotten Heir</div>
+
+        {view === 'menu' && (
+          <div className="title-menu pixel-panel">
+            <MenuList
+              label="Main menu"
+              items={[
+                ...(hasSave
+                  ? [
+                      {
+                        id: 'continue',
+                        label: 'Continue',
+                        onSelect: () => save.ok && gameStore.getState().loadGame(save.data),
+                        hint: save.ok
+                          ? `${save.data.prologueComplete ? 'Chapter 0 complete' : SCENES[save.data.scene].name} · ${formatPlaytime(save.data.playTimeMs)}`
+                          : undefined,
+                      },
+                    ]
+                  : []),
+                { id: 'new-game', label: 'New Game', onSelect: newGame },
+                { id: 'settings', label: 'Settings', onSelect: () => setView('settings') },
+              ]}
+            />
+            {!save.ok && LOAD_PROBLEM[save.reason] && (
+              <p className="title-warning" data-testid="save-warning">
+                {LOAD_PROBLEM[save.reason]} Starting a New Game will replace it.
+              </p>
+            )}
+          </div>
+        )}
+        {view === 'settings' && <SettingsPanel onBack={() => setView('menu')} />}
+      </div>
+
+      {view === 'confirm-new' && (
+        <ConfirmDialog
+          message="Start a new game? Your saved progress will be erased."
+          confirmLabel="Erase and start"
+          onCancel={() => setView('menu')}
+          onConfirm={() => {
+            deleteSave();
+            gameStore.getState().startNewGame();
+          }}
+        />
+      )}
+
+      <footer className="title-footer">
+        A work of fiction set in an imagined, alternate-history Sarawak. Its monarchy, Paladin order and
+        events are invented and do not depict real history.
+        <span className="title-controls">↑/↓ choose · E / Enter select · Esc back</span>
+      </footer>
+    </div>
+  );
+}

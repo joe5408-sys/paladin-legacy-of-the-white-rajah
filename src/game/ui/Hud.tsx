@@ -38,7 +38,7 @@ export function Hud() {
       <DialogueBox />
       {mode === 'explore' && (
         <div className="hud-controls pixel-panel">
-          <kbd>WASD</kbd> / <kbd>Arrows</kbd> Move · <kbd>E</kbd> Interact
+          <kbd>WASD</kbd> / <kbd>Arrows</kbd> Move · <kbd>E</kbd> Interact · <kbd>Esc</kbd> Menu
         </div>
       )}
       <SceneFade />

@@ -13,10 +13,13 @@ Every asset in the game must be original, properly licensed, or explicitly autho
 | Covenant Guardian battle sprite | Pixel art (generated at runtime, 32×40) | `src/game/combat/guardianSprite.ts` | Original design | Project-owned | |
 | Daniel Rengas placeholder sprite sheet | Pixel art (generated at runtime) | `pixelSprite.ts` + `characters.ts` | Original, project code | Project-owned | |
 | Chamber inscription script | Abstract pixel glyphs (generated at runtime) | `AncientChamber.tsx` | Original | Project-owned | Not a real writing system |
+| All music, ambience and sound effects | Synthesized at runtime (Web Audio oscillators and noise) | `src/game/audio/audio.ts` | Original, project code | Project-owned | No audio files are bundled |
+| Favicon | SVG | `public/favicon.svg` | Original | Project-owned | Simplified Paladin sign |
+| Title screen backdrop | CSS gradients | `src/styles/global.css` | Original | Project-owned | |
 | Dialogue text | Writing | `src/data/dialogue.ts` | Original | Project-owned | |
 | Village buildings, props, terrain | Procedural low-poly geometry | `src/game/scenes/environment.tsx` | Original, project code | Project-owned | Three.js primitives only |
 | UI font | System monospace (`Courier New` / `ui-monospace`) | User's OS | — | System font, not bundled | Replace with a licensed pixel font later |
 
 **Third-party code libraries** (MIT unless noted): react, react-dom, three, @react-three/fiber, @react-three/drei, zustand, vite, vitest, typescript.
 
-No third-party art, audio or fonts are bundled yet.
+No third-party art, audio or fonts are bundled.
