@@ -34,7 +34,14 @@ export type StoryFlag =
   | 'c1_letter_found' // found the Rajah's reply
   | 'c1_security_arrived' // Lord Chamberlain Harrow and palace security arrive
   | 'c1_lights_out'
-  | 'c1_escaped'; // escaped through the flood door (end of Chapter 1)
+  | 'c1_escaped' // escaped through the flood door (end of Chapter 1)
+  // Chapter 2: The River Remembers
+  | 'chapter2_started'
+  | 'c2_arrived' // on the express boat, opening narration played
+  | 'c2_talked_mara'
+  | 'c2_saw_news' // the survey news on a passenger's phone
+  | 'c2_talked_captain'
+  | 'c2_reached_jetty'; // arrived at Sungai Awan (milestone 2.1 cliffhanger)
 
 export type StoryFlags = Partial<Record<StoryFlag, true>>;
 

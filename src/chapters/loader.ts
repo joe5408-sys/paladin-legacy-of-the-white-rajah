@@ -14,6 +14,9 @@ export function loadChapter(chapter: number): Promise<void> {
       case 1:
         p = import('./chapter1/content').then(() => undefined);
         break;
+      case 2:
+        p = import('./chapter2/content').then(() => undefined);
+        break;
       default:
         p = Promise.resolve(); // chapter 0 is built in
     }
@@ -26,6 +29,7 @@ export function loadChapter(chapter: number): Promise<void> {
 
 /** Chapters a save or flag list needs before it can be validated or played. */
 export function chaptersNeededFor(flags: readonly string[]): number[] {
+  if (flags.includes('chapter2_started' satisfies StoryFlag)) return [2];
   return flags.includes('chapter1_started' satisfies StoryFlag) ? [1] : [];
 }
 
@@ -35,5 +39,5 @@ export async function loadChaptersFor(flags: readonly string[]): Promise<void> {
 
 /** Whether a newer chapter exists to continue into after the given one. */
 export function hasChapterAfter(chapter: number): boolean {
-  return chapter === 0;
+  return chapter === 0 || chapter === 1;
 }

@@ -20,6 +20,8 @@ Every asset in the game must be original, properly licensed, or explicitly autho
 | Kak Jamilah placeholder sprite sheet | Pixel art (generated at runtime) | `pixelSprite.ts` + `characters.ts` | Original, project code | Project-owned | Headscarf and long skirt via palette and features |
 | Kuching waterfront (shophouses, Archives, Palace, fort, stall, bandstand, pier, boat) | Procedural low-poly | `src/chapters/chapter1/Waterfront.tsx` | Original, project code | Project-owned | Fictional, alternate-history versions of recognisable waterfront features |
 | The Archivist placeholder sprite sheet | Pixel art (generated at runtime) | `pixelSprite.ts` + `characters.ts` | Original, project code | Project-owned | Glasses, bun, long skirt |
+| Captain Ah Hock, student and auntie placeholder sprite sheets | Pixel art (generated at runtime) | `pixelSprite.ts` + `characters.ts` | Original, project code | Project-owned | Chapter 2 |
+| Express boat, river and drifting riverbank (jungle, longhouse silhouettes) | Procedural low-poly | `src/chapters/chapter2/Boat.tsx` | Original, project code | Project-owned | |
 | Lord Chamberlain Harrow and Royal Security officer placeholder sprite sheets | Pixel art (generated at runtime) | `pixelSprite.ts` + `characters.ts` | Original, project code | Project-owned | |
 | Sealed records interior (tin box shelves, reading table, VALE box, flood door) | Procedural low-poly | `src/chapters/chapter1/Records.tsx` | Original, project code | Project-owned | |
 | Hollow Sentinel sprite | Pixel art (generated at runtime) | `src/game/combat/sentinelSprite.ts` | Original, project code | Project-owned | Brass-and-ironwood palace construct, original design |

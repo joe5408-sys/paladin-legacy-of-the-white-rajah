@@ -13,8 +13,8 @@ export function formatPlaytime(ms: number): string {
 }
 
 /**
- * Closing card for a chapter. Chapter 0 offers "Continue to Chapter 1";
- * Chapter 1 points ahead to Chapter 2 (not yet written).
+ * Closing card for a chapter. Chapters 0 and 1 offer to continue into the next;
+ * the in-progress Chapter 2 ends on a "to be continued" card.
  */
 export function ChapterComplete() {
   const startedAt = useGame((s) => s.startedAt);
@@ -30,30 +30,31 @@ export function ChapterComplete() {
     return () => clearTimeout(t);
   }, []);
 
-  const continueToChapter1 = async () => {
+  const next = (chapter + 1) as 1 | 2;
+  const continueToNext = async () => {
     setLoading(true);
     setError(null);
     try {
-      await loadChapter(1);
-      gameStore.getState().startChapter1();
+      await loadChapter(next);
+      gameStore.getState().startChapter(next);
     } catch {
-      setError('Could not load Chapter 1. Check your connection and try again.');
+      setError(`Could not load Chapter ${next}. Check your connection and try again.`);
       setLoading(false);
     }
   };
 
   const items: MenuItem[] = [];
-  if (chapter === 0 && hasChapterAfter(0)) {
+  if (hasChapterAfter(chapter)) {
     items.push({
       id: 'next-chapter',
-      label: loading ? 'Loading Chapter 1…' : 'Continue to Chapter 1',
+      label: loading ? `Loading Chapter ${next}…` : `Continue to Chapter ${next}`,
       disabled: !ready || loading,
-      onSelect: () => void continueToChapter1(),
+      onSelect: () => void continueToNext(),
     });
   }
   const playAgain: MenuItem = { id: 'play-again', label: 'Play Again', disabled: !ready || loading, onSelect: () => gameStore.getState().newGame() };
   const mainMenu: MenuItem = { id: 'main-menu', label: 'Main Menu', disabled: !ready || loading, onSelect: () => gameStore.getState().returnToTitle() };
-  // After the last written chapter, default to the safe choice (Main Menu keeps the save).
+  // After the last written content, default to the safe choice (Main Menu keeps the save).
   if (chapter === 0) items.push(playAgain, mainMenu);
   else items.push(mainMenu, playAgain);
 
@@ -74,13 +75,21 @@ export function ChapterComplete() {
           {playtime}
           <div className="chapter-next">Next: Chapter 1 · The Capital's Shadow</div>
         </>
-      ) : (
+      ) : chapter === 1 ? (
         <>
           <div className="chapter-kicker">Chapter 1 · The Capital's Shadow</div>
           <h1 className="chapter-title" data-testid="chapter1-complete">Chapter 1 Complete</h1>
           <p className="chapter-quote">“Keep the sign safe until the Crown deserves it again.”</p>
           {playtime}
-          <div className="chapter-next">Next: Chapter 2 · The river, and what Elias hid. Arrives in a future update; your progress is saved.</div>
+          <div className="chapter-next">Next: Chapter 2 · The River Remembers</div>
+        </>
+      ) : (
+        <>
+          <div className="chapter-kicker">Chapter 2 · The River Remembers</div>
+          <h1 className="chapter-title" data-testid="c2-to-be-continued">To Be Continued</h1>
+          <p className="chapter-quote">Those pegs weren't here a week ago.</p>
+          {playtime}
+          <div className="chapter-next">The rest of Chapter 2 arrives in a future update. Your progress is saved.</div>
         </>
       )}
       <div className={`chapter-menu${ready ? '' : ' waiting'}`}>

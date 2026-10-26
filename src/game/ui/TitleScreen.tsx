@@ -107,6 +107,8 @@ export function TitleScreen() {
 /** Short description of where a save is, for the Continue hint. */
 function describeSave(data: SaveData): string {
   const flags = new Set(data.flags);
+  if (flags.has('c2_reached_jetty')) return 'Chapter 2 · The River Remembers (to be continued)';
+  if (flags.has('chapter2_started')) return `Chapter 2 · ${SCENES[data.scene].name}`;
   if (flags.has('c1_escaped')) return 'Chapter 1 complete';
   if (flags.has('chapter1_started')) return `Chapter 1 · ${SCENES[data.scene].name}`;
   if (data.prologueComplete) return 'Chapter 0 complete';

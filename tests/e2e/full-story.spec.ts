@@ -1,17 +1,18 @@
 /**
  * Plays the whole game as it stands, with real keyboard input in a real browser:
  * Chapter 0 from New Game to CHAPTER 0 COMPLETE, then Chapter 1 (Milestones 1.1–1.2:
- * the Kuching waterfront, the Royal Archives, the vault battle and the sealed records) to the Chapter 1 Complete card. Also checks that Chapter 1 is only downloaded
+ * the Kuching waterfront, the Royal Archives, the vault battle, the sealed records and the Chapter 2 express boat) to the "to be continued" card. Also checks that Chapter 1 is only downloaded
  * when the player reaches it.
  */
 import { expect, test } from '@playwright/test';
 import { arriveIn, expectLocation, finishDialogue, press, testId, trackErrors, walk } from './helpers';
 
-test('full story: Chapter 0 and all of Chapter 1', async ({ page }) => {
+test('full story: Chapters 0 and 1, and Chapter 2 so far', async ({ page }) => {
   const errors = trackErrors(page);
   const requested: string[] = [];
   page.on('request', (r) => requested.push(r.url()));
   const chapter1Requested = () => requested.some((u) => /\/assets\/(Waterfront|content)-/.test(u));
+  const chapter2Requested = () => requested.some((u) => /\/assets\/(Boat|boatData)-/.test(u));
 
   await page.goto('/');
   await page.evaluate(() => localStorage.clear());
@@ -206,11 +207,48 @@ test('full story: Chapter 0 and all of Chapter 1', async ({ page }) => {
   await finishDialogue(page);
   await expect(testId(page, 'chapter1-complete')).toBeVisible({ timeout: 10_000 });
 
+  // ── Chapter 2.1: upriver on the express boat ─────────
+  expect(chapter2Requested()).toBe(false); // only downloaded when needed
+  await expect(testId(page, 'menu-next-chapter')).toBeEnabled({ timeout: 5_000 });
+  await testId(page, 'menu-next-chapter').click();
+  await expect(testId(page, 'chapter-card')).toBeVisible();
+  await expect(testId(page, 'chapter-card')).toContainText('The River Remembers');
+  expect(chapter2Requested()).toBe(true);
+  await arriveIn(page, 'Express Boat — Rajang River');
+  await expect(testId(page, 'objective')).toContainText('Talk to Aunt Mara.');
+
+  await walk(page, 'KeyS', 0.25);
+  await walk(page, 'KeyD', 0.8);
+  await expect(testId(page, 'interaction-prompt')).toContainText('Talk to Aunt Mara');
+  await press(page, 'KeyE');
+  await finishDialogue(page);
+  await expect(testId(page, 'objective')).toContainText('Find out what the other passengers are talking about.');
+
+  await walk(page, 'KeyD', 3.3);
+  await walk(page, 'KeyW', 0.3);
+  await expect(testId(page, 'interaction-prompt')).toContainText('Talk to Student');
+  await press(page, 'KeyE');
+  await finishDialogue(page);
+  await expect(testId(page, 'objective')).toContainText('Ask the captain about Sungai Awan.');
+
+  await walk(page, 'KeyD', 1.8);
+  await expect(testId(page, 'interaction-prompt')).toContainText('Talk to Captain Ah Hock');
+  await press(page, 'KeyE');
+  await finishDialogue(page);
+  await expect(testId(page, 'objective')).toContainText('Collect your things from the cabin.');
+
+  await walk(page, 'KeyS', 0.3);
+  await walk(page, 'KeyA', 7);
+  await expect(testId(page, 'interaction-prompt')).toContainText('Inspect Cabin');
+  await press(page, 'KeyE');
+  await finishDialogue(page);
+  await expect(testId(page, 'c2-to-be-continued')).toBeVisible({ timeout: 10_000 });
+
   // The cliffhanger is saved; after a refresh, Continue says so.
   await page.waitForTimeout(500);
   await page.reload();
   await expect(testId(page, 'menu-continue')).toBeVisible({ timeout: 10_000 });
-  await expect(page.locator('.menu-hint')).toContainText('Chapter 1');
+  await expect(page.locator('.menu-hint')).toContainText('Chapter 2');
 
   expect(errors).toEqual([]);
 });

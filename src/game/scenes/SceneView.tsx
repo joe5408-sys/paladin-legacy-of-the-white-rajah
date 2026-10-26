@@ -10,6 +10,8 @@ const Waterfront = lazy(() => import('../../chapters/chapter1/Waterfront'));
 const Archives = lazy(() => import('../../chapters/chapter1/Archives'));
 const Vault = lazy(() => import('../../chapters/chapter1/Vault'));
 const Records = lazy(() => import('../../chapters/chapter1/Records'));
+// Chapter 2
+const Boat = lazy(() => import('../../chapters/chapter2/Boat'));
 
 /**
  * Renders the active scene, or the battle arena during a battle.
@@ -49,6 +51,12 @@ export function SceneView() {
       return (
         <Suspense fallback={null}>
           <Records key="records" spawn={spawn} />
+        </Suspense>
+      );
+    case 'boat':
+      return (
+        <Suspense fallback={null}>
+          <Boat key="boat" spawn={spawn} />
         </Suspense>
       );
   }

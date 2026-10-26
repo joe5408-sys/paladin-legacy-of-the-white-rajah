@@ -19,6 +19,7 @@ import { DEFAULT_SETTINGS, loadSettings, SETTINGS_KEY, validateSettings } from '
 import { gameStore } from '../../src/game/core/gameStore';
 import { SCENES } from '../../src/data/scenes';
 import '../../src/chapters/chapter1/content'; // so Chapter 1 scenes can be validated
+import '../../src/chapters/chapter2/content';
 
 /** In-memory stand-in for localStorage. */
 class MemoryStorage implements SaveStorage {

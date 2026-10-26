@@ -6,10 +6,12 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { gameStore } from '../../src/game/core/gameStore';
 import { CHAMBER_LAYOUT } from '../../src/data/ancientChamber';
 import { WATERFRONT_LAYOUT } from '../../src/chapters/chapter1/data';
+import { BOAT_LAYOUT } from '../../src/chapters/chapter2/boatData';
 import { RECORDS_LAYOUT } from '../../src/chapters/chapter1/recordsData';
 import { VAULT_LAYOUT } from '../../src/chapters/chapter1/vaultData';
 import { ARCHIVES_LAYOUT } from '../../src/chapters/chapter1/archivesData';
 import '../../src/chapters/chapter1/content'; // registers Chapter 1 dialogue and objectives
+import '../../src/chapters/chapter2/content';
 import { HOME_LAYOUT } from '../../src/data/familyHome';
 import { VILLAGE_LAYOUT } from '../../src/data/villageSquare';
 import { DIALOGUES } from '../../src/data/dialogue';
@@ -31,6 +33,7 @@ const LAYOUTS: Record<SceneId, SceneLayout> = {
   archives: ARCHIVES_LAYOUT,
   vault: VAULT_LAYOUT,
   records: RECORDS_LAYOUT,
+  boat: BOAT_LAYOUT,
 };
 
 function finishDialogue() {

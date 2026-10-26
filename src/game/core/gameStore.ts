@@ -131,6 +131,8 @@ export interface GameState {
   returnToTitle(): void;
   /** Begins Chapter 1 (its content must already be loaded). Keeps story flags and play time. */
   startChapter1(): void;
+  /** Starts a later chapter (1 or 2) after the previous chapter's closing card. */
+  startChapter(chapter: 1 | 2): void;
   /** Called when the chapter title card has been shown: hands control to the player. */
   dismissChapterCard(): void;
   /** Whether the pause menu may open right now. */
@@ -165,6 +167,12 @@ function initialState() {
     completedAt: null,
   };
 }
+
+/** Where each later chapter begins. */
+const CHAPTER_STARTS: Record<1 | 2, { flag: StoryFlag; scene: SceneId; spawn: string; card: string }> = {
+  1: { flag: 'chapter1_started', scene: 'waterfront', spawn: 'arrival', card: "Chapter 1 · The Capital's Shadow" },
+  2: { flag: 'chapter2_started', scene: 'boat', spawn: 'arrival', card: 'Chapter 2 · The River Remembers' },
+};
 
 function freshBattle(encounter: EncounterDef, stage: BattleStage, message: string): ActiveBattle {
   return {
@@ -396,16 +404,21 @@ export const gameStore = createStore<GameState>()((set, get) => ({
   },
 
   startChapter1() {
+    get().startChapter(1);
+  },
+
+  startChapter(chapter) {
     const s = get();
+    const start = CHAPTER_STARTS[chapter];
     set({
       ...initialState(),
-      flags: { ...s.flags, chapter1_started: true },
+      flags: { ...s.flags, [start.flag]: true },
       startedAt: s.startedAt,
-      scene: 'waterfront',
-      spawn: spawnPoint('waterfront', 'arrival'),
+      scene: start.scene,
+      spawn: spawnPoint(start.scene, start.spawn),
       // Input stays locked while the chapter title card is on screen.
       mode: 'transition',
-      chapterCard: "Chapter 1 · The Capital's Shadow",
+      chapterCard: start.card,
     });
   },
 

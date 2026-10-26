@@ -1,6 +1,6 @@
 # Session Handoff
 
-## Last session — 2026-10-26 (Claude Code): Phase 7 / Chapter 1, Milestones 1.1–1.4 (Chapter 1 complete)
+## Last session — 2026-10-26 (Claude Code): Chapter 1 complete; Chapter 2 designed; Milestone 2.1 built
 **Result:** Chapter 1 has started. After "Chapter 0 Complete" the player can **Continue to Chapter 1**, arrive at the Kuching waterfront, meet Daniel at the pier and reach the sealed Royal Archives ("To Be Continued"). Chapter content is lazy-loaded, and Playwright browser tests now play the whole story automatically.
 
 ### Key files
@@ -22,8 +22,15 @@ The vault behind the iron door and the Hollow Sentinel battle (telegraphed heavy
 ### Milestone 1.4 (done this session)
 The sealed records, the VALE box (Elias Vale's unredacted name), the Rajah's reply, Harrow's arrival, lights out, and the flood-door escape → Chapter 1 Complete. Files: `src/chapters/chapter1/{Records.tsx,recordsData.ts}`; characters `harrow` and `officer` in `data/characters.ts`; the card in `ChapterComplete.tsx`. Latest results: `npm test` 151/151, `npm run e2e` 3/3 (the full-story test plays the whole game).
 
-### Next exact task — review the Chapter 2 draft (no code yet)
-Chapter 1 is finished. `docs/CHAPTER_2.md` is agreed (defaults accepted); Milestone 2.1 (Upriver) is next. The draft covers the premise, five milestones, characters, balance, tech notes and cultural notes. Hooks from Chapter 1 are listed at the end of `docs/CHAPTER_1.md` (Sungai Awan threatened, Daniel in custody, what Elias hid upriver). Also still open: a human play-through to confirm pacing, and a listen to the audio.
+### Milestone 2.1 (done this session)
+The express boat up the Rajang: Mara, the survey news, Captain Ah Hock, arrival at the Sungai Awan jetty → "To Be Continued". Files: `src/chapters/chapter2/{Boat.tsx,boatData.ts,content.ts}`; chapter hand-off in `gameStore.startChapter`, `loader.ts`, `quests.ts`, `ChapterComplete.tsx`. Tests: `chapter2.test.ts`, `full-story.spec.ts`. Latest results: `npm test` 161/161, `npm run e2e` 3/3.
+
+### Next exact task — Milestone 2.2: Home, Changed
+See `docs/CHAPTER_2.md`.
+1. A Chapter 2 version of Sungai Awan (`village_c2`), reusing the village scene's pieces: survey pegs with orange tape, a Crown notice on the board, a survey boat at the jetty.
+2. Uncle Lim (furious), Kak Siti (new; the shop), Julian Pell (new; polite, "relocation packages"; redeemable).
+3. The family home: Elias's portrait hides a river map with three marks and a verse → objective to go upriver. The chapter end moves to the end of 2.2.
+4. Unit tests plus an e2e extension; deploy; run the e2e suite against the live site.
 
 ### Watch out
 - Pushing to `master` deploys to the public site.

@@ -4,7 +4,7 @@
  */
 import type { CharacterFeatures, CharacterPalette } from '../game/player/pixelSprite';
 
-export type CharacterId = 'adrian' | 'lim' | 'mara' | 'guardian' | 'daniel' | 'jamilah' | 'archivist' | 'harrow' | 'officer';
+export type CharacterId = 'adrian' | 'lim' | 'mara' | 'guardian' | 'daniel' | 'jamilah' | 'archivist' | 'harrow' | 'officer' | 'ahhock' | 'passenger' | 'auntie';
 
 export interface CharacterDef {
   id: CharacterId;
@@ -170,5 +170,61 @@ export const CHARACTERS: Record<CharacterId, CharacterDef> = {
       pants: '#2b3747',
       boots: '#0e0c0c',
     },
+  },
+  // Chapter 2
+  ahhock: {
+    id: 'ahhock',
+    name: 'Captain Ah Hock',
+    palette: {
+      outline: OUTLINE,
+      hair: '#5e5a56', // greying crew cut
+      hairHi: '#86817b',
+      skin: '#d0a070',
+      skinShade: '#ae8052',
+      eye: '#1b1420',
+      jacket: '#e8e2d2', // faded white singlet over a short-sleeved shirt
+      jacketShade: '#c4bca8',
+      trim: '#3d6b8a',
+      belt: '#3a2c20',
+      pants: '#4a4a3e', // work shorts
+      boots: '#2a2622', // rubber boots
+    },
+  },
+  passenger: {
+    id: 'passenger',
+    name: 'Student',
+    palette: {
+      outline: OUTLINE,
+      hair: '#16121a',
+      hairHi: '#2e2834',
+      skin: '#b88358',
+      skinShade: '#976640',
+      eye: '#1b1420',
+      jacket: '#8a2f3a', // university hoodie
+      jacketShade: '#6a222c',
+      trim: '#e6e0d0',
+      belt: '#2a2a30',
+      pants: '#2f3e5a', // jeans
+      boots: '#d8d4cc', // white trainers
+    },
+  },
+  auntie: {
+    id: 'auntie',
+    name: 'Auntie',
+    palette: {
+      outline: OUTLINE,
+      hair: '#2a2228',
+      hairHi: '#463a42',
+      skin: '#c48c60',
+      skinShade: '#a26e46',
+      eye: '#1b1420',
+      jacket: '#c46a3a', // patterned orange blouse
+      jacketShade: '#a0522a',
+      trim: '#f0d890',
+      belt: '#5a3a2a',
+      pants: '#3e5a48', // sarong
+      boots: '#5a3a2a', // sandals
+    },
+    features: { longSkirt: true },
   },
 };

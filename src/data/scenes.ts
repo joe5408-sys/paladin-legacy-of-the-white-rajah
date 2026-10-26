@@ -5,7 +5,7 @@
 import type { Direction } from '../game/core/input';
 import type { DialogueRule } from '../game/dialogue/types';
 
-export type SceneId = 'village' | 'home' | 'chamber' | 'waterfront' | 'archives' | 'vault' | 'records';
+export type SceneId = 'village' | 'home' | 'chamber' | 'waterfront' | 'archives' | 'vault' | 'records' | 'boat';
 
 export interface SpawnPoint {
   x: number;
@@ -87,6 +87,15 @@ export const SCENES: Record<SceneId, SceneDef> = {
     },
     arrival: [{ dialogue: 'c1_records_arrival', unless: ['c1_entered_records'] }],
   },
+  // Chapter 2. Loaded on demand (src/chapters/chapter2).
+  boat: {
+    id: 'boat',
+    name: 'Express Boat — Rajang River',
+    spawns: {
+      arrival: { x: -3.4, z: 0, facing: 'east' },
+    },
+    arrival: [{ dialogue: 'c2_boat_arrival', unless: ['c2_arrived'] }],
+  },
 };
 
 /** Chapter a scene belongs to (0 = prologue). */
@@ -98,6 +107,7 @@ export const SCENE_CHAPTER: Record<SceneId, number> = {
   archives: 1,
   vault: 1,
   records: 1,
+  boat: 2,
 };
 
 export const NEW_GAME_SCENE: SceneId = 'village';

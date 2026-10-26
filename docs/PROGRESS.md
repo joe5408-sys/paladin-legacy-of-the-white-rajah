@@ -1,10 +1,18 @@
 # Progress
 
-**Current phase:** Phase 7 — Chapter 1 ✅ complete (milestones 1.1–1.4). Chapter 2 not started; it needs a design pass first (see `SESSION_HANDOFF.md`). See `docs/CHAPTER_1.md`.
+**Current phase:** Phase 8 — Chapter 2: The River Remembers (design agreed, `docs/CHAPTER_2.md`). Milestone 2.1 (Upriver) ✅ done; 2.2 (Home, Changed) next. See `docs/CHAPTER_1.md`.
 **MVP:** ✅ complete (phases 0–6); Chapter 0 is live.
 **Live site:** https://legacyofwhiterajah.netlify.app
 **Repository:** https://github.com/joe5408-sys/paladin-legacy-of-the-white-rajah (public, `master`; Netlify auto-deploys on push)
 **Last updated:** 2026-10-26
+
+### Phase 8 — Chapter 2, Milestone 2.1: Upriver (2026-10-26) ✅
+- **Design:** `docs/CHAPTER_2.md` agreed with its default choices: River Ward, Daniel as a story ally, a redeemable Julian Pell, real place names allowed, five milestones.
+- **Chapter hand-off:** the Chapter 1 Complete card now offers **Continue to Chapter 2** (its default choice), which downloads Chapter 2 on demand and shows the title card "Chapter 2 · The River Remembers". The chapter-start code is now shared (`startChapter(1 | 2)`), and the loader, quests, saves and title screen know about Chapter 2.
+- **Express boat scene** (`src/chapters/chapter2/Boat.tsx` + `boatData.ts`, lazy-loaded): a white-and-blue express boat with cabin, rails, bench, cargo and engine housing on the brown Rajang. The jungle bank, longhouses on stilts and river foam drift past to suggest travel, and two foam lines trail behind the stern. New engine-and-river ambience.
+- **New characters:** Captain Ah Hock, a university student and an auntie with rambutans.
+- **Story:** four objectives in a fixed order (Mara → the news on the student's phone → the captain → the cabin), ending at the Sungai Awan jetty with fresh survey pegs on the bank → "To Be Continued".
+- **Test results:** `npm test` 161/161. The new `chapter2.test.ts` (6 tests) covers lazy loading, the hand-off from Chapter 1, the boat conversations and their locks, saves, and a save claiming the boat too early. The shared layout, spawn and dialogue checks now include the boat. `npm run e2e` 3/3: the full-story test continues from Chapter 1 Complete into Chapter 2, checks its files download only then, and plays 2.1 to the card (2.4 min for the whole game). Visual check by screenshots: removed fog that washed the scene out, brought the far bank into view, and replaced a slab-like wake with foam lines.
 
 ### Phase 7 — Chapter 1, Milestone 1.4: The Redacted Name (2026-10-26) ✅ Chapter 1 complete
 - The vault's inner gate now leads on (no ending): **the sealed records** (`src/chapters/chapter1/Records.tsx` + `recordsData.ts`, lazy-loaded), a low room of wooden floorboards, hanging bulbs, shelves of stencilled tin record boxes, a reading table with the VALE box, and a rusted flood door. Saves from the old 1.3 cliffhanger get "Enter Sealed Records" at the open gate.
