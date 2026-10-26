@@ -1,9 +1,25 @@
 # Progress
 
-**Current phase:** ✅ MVP complete. All phases 0–6 done; Chapter 0 is live.
+**Current phase:** Phase 7 — Chapter 1. Milestone 1.1 (Arrival in Kuching) ✅ done; 1.2 (The Royal Archives) next. See `docs/CHAPTER_1.md`.
+**MVP:** ✅ complete (phases 0–6); Chapter 0 is live.
 **Live site:** https://legacyofwhiterajah.netlify.app
 **Repository:** https://github.com/joe5408-sys/paladin-legacy-of-the-white-rajah (public, `master`; Netlify auto-deploys on push)
 **Last updated:** 2026-10-26
+
+### Phase 7 — Chapter 1, Milestone 1.1: Arrival in Kuching (2026-10-26) ✅
+- **Chapter system:** chapter content is **lazy-loaded** (`src/chapters/loader.ts`), so Chapter 1's dialogue and 3D scene are separate downloads (about 4 KB gzip) fetched only when the player reaches Chapter 1 or continues a Chapter 1 save.
+  - Registries for dialogue, layouts and objectives (`registerDialogues`, `registerLayout`, `registerObjectives`).
+  - Chapter-aware objectives (`objectivesFor`), save validation, title "Continue" hint and closing cards.
+- **Chapter 0 → 1:** the Chapter 0 card now offers **Continue to Chapter 1** (keeps story flags and play time). A full-screen chapter title card follows ("Chapter 1 · The Capital's Shadow").
+- **Kuching waterfront** (`src/chapters/chapter1/`): dusk lighting; a row of four shophouses; the columned Royal Archives; the river boardwalk with a ferry pier and moored boat; the Palace and old fort lit across the river; Kak Jamilah's kolo mee stall; a bandstand; lamps and palms.
+  - NPCs: Daniel (pier), Aunt Mara (bench) and Kak Jamilah (new character).
+  - Objectives: Meet Daniel → Go to the Royal Archives → **To Be Continued** card (saved, and reopens on Continue).
+  - New ambience: evening river with night insects.
+- **Automated browser tests (Playwright)**, run in the locally installed **Edge** (no browser download), against the production build:
+  - `npm run e2e` builds and runs them. `E2E_BASE_URL=https://legacyofwhiterajah.netlify.app npx playwright test` tests the live site.
+  - `smoke.spec.ts`: title, settings, New Game, walk into the house, autosave, pause, Save, return to the title, refresh, Continue; corrupt save.
+  - `full-story.spec.ts`: **plays all of Chapter 0 and Chapter 1 milestone 1.1 with real keyboard input**, and checks that Chapter 1 isn't downloaded before it's reached.
+- **Test results:** `npm test` 117/117 (12 new). `npx playwright test` 3/3 passed against the production build (the full-story run takes about 58 s). The build splits Chapter 1 into its own files. I also checked the waterfront visually with Playwright screenshots and fixed three things: the Palace was out of view, the boat was facing the wrong way, and the south edge was empty.
 
 ### Post-launch: sword combat visuals (2026-10-26) ✅
 Playtest feedback said attacks showed no sword action. In battle, Adrian now holds the **blade of light** the heirloom forms.

@@ -28,6 +28,7 @@ import type { DialogueDef } from '../dialogue/types';
 import type { StoryFlag, StoryFlags } from './flags';
 import type { Interactable } from '../interaction/interaction';
 import type { SaveData } from '../save/save';
+import { isAtChapterEnd } from '../quests/quests';
 
 export type GameMode = 'explore' | 'dialogue' | 'transition' | 'battle' | 'ending';
 
@@ -87,6 +88,8 @@ export interface GameState {
   dialogue: ActiveDialogue | null;
   transition: SceneTransition | null;
   battle: ActiveBattle | null;
+  /** Chapter title card on screen (e.g. "Chapter 1 · The Capital's Shadow"). */
+  chapterCard: string | null;
   /** Wall-clock time (ms) when this playthrough started and when the chapter ended. */
   startedAt: number;
   completedAt: number | null;
@@ -126,6 +129,10 @@ export interface GameState {
   loadGame(save: SaveData): void;
   /** Back to the title screen (unsaved progress is discarded). */
   returnToTitle(): void;
+  /** Begins Chapter 1 (its content must already be loaded). Keeps story flags and play time. */
+  startChapter1(): void;
+  /** Called when the chapter title card has been shown: hands control to the player. */
+  dismissChapterCard(): void;
   /** Whether the pause menu may open right now. */
   canPause(): boolean;
   /** Opens/closes the pause menu. Returns the new paused state. */
@@ -153,6 +160,7 @@ function initialState() {
     dialogue: null,
     transition: null,
     battle: null,
+    chapterCard: null as string | null,
     startedAt: Date.now(),
     completedAt: null,
   };
@@ -376,14 +384,34 @@ export const gameStore = createStore<GameState>()((set, get) => ({
       spawn: { ...save.position },
       flags,
       startedAt: now - save.playTimeMs,
-      // A finished save reopens on the completion card.
-      mode: save.prologueComplete ? 'ending' : 'explore',
-      completedAt: save.prologueComplete ? now : null,
+      // A save made at a chapter's end reopens on its closing card.
+      mode: isAtChapterEnd(flags) ? 'ending' : 'explore',
+      completedAt: isAtChapterEnd(flags) ? now : null,
     });
   },
 
   returnToTitle() {
     set({ ...initialState(), screen: 'title' });
+  },
+
+  startChapter1() {
+    const s = get();
+    set({
+      ...initialState(),
+      flags: { ...s.flags, chapter1_started: true },
+      startedAt: s.startedAt,
+      scene: 'waterfront',
+      spawn: spawnPoint('waterfront', 'arrival'),
+      // Input stays locked while the chapter title card is on screen.
+      mode: 'transition',
+      chapterCard: "Chapter 1 · The Capital's Shadow",
+    });
+  },
+
+  dismissChapterCard() {
+    if (!get().chapterCard) return;
+    set({ chapterCard: null, mode: 'explore' });
+    get().arrive();
   },
 
   canPause() {

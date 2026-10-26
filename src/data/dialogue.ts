@@ -200,4 +200,9 @@ const defs: DialogueDef[] = [
   },
 ];
 
+/** All loaded dialogue by id. Later chapters add theirs with registerDialogues(). */
 export const DIALOGUES: Record<string, DialogueDef> = Object.fromEntries(defs.map((d) => [d.id, d]));
+
+export function registerDialogues(more: readonly DialogueDef[]) {
+  for (const d of more) DIALOGUES[d.id] = d;
+}

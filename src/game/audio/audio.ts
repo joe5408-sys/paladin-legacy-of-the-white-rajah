@@ -23,7 +23,7 @@ export type SfxName =
   | 'defeat'
   | 'save';
 
-export type AmbienceName = 'title' | 'village' | 'home' | 'chamber' | 'battle' | 'ending';
+export type AmbienceName = 'title' | 'village' | 'home' | 'chamber' | 'battle' | 'ending' | 'waterfront';
 
 type Ctx = AudioContext;
 
@@ -254,6 +254,16 @@ class AudioEngine {
         pad([196, 293.7], 0.02);
         every(3000, 7000, chirp);
         break;
+      case 'waterfront': {
+        // Evening river, a soft city hum and night insects
+        wash(550, 0.1);
+        pad([174.6, 261.6, 329.6], 0.018);
+        every(2500, 6000, () => {
+          const t = ctx.currentTime;
+          for (let i = 0; i < 6; i++) this.tone(4300, t + i * 0.05, 0.03, { gain: 0.012, dest: bus });
+        });
+        break;
+      }
       case 'home':
         pad([130.8, 196, 246.9], 0.025);
         wash(300, 0.03);

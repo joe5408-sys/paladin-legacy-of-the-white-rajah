@@ -5,7 +5,7 @@
 import type { Direction } from '../game/core/input';
 import type { DialogueRule } from '../game/dialogue/types';
 
-export type SceneId = 'village' | 'home' | 'chamber';
+export type SceneId = 'village' | 'home' | 'chamber' | 'waterfront';
 
 export interface SpawnPoint {
   x: number;
@@ -50,6 +50,23 @@ export const SCENES: Record<SceneId, SceneDef> = {
     },
     arrival: [{ dialogue: 'chamber_arrival', unless: ['entered_chamber'] }],
   },
+  // Chapter 1. Its dialogue, layout and 3D scene are loaded on demand (src/chapters/chapter1).
+  waterfront: {
+    id: 'waterfront',
+    name: 'Kuching — Waterfront',
+    spawns: {
+      arrival: { x: 7, z: 4.5, facing: 'north' },
+    },
+    arrival: [{ dialogue: 'c1_arrival', unless: ['c1_arrived'] }],
+  },
+};
+
+/** Chapter a scene belongs to (0 = prologue). */
+export const SCENE_CHAPTER: Record<SceneId, number> = {
+  village: 0,
+  home: 0,
+  chamber: 0,
+  waterfront: 1,
 };
 
 export const NEW_GAME_SCENE: SceneId = 'village';

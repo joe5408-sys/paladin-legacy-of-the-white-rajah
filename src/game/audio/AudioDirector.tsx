@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
-import { PROLOGUE_OBJECTIVES } from '../../data/quests';
 import { gameStore, type GameState } from '../core/gameStore';
-import { currentObjectiveIndex } from '../quests/quests';
+import { activeChapter, currentObjectiveIndex, objectivesFor } from '../quests/quests';
 import { settingsStore } from '../settings/settings';
 import { audio, type AmbienceName } from './audio';
 
@@ -44,9 +43,11 @@ export function AudioDirector() {
       // Story beats
       if (s.flags.heirloom_awakened && !prev.flags.heirloom_awakened) audio.play('awaken');
       else if (s.screen === 'game' && prev.screen === 'game' && s.flags !== prev.flags) {
-        const before = currentObjectiveIndex(PROLOGUE_OBJECTIVES, prev.flags);
-        const after = currentObjectiveIndex(PROLOGUE_OBJECTIVES, s.flags);
-        if (after > before && after < PROLOGUE_OBJECTIVES.length) audio.play('objective');
+        const list = objectivesFor(s.flags);
+        const sameChapter = activeChapter(s.flags) === activeChapter(prev.flags);
+        const before = currentObjectiveIndex(list, prev.flags);
+        const after = currentObjectiveIndex(list, s.flags);
+        if (sameChapter && after > before && after < list.length) audio.play('objective');
       }
 
       // Battle

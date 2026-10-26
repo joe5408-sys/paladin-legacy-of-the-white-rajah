@@ -4,7 +4,7 @@
  */
 import type { CharacterFeatures, CharacterPalette } from '../game/player/pixelSprite';
 
-export type CharacterId = 'adrian' | 'lim' | 'mara' | 'guardian' | 'daniel';
+export type CharacterId = 'adrian' | 'lim' | 'mara' | 'guardian' | 'daniel' | 'jamilah';
 
 export interface CharacterDef {
   id: CharacterId;
@@ -96,5 +96,24 @@ export const CHARACTERS: Record<CharacterId, CharacterDef> = {
       pants: '#1f2633',
       boots: '#0e0c0c',
     },
+  },
+  jamilah: {
+    id: 'jamilah',
+    name: 'Kak Jamilah',
+    palette: {
+      outline: OUTLINE,
+      hair: '#3f6e8c', // headscarf
+      hairHi: '#5b8fb0',
+      skin: '#c48b5f',
+      skinShade: '#a26c45',
+      eye: '#1b1420',
+      jacket: '#e3b04b', // stall apron over a blouse
+      jacketShade: '#c08e30',
+      trim: '#7a3b5e',
+      belt: '#5a3b22',
+      pants: '#5a3b5e', // long skirt
+      boots: '#2a2018',
+    },
+    features: { longSkirt: true },
   },
 };

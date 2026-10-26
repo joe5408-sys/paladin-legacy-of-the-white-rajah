@@ -5,6 +5,8 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { gameStore } from '../../src/game/core/gameStore';
 import { CHAMBER_LAYOUT } from '../../src/data/ancientChamber';
+import { WATERFRONT_LAYOUT } from '../../src/chapters/chapter1/data';
+import '../../src/chapters/chapter1/content'; // registers Chapter 1 dialogue and objectives
 import { HOME_LAYOUT } from '../../src/data/familyHome';
 import { VILLAGE_LAYOUT } from '../../src/data/villageSquare';
 import { DIALOGUES } from '../../src/data/dialogue';
@@ -18,7 +20,12 @@ import type { SceneLayout } from '../../src/game/scenes/layout';
 import type { Command } from '../../src/game/combat/battle';
 
 const s = () => gameStore.getState();
-const LAYOUTS: Record<SceneId, SceneLayout> = { village: VILLAGE_LAYOUT, home: HOME_LAYOUT, chamber: CHAMBER_LAYOUT };
+const LAYOUTS: Record<SceneId, SceneLayout> = {
+  village: VILLAGE_LAYOUT,
+  home: HOME_LAYOUT,
+  chamber: CHAMBER_LAYOUT,
+  waterfront: WATERFRONT_LAYOUT,
+};
 
 function finishDialogue() {
   for (let i = 0; i < 200 && s().dialogue; i++) s().pressAction('Enter');

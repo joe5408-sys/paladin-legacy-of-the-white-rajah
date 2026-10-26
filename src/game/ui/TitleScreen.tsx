@@ -1,7 +1,8 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { loadChaptersFor } from '../../chapters/loader';
 import { SCENES } from '../../data/scenes';
 import { gameStore } from '../core/gameStore';
-import { deleteSave, loadSave } from '../save/save';
+import { deleteSave, loadSave, peekSavedFlags, type SaveData } from '../save/save';
 import { getInsigniaTexture } from '../scenes/insignia';
 import { formatPlaytime } from './ChapterComplete';
 import { ConfirmDialog } from './ConfirmDialog';
@@ -17,8 +18,24 @@ const LOAD_PROBLEM: Record<string, string> = {
 /** Main menu: New Game, Continue (only with a valid save), Settings. */
 export function TitleScreen() {
   const [view, setView] = useState<'menu' | 'settings' | 'confirm-new'>('menu');
+  const [chaptersReady, setChaptersReady] = useState(false);
+
+  // A save from a later chapter needs that chapter's content before it can be checked.
+  useEffect(() => {
+    let alive = true;
+    loadChaptersFor(peekSavedFlags())
+      .catch(() => undefined) // offline: the save will show as unreadable instead of crashing
+      .finally(() => alive && setChaptersReady(true));
+    return () => {
+      alive = false;
+    };
+  }, []);
+
   // Re-read the save whenever we come back to the main menu view.
-  const save = useMemo(() => loadSave(), [view]);
+  const save = useMemo(
+    () => (chaptersReady ? loadSave() : ({ ok: false, reason: 'missing' } as const)),
+    [view, chaptersReady],
+  );
   const emblem = useMemo(() => (getInsigniaTexture('#ffe08a').image as HTMLCanvasElement).toDataURL(), []);
 
   const hasSave = save.ok;
@@ -48,9 +65,7 @@ export function TitleScreen() {
                         id: 'continue',
                         label: 'Continue',
                         onSelect: () => save.ok && gameStore.getState().loadGame(save.data),
-                        hint: save.ok
-                          ? `${save.data.prologueComplete ? 'Chapter 0 complete' : SCENES[save.data.scene].name} · ${formatPlaytime(save.data.playTimeMs)}`
-                          : undefined,
+                        hint: save.ok ? `${describeSave(save.data)} · ${formatPlaytime(save.data.playTimeMs)}` : undefined,
                       },
                     ]
                   : []),
@@ -87,4 +102,13 @@ export function TitleScreen() {
       </footer>
     </div>
   );
+}
+
+/** Short description of where a save is, for the Continue hint. */
+function describeSave(data: SaveData): string {
+  const flags = new Set(data.flags);
+  if (flags.has('c1_archives_reached')) return "Chapter 1 · The Capital's Shadow (to be continued)";
+  if (flags.has('chapter1_started')) return `Chapter 1 · ${SCENES[data.scene].name}`;
+  if (data.prologueComplete) return 'Chapter 0 complete';
+  return SCENES[data.scene].name;
 }

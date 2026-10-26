@@ -1,23 +1,26 @@
 # Session Handoff
 
-## Last session — 2026-10-26 (Claude Code): Phase 6 complete and deployed
-**Result:** Chapter 0 MVP is done and live at **https://legacyofwhiterajah.netlify.app**.
-Repository: https://github.com/joe5408-sys/paladin-legacy-of-the-white-rajah (public). Netlify project `legacyofwhiterajah` builds `master` automatically on every push using `netlify.toml`.
+## Last session — 2026-10-26 (Claude Code): Phase 7 / Chapter 1, Milestone 1.1
+**Result:** Chapter 1 has started. After "Chapter 0 Complete" the player can **Continue to Chapter 1**, arrive at the Kuching waterfront, meet Daniel at the pier and reach the sealed Royal Archives ("To Be Continued"). Chapter content is lazy-loaded, and Playwright browser tests now play the whole story automatically.
 
-### Verified on the live site
-Full prologue play-through, the battle pause menu (Save disabled), victory → ending card, autosave of the completed game, browser refresh → Continue reopening it, and a console with no errors. Details are in PROGRESS.md.
+### Key files
+- `src/chapters/loader.ts`; `src/chapters/chapter1/{data.ts,content.ts,Waterfront.tsx}`
+- Registries: `src/data/{dialogue,layouts,quests}.ts`; chapter helpers in `src/game/quests/quests.ts`
+- UI: `ChapterTitleCard.tsx`, `ChapterComplete.tsx` (chapter variants), `TitleScreen.tsx` (preload and hint)
+- Tests: `tests/unit/chapter1.test.ts`, `tests/e2e/*`, `playwright.config.ts`
+- Design: `docs/CHAPTER_1.md`
 
-### Open items (not blocking)
-1. Listen to the audio once (it couldn't be checked by ear).
-2. Time one real-speed play-through (estimate 4–6½ min against the 5–10 min target). Add content only if it's clearly too short.
-3. Optional: Playwright smoke test against `npm run preview` or the live URL.
-4. Optional polish: a licensed pixel font (currently the system monospace), code-splitting three.js to shrink the 1.2 MB bundle, and fading palm fronds when the player walks behind them.
+### Tests run
+`npm test` 117/117 · `npx playwright test` 3/3 (production build, Edge) · `npm run build` OK.
 
-### Rules for the next phase
-The master prompt allows Chapter 1 work now that Phase 6 is complete, but scope it as its own small milestone (see MASTER_PROMPT §23 scope control).
+### Next exact task — Milestone 1.2: The Royal Archives
+See `docs/CHAPTER_1.md`.
+1. New `archives` interior scene (lazy, in `chapter1/`).
+2. The Archives door becomes an `enter` at dawn: the `c1_archives_door` dialogue should lead into it instead of ending the chapter. Move the "To Be Continued" card to the end of 1.2.
+3. An Archivist NPC and three inspectable record shelves; finding the redacted Vale file sets flags and objectives.
+4. Unit tests plus an extension of `full-story.spec.ts`. Deploy, then run `E2E_BASE_URL=https://legacyofwhiterajah.netlify.app npx playwright test` against the live site.
 
 ### Watch out
-- Pushing to `master` deploys to the public site immediately.
-- The Vite dev watcher on this machine can miss fast scripted multi-writes; restart `npm run dev` if the browser disagrees with the tests.
-- The desktop app's browser pane throttles pages to about 1 fps when the app window is out of view.
-- Dev-only hooks (`window.__PALADIN_STORE__`, `window.__PALADIN__`) don't exist in production builds.
+- Pushing to `master` deploys to the public site.
+- The Vite dev watcher can miss fast scripted multi-writes; restart `npm run dev` if the browser disagrees with the tests.
+- The desktop app's browser pane throttles hidden pages. Prefer Playwright (`npx playwright test`) for real-time checks.

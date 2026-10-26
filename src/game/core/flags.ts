@@ -14,7 +14,12 @@ export type StoryFlag =
   | 'read_message'
   | 'daniel_arrived'
   | 'met_daniel'
-  | 'prologue_complete';
+  | 'prologue_complete'
+  // Chapter 1: The Capital's Shadow
+  | 'chapter1_started'
+  | 'c1_arrived'
+  | 'c1_met_daniel'
+  | 'c1_archives_reached';
 
 export type StoryFlags = Partial<Record<StoryFlag, true>>;
 

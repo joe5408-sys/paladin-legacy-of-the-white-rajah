@@ -2,6 +2,7 @@ import { SCENES } from '../../data/scenes';
 import { BattleHud } from '../combat/BattleHud';
 import { useGame } from '../core/gameStore';
 import { ChapterComplete } from './ChapterComplete';
+import { ChapterTitleCard } from './ChapterTitleCard';
 import { DialogueBox } from './DialogueBox';
 import { InteractionPrompt } from './InteractionPrompt';
 import { ObjectiveTracker } from './ObjectiveTracker';
@@ -42,6 +43,7 @@ export function Hud() {
         </div>
       )}
       <SceneFade />
+      <ChapterTitleCard />
     </div>
   );
 }

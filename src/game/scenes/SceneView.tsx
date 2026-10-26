@@ -1,8 +1,12 @@
+import { lazy, Suspense } from 'react';
 import { BattleArena } from '../combat/BattleArena';
 import { useGame } from '../core/gameStore';
 import { AncientChamber } from './AncientChamber';
 import { FamilyHome } from './FamilyHome';
 import { VillageSquare } from './VillageSquare';
+
+// Chapter 1 scenes are split into their own download, fetched only when needed.
+const Waterfront = lazy(() => import('../../chapters/chapter1/Waterfront'));
 
 /**
  * Renders the active scene, or the battle arena during a battle.
@@ -20,5 +24,11 @@ export function SceneView() {
       return <FamilyHome key="home" spawn={spawn} />;
     case 'chamber':
       return <AncientChamber key="chamber" spawn={spawn} />;
+    case 'waterfront':
+      return (
+        <Suspense fallback={null}>
+          <Waterfront key="waterfront" spawn={spawn} />
+        </Suspense>
+      );
   }
 }

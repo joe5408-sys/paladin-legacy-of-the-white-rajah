@@ -19,6 +19,16 @@ tests/unit/                Vitest tests for pure logic
 docs/                      Design, progress and handoff docs
 ```
 
+## Chapters (lazy-loaded)
+- Chapter 0 is built in. Each later chapter lives in `src/chapters/chapterN/` with `data.ts` (layout, dialogue, objectives), `content.ts` (registers them) and its scene components.
+- `loadChapter(n)` dynamically imports the chapter, so it's a separate download. The title screen preloads whatever chapter the save needs (`peekSavedFlags`) before validating it.
+- Scene metadata (`SCENES`: names, spawns, arrival rules) stays static because it's tiny. Lazy scene components render through `React.lazy` in `SceneView`.
+- The current chapter comes from flags (`chapter1_started`), and so do its objectives (`objectivesFor`) and the "at chapter end" state (`isAtChapterEnd`).
+
+## Testing
+- `npm test`: Vitest unit and integration tests on pure logic and the store (they play the whole story through store actions).
+- `npm run e2e`: Playwright against the production build in the local Edge (`tests/e2e`). It drives the real game with keyboard input; tests read the UI through `data-testid` attributes.
+
 ## Key decisions
 - **Pure logic is separate from rendering.** `core/collision.ts`, `core/input.ts`, `player/animation.ts` and `data/*` do not import React or Three.js, so they are unit-testable in Node.
 - **Collision** is circle vs. axis-aligned boxes on the X/Z plane, resolved per axis (to slide along walls) with sub-steps (no tunnelling). No physics engine.

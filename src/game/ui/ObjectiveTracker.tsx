@@ -1,12 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import { PROLOGUE_OBJECTIVES } from '../../data/quests';
 import { useGame } from '../core/gameStore';
-import { currentObjective } from '../quests/quests';
+import { currentObjective, objectivesFor } from '../quests/quests';
 
 /** Shows the active objective; flashes briefly when it changes. */
 export function ObjectiveTracker() {
   const flags = useGame((s) => s.flags);
-  const objective = currentObjective(PROLOGUE_OBJECTIVES, flags);
+  const objective = currentObjective(objectivesFor(flags), flags);
   const [flash, setFlash] = useState(false);
   const lastId = useRef(objective?.id);
 

@@ -2,7 +2,7 @@
 
 A small HD-2D browser RPG set in a fictional alternate-history Sarawak.
 
-**Play Chapter 0 (The Forgotten Heir): https://legacyofwhiterajah.netlify.app**
+**Play: https://legacyofwhiterajah.netlify.app**: Chapter 0 (The Forgotten Heir), complete, and the opening of Chapter 1 (The Capital's Shadow).
 
 ## Run
 ```bash
@@ -11,6 +11,7 @@ npm run dev        # dev server at http://localhost:5173
 npm test           # unit tests
 npm run build      # production build into dist/
 npm run preview    # serve the production build
+npm run e2e        # build + Playwright browser tests (uses your installed Microsoft Edge)
 ```
 
 **Controls:** Esc opens the pause menu (Resume, Save, Settings, Main Menu) · WASD or arrow keys to move · E to interact · E / Enter / Space to advance dialogue · in battle, ↑/↓ (or W/S) to pick a command and E / Enter / Space to confirm (mouse also works).

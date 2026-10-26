@@ -12,6 +12,8 @@ import { DIALOGUES } from '../../src/data/dialogue';
 import { VILLAGE_LAYOUT } from '../../src/data/villageSquare';
 import { HOME_LAYOUT } from '../../src/data/familyHome';
 import { CHAMBER_LAYOUT } from '../../src/data/ancientChamber';
+import { WATERFRONT_LAYOUT } from '../../src/chapters/chapter1/data';
+import '../../src/chapters/chapter1/content'; // registers Chapter 1 dialogue and objectives
 import { findNearestInteractable, isAvailable } from '../../src/game/interaction/interaction';
 import { circleOverlapsBox, moveWithCollision } from '../../src/game/core/collision';
 import { PLAYER_RADIUS } from '../../src/game/core/constants';
@@ -23,11 +25,13 @@ const LAYOUTS: Record<SceneId, SceneLayout> = {
   village: VILLAGE_LAYOUT,
   home: HOME_LAYOUT,
   chamber: CHAMBER_LAYOUT,
+  waterfront: WATERFRONT_LAYOUT,
 };
 const ALL_FLAGS = Object.fromEntries(
   ([
     'arrived', 'met_lim', 'entered_home', 'met_mara', 'heirloom_awakened',
     'passage_open', 'entered_chamber', 'guardian_defeated', 'read_message',
+    'chapter1_started', 'c1_arrived', 'c1_met_daniel',
   ] as StoryFlag[]).map((f) => [f, true]),
 ) as StoryFlags;
 

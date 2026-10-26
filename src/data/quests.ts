@@ -19,3 +19,10 @@ export const PROLOGUE_OBJECTIVES: Objective[] = [
   { id: 'defeat_guardian', text: 'Defeat the Guardian.', completeWhen: 'guardian_defeated' },
   { id: 'read_message', text: 'Read the ancestral message.', completeWhen: 'read_message' },
 ];
+
+/** Objective list per chapter. Chapter 0 is built in; later chapters register theirs on load. */
+export const OBJECTIVES_BY_CHAPTER: Record<number, Objective[]> = { 0: PROLOGUE_OBJECTIVES };
+
+export function registerObjectives(chapter: number, objectives: Objective[]) {
+  OBJECTIVES_BY_CHAPTER[chapter] = objectives;
+}

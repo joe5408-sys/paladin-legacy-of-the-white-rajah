@@ -6,7 +6,7 @@
  * Battles are never saved mid-turn: saving is only allowed while exploring, and
  * the automatic checkpoints are taken on scene arrival and after a victory.
  */
-import { LAYOUTS } from '../../data/layouts';
+import { getLayout } from '../../data/layouts';
 import { SCENES, type SceneId, type SpawnPoint } from '../../data/scenes';
 import { circleOverlapsBox } from '../core/collision';
 import { PLAYER_RADIUS } from '../core/constants';
@@ -41,7 +41,7 @@ export interface SaveStorage {
 const ALL_FLAGS: readonly StoryFlag[] = [
   'arrived', 'met_lim', 'entered_home', 'met_mara', 'heirloom_awakened', 'passage_open',
   'entered_chamber', 'guardian_defeated', 'read_message', 'daniel_arrived', 'met_daniel',
-  'prologue_complete',
+  'prologue_complete', 'chapter1_started', 'c1_arrived', 'c1_met_daniel', 'c1_archives_reached',
 ];
 const DIRECTIONS: readonly Direction[] = ['north', 'south', 'east', 'west'];
 
@@ -50,6 +50,7 @@ const SCENE_REQUIRES: Record<SceneId, StoryFlag[]> = {
   village: [],
   home: ['entered_home'],
   chamber: ['passage_open'],
+  waterfront: ['chapter1_started'],
 };
 
 /** Browser localStorage, or null where it's unavailable (private mode, blocked, tests). */
@@ -75,7 +76,8 @@ function firstSpawn(scene: SceneId): SpawnPoint {
 
 /** Is this a legal standing spot in the scene (in bounds and not inside an obstacle)? */
 export function isStandable(scene: SceneId, p: { x: number; z: number }, flags: StoryFlags): boolean {
-  const layout = LAYOUTS[scene];
+  const layout = getLayout(scene);
+  if (!layout) return false; // chapter not loaded: can't check, so use the spawn point
   const b = layout.bounds;
   if (
     p.x < b.minX + PLAYER_RADIUS - 1e-6 ||
@@ -203,4 +205,16 @@ export function buildSave(
     playTimeMs: Math.max(0, (state.completedAt ?? now) - state.startedAt),
     prologueComplete: !!state.flags.prologue_complete,
   };
+}
+
+/** Story flags from the stored save without validating it (used to preload chapters). */
+export function peekSavedFlags(storage: SaveStorage | null = defaultStorage()): string[] {
+  try {
+    const text = storage?.getItem(SAVE_KEY);
+    const raw: unknown = text ? JSON.parse(text) : null;
+    const flags = isObject(raw) ? raw.flags : null;
+    return Array.isArray(flags) ? flags.filter((f): f is string => typeof f === 'string') : [];
+  } catch {
+    return [];
+  }
 }
