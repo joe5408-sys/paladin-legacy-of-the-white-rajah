@@ -12,6 +12,8 @@ const Vault = lazy(() => import('../../chapters/chapter1/Vault'));
 const Records = lazy(() => import('../../chapters/chapter1/Records'));
 // Chapter 2
 const Boat = lazy(() => import('../../chapters/chapter2/Boat'));
+const VillageC2 = lazy(() => import('../../chapters/chapter2/VillageC2'));
+const HomeC2 = lazy(() => import('../../chapters/chapter2/HomeC2'));
 
 /**
  * Renders the active scene, or the battle arena during a battle.
@@ -57,6 +59,18 @@ export function SceneView() {
       return (
         <Suspense fallback={null}>
           <Boat key="boat" spawn={spawn} />
+        </Suspense>
+      );
+    case 'village_c2':
+      return (
+        <Suspense fallback={null}>
+          <VillageC2 key="village_c2" spawn={spawn} />
+        </Suspense>
+      );
+    case 'home_c2':
+      return (
+        <Suspense fallback={null}>
+          <HomeC2 key="home_c2" spawn={spawn} />
         </Suspense>
       );
   }

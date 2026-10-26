@@ -8,8 +8,14 @@ function ambienceFor(s: GameState): AmbienceName {
   if (s.screen === 'title') return 'title';
   if (s.mode === 'ending') return 'ending';
   if (s.battle) return 'battle';
-  return s.scene;
+  return SCENE_AMBIENCE[s.scene] ?? (s.scene as AmbienceName);
 }
+
+/** Scenes that reuse another scene's ambience. */
+const SCENE_AMBIENCE: Partial<Record<GameState['scene'], AmbienceName>> = {
+  village_c2: 'village',
+  home_c2: 'home',
+};
 
 /**
  * Listens to game state and plays the matching sounds. Keeps audio out of

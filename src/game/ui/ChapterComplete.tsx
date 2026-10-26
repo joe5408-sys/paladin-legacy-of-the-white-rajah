@@ -87,7 +87,7 @@ export function ChapterComplete() {
         <>
           <div className="chapter-kicker">Chapter 2 · The River Remembers</div>
           <h1 className="chapter-title" data-testid="c2-to-be-continued">To Be Continued</h1>
-          <p className="chapter-quote">Those pegs weren't here a week ago.</p>
+          <p className="chapter-quote">“First the deep, then the bright, then the one that waits.”</p>
           {playtime}
           <div className="chapter-next">The rest of Chapter 2 arrives in a future update. Your progress is saved.</div>
         </>

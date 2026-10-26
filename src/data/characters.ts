@@ -4,7 +4,7 @@
  */
 import type { CharacterFeatures, CharacterPalette } from '../game/player/pixelSprite';
 
-export type CharacterId = 'adrian' | 'lim' | 'mara' | 'guardian' | 'daniel' | 'jamilah' | 'archivist' | 'harrow' | 'officer' | 'ahhock' | 'passenger' | 'auntie';
+export type CharacterId = 'adrian' | 'lim' | 'mara' | 'guardian' | 'daniel' | 'jamilah' | 'archivist' | 'harrow' | 'officer' | 'ahhock' | 'passenger' | 'auntie' | 'siti' | 'pell';
 
 export interface CharacterDef {
   id: CharacterId;
@@ -226,5 +226,42 @@ export const CHARACTERS: Record<CharacterId, CharacterDef> = {
       boots: '#5a3a2a', // sandals
     },
     features: { longSkirt: true },
+  },
+  siti: {
+    id: 'siti',
+    name: 'Kak Siti',
+    palette: {
+      outline: OUTLINE,
+      hair: '#2c3e5c', // navy headscarf
+      hairHi: '#3e5476',
+      skin: '#c8946a',
+      skinShade: '#a6744c',
+      eye: '#1b1420',
+      jacket: '#e8f0f4', // clinic nurse's uniform
+      jacketShade: '#c4d2da',
+      trim: '#5a9ab8',
+      belt: '#7a8a96',
+      pants: '#e8f0f4',
+      boots: '#f2f2ee',
+    },
+    features: { longSkirt: true },
+  },
+  pell: {
+    id: 'pell',
+    name: 'Julian Pell',
+    palette: {
+      outline: OUTLINE,
+      hair: '#8a6a3a', // neat sandy hair
+      hairHi: '#b08c54',
+      skin: '#e6c2a0',
+      skinShade: '#c8a07c',
+      eye: '#1b1420',
+      jacket: '#efe9dc', // pressed linen shirt
+      jacketShade: '#d2cab6',
+      trim: '#3a6a8a', // company lanyard
+      belt: '#5a4632',
+      pants: '#b8a47a', // chinos
+      boots: '#6a4a30',
+    },
   },
 };

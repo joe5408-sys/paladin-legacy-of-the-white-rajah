@@ -41,7 +41,14 @@ export type StoryFlag =
   | 'c2_talked_mara'
   | 'c2_saw_news' // the survey news on a passenger's phone
   | 'c2_talked_captain'
-  | 'c2_reached_jetty'; // arrived at Sungai Awan (milestone 2.1 cliffhanger)
+  | 'c2_reached_jetty' // arrived at Sungai Awan
+  | 'c2_village_arrived'
+  | 'c2_read_notice' // the Crown survey notice
+  | 'c2_talked_lim'
+  | 'c2_met_siti'
+  | 'c2_met_pell'
+  | 'c2_home_talked' // Mara points to the portrait
+  | 'c2_found_map'; // Elias's map behind the portrait (milestone 2.2 cliffhanger)
 
 export type StoryFlags = Partial<Record<StoryFlag, true>>;
 

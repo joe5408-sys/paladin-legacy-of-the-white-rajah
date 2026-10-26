@@ -1,4 +1,6 @@
+import type { ReactNode } from 'react';
 import type { SpawnPoint } from '../../data/scenes';
+import type { SceneLayout } from './layout';
 import { BOARDWALK, BUILDINGS, PROPS, RIVER, VILLAGE_LAYOUT } from '../../data/villageSquare';
 import { Boardwalk, Building, GroundPatch, Prop, River } from './environment';
 import { ExplorationRig } from './ExplorationRig';
@@ -11,8 +13,19 @@ const FAR_TREES: Array<[number, number, number]> = Array.from({ length: 22 }, (_
   return [x, z, s];
 });
 
-/** Area A — the riverside village square of Sungai Awan. */
-export function VillageSquare({ spawn }: { spawn: SpawnPoint }) {
+/**
+ * Area A — the riverside village square of Sungai Awan.
+ * Later chapters reuse it with their own layout (people, interactions) and extra props.
+ */
+export function VillageSquare({
+  spawn,
+  layout = VILLAGE_LAYOUT,
+  children,
+}: {
+  spawn: SpawnPoint;
+  layout?: SceneLayout;
+  children?: ReactNode;
+}) {
   return (
     <>
       <color attach="background" args={['#9fc6c9']} />
@@ -64,7 +77,9 @@ export function VillageSquare({ spawn }: { spawn: SpawnPoint }) {
         <Prop key={i} def={p} />
       ))}
 
-      <ExplorationRig layout={VILLAGE_LAYOUT} spawn={spawn} />
+      {children}
+
+      <ExplorationRig layout={layout} spawn={spawn} />
     </>
   );
 }

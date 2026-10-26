@@ -13,6 +13,7 @@ import { VILLAGE_LAYOUT } from '../../src/data/villageSquare';
 import { HOME_LAYOUT } from '../../src/data/familyHome';
 import { CHAMBER_LAYOUT } from '../../src/data/ancientChamber';
 import { WATERFRONT_LAYOUT } from '../../src/chapters/chapter1/data';
+import { HOME_C2_LAYOUT, VILLAGE_C2_LAYOUT } from '../../src/chapters/chapter2/villageData';
 import { BOAT_LAYOUT } from '../../src/chapters/chapter2/boatData';
 import { RECORDS_LAYOUT } from '../../src/chapters/chapter1/recordsData';
 import { VAULT_LAYOUT } from '../../src/chapters/chapter1/vaultData';
@@ -35,6 +36,8 @@ const LAYOUTS: Record<SceneId, SceneLayout> = {
   vault: VAULT_LAYOUT,
   records: RECORDS_LAYOUT,
   boat: BOAT_LAYOUT,
+  village_c2: VILLAGE_C2_LAYOUT,
+  home_c2: HOME_C2_LAYOUT,
 };
 const ALL_FLAGS = Object.fromEntries(
   ([

@@ -12,6 +12,7 @@ import type { DialogueDef } from '../../game/dialogue/types';
 import type { Interactable } from '../../game/interaction/interaction';
 import { NPC_COLLIDER_SIZE, type NpcPlacement, type SceneLayout } from '../../game/scenes/layout';
 import type { Objective } from '../../data/quests';
+import { VILLAGE_C2_OBJECTIVES } from './villageData';
 
 export const DECK: Box = { minX: -4.6, maxX: 4.6, minZ: -1.4, maxZ: 1.4 };
 export const BENCH = { x: -2.0, z: -1.15, width: 2.0, depth: 0.4 };
@@ -21,7 +22,7 @@ export const ENGINE = { x: 4.1, z: 0, width: 1.0, depth: 1.4 };
 export const BOAT_NPCS: NpcPlacement[] = [
   { id: 'npc-mara-boat', character: 'mara', x: -1.9, z: -0.55, facing: 'south' },
   { id: 'npc-passenger', character: 'passenger', x: 0.7, z: -0.9, facing: 'south' },
-  { id: 'npc-auntie', character: 'auntie', x: -0.3, z: 0.9, facing: 'north' },
+  { id: 'npc-auntie', character: 'auntie', x: -0.3, z: 1.05, facing: 'north' },
   { id: 'npc-ahhock', character: 'ahhock', x: 3.2, z: -0.6, facing: 'west' },
 ];
 
@@ -60,7 +61,7 @@ export const BOAT_INTERACTABLES: Interactable[] = [
     kind: 'talk',
     label: 'Auntie',
     x: -0.3,
-    z: 0.9,
+    z: 1.05,
     radius: 1.2,
     npc: 'auntie',
     dialogue: [{ dialogue: 'c2_auntie' }],
@@ -87,6 +88,8 @@ export const BOAT_INTERACTABLES: Interactable[] = [
     z: 0,
     radius: 0.7,
     dialogue: [
+      // A save from the old 2.1 cliffhanger only needs a short reminder.
+      { dialogue: 'c2_to_jetty', requires: ['c2_reached_jetty'] },
       { dialogue: 'c2_disembark', requires: ['c2_talked_captain'] },
       { dialogue: 'c2_cabin_early' },
     ],
@@ -112,6 +115,7 @@ export const CHAPTER2_OBJECTIVES: Objective[] = [
   { id: 'c2_news', text: 'Find out what the other passengers are talking about.', completeWhen: 'c2_saw_news' },
   { id: 'c2_captain', text: 'Ask the captain about Sungai Awan.', completeWhen: 'c2_talked_captain' },
   { id: 'c2_jetty', text: 'Collect your things from the cabin.', completeWhen: 'c2_reached_jetty' },
+  ...VILLAGE_C2_OBJECTIVES,
 ];
 
 export const BOAT_DIALOGUE: DialogueDef[] = [
@@ -212,6 +216,11 @@ export const BOAT_DIALOGUE: DialogueDef[] = [
       { speaker: 'adrian', text: 'Those weren\'t here a week ago.' },
       { speaker: 'mara', text: 'No. And I don\'t think they are planning to take them home.' },
     ],
-    endChapter: true,
+    enterScene: { scene: 'village_c2', spawn: 'jetty' },
+  },
+  {
+    id: 'c2_to_jetty',
+    lines: [{ speaker: null, text: 'Ah Hock\'s blue longboat is waiting at Kapit. Two hours later, Sungai Awan.' }],
+    enterScene: { scene: 'village_c2', spawn: 'jetty' },
   },
 ];

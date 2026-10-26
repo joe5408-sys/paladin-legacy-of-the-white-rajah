@@ -1,10 +1,17 @@
 # Progress
 
-**Current phase:** Phase 8 — Chapter 2: The River Remembers (design agreed, `docs/CHAPTER_2.md`). Milestone 2.1 (Upriver) ✅ done; 2.2 (Home, Changed) next. See `docs/CHAPTER_1.md`.
+**Current phase:** Phase 8 — Chapter 2: The River Remembers (design agreed, `docs/CHAPTER_2.md`). Milestones 2.1 (Upriver) and 2.2 (Home, Changed) ✅ done; 2.3 (The Waystation) next. See `docs/CHAPTER_1.md`.
 **MVP:** ✅ complete (phases 0–6); Chapter 0 is live.
 **Live site:** https://legacyofwhiterajah.netlify.app
 **Repository:** https://github.com/joe5408-sys/paladin-legacy-of-the-white-rajah (public, `master`; Netlify auto-deploys on push)
 **Last updated:** 2026-10-26
+
+### Phase 8 — Chapter 2, Milestone 2.2: Home, Changed (2026-10-27) ✅
+- The boat's cabin now leads on to **Sungai Awan, changed**: the prologue village and family home reused with Chapter 2 layouts and props (a Crown notice board, survey pegs with orange tape, the Awan Riverlands survey boat, Ah Hock's blue longboat). The prologue scene components now take a layout and extra props, so no geometry was copied.
+- **New characters:** Kak Siti (the clinic nurse) and Julian Pell (the survey manager). Returning: Uncle Lim, Aunt Mara, Captain Ah Hock.
+- **Story:** the notice → Lim → Pell → Mara at home → the map and verse behind Elias's portrait (the portrait then lies on the table, map side up) → "To Be Continued". Each step is locked until the one before it is done; Siti, Ah Hock and a survey peg are optional.
+- Kak Siti became the clinic nurse rather than the shopkeeper, because Uncle Lim already runs the kedai (noted in `CHAPTER_2.md`).
+- **Test results:** `npm test` 172/172 (new: the full 2.2 flow including out-of-order attempts, Mara waiting until Pell, the old-2.1-save migration, and a too-early village save; the shared layout checks cover both new scenes). `npm run e2e` 3/3: the full-story test now also walks Sungai Awan and the house to the portrait (2.8 min for the whole game). While extending it I moved the boat's auntie slightly so the walk to the cabin isn't a tight squeeze, and fixed two test-route mistakes. Visual check by screenshots: hid the wall portrait once it's on the table.
 
 ### Phase 8 — Chapter 2, Milestone 2.1: Upriver (2026-10-26) ✅
 - **Design:** `docs/CHAPTER_2.md` agreed with its default choices: River Ward, Daniel as a story ally, a redeemable Julian Pell, real place names allowed, five milestones.

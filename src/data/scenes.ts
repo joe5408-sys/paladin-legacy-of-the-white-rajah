@@ -5,7 +5,7 @@
 import type { Direction } from '../game/core/input';
 import type { DialogueRule } from '../game/dialogue/types';
 
-export type SceneId = 'village' | 'home' | 'chamber' | 'waterfront' | 'archives' | 'vault' | 'records' | 'boat';
+export type SceneId = 'village' | 'home' | 'chamber' | 'waterfront' | 'archives' | 'vault' | 'records' | 'boat' | 'village_c2' | 'home_c2';
 
 export interface SpawnPoint {
   x: number;
@@ -96,6 +96,23 @@ export const SCENES: Record<SceneId, SceneDef> = {
     },
     arrival: [{ dialogue: 'c2_boat_arrival', unless: ['c2_arrived'] }],
   },
+  // Sungai Awan again, re-dressed for Chapter 2 (same buildings, new people and props).
+  village_c2: {
+    id: 'village_c2',
+    name: 'Sungai Awan — Village Square',
+    spawns: {
+      jetty: { x: 1.6, z: -4.6, facing: 'south' },
+      from_home: { x: 6.8, z: 3.5, facing: 'south' },
+    },
+    arrival: [{ dialogue: 'c2_village_arrival', unless: ['c2_village_arrived'] }],
+  },
+  home_c2: {
+    id: 'home_c2',
+    name: 'Vale Family Home',
+    spawns: {
+      door: { x: 0, z: 2.0, facing: 'north' },
+    },
+  },
 };
 
 /** Chapter a scene belongs to (0 = prologue). */
@@ -108,6 +125,8 @@ export const SCENE_CHAPTER: Record<SceneId, number> = {
   vault: 1,
   records: 1,
   boat: 2,
+  village_c2: 2,
+  home_c2: 2,
 };
 
 export const NEW_GAME_SCENE: SceneId = 'village';

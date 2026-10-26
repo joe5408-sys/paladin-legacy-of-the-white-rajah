@@ -1,7 +1,7 @@
 /**
- * Chapter 2, Milestone 2.1 (Upriver): lazy loading, the hand-off from the Chapter 1
- * Complete card, the express-boat conversations in order, saves and the
- * "to be continued" ending.
+ * Chapter 2, Milestones 2.1 (Upriver) and 2.2 (Home, Changed): lazy loading, the
+ * hand-off from the Chapter 1 Complete card, the conversations in order, saves
+ * and the "to be continued" ending.
  */
 import { beforeEach, describe, expect, it } from 'vitest';
 import { gameStore } from '../../src/game/core/gameStore';
@@ -26,6 +26,21 @@ const CHAPTER1_DONE: StoryFlag[] = [
   'c1_box_read', 'c1_letter_found', 'c1_security_arrived', 'c1_lights_out', 'c1_escaped',
 ];
 
+const BOAT_DONE: StoryFlag[] = ['chapter2_started', 'c2_arrived', 'c2_talked_mara', 'c2_saw_news', 'c2_talked_captain', 'c2_reached_jetty'];
+
+/** Loads a save placed in a Chapter 2 scene with the given flags. */
+function placeIn(scene: 'boat' | 'village_c2' | 'home_c2', spawn: string, flags: StoryFlag[]) {
+  s().setFlags(flags);
+  const r = validateSave(JSON.parse(JSON.stringify(buildSave({ ...s(), scene }, SCENES[scene].spawns[spawn]))));
+  expect(r.ok).toBe(true);
+  if (r.ok) s().loadGame(r.data);
+}
+/** Plays a pending scene change (fade out, swap, fade in, arrival). */
+function arrive() {
+  s().swapScene();
+  s().finishTransition();
+}
+
 function finishDialogue() {
   for (let i = 0; i < 100 && s().dialogue; i++) s().pressAction('Enter');
 }
@@ -44,7 +59,7 @@ describe('Chapter 2 loading', () => {
     await loadChapter(2);
     expect(DIALOGUES.c2_boat_arrival).toBeDefined();
     expect(getLayout('boat')).toBeDefined();
-    expect(OBJECTIVES_BY_CHAPTER[2]?.length).toBe(4);
+    expect(OBJECTIVES_BY_CHAPTER[2]?.length).toBe(9);
   });
 
   it('knows that Chapter 1 now leads on, and which chapter a save needs', () => {
@@ -82,7 +97,7 @@ describe('Chapter 2 flow', () => {
     expect(objective()).toBe('c2_mara');
   });
 
-  it('plays through Milestone 2.1 in order, to the "to be continued" card', () => {
+  it('plays through Milestone 2.1 in order, then on to Sungai Awan', () => {
     s().startChapter(2);
     s().dismissChapterCard();
     finishDialogue();
@@ -127,8 +142,90 @@ describe('Chapter 2 flow', () => {
     expect(s().dialogue?.def.id).toBe('c2_disembark');
     finishDialogue();
     expect(s().flags.c2_reached_jetty).toBe(true);
+    expect(s().mode).toBe('transition');
+    expect(s().transition?.to).toBe('village_c2');
+    expect(isAtChapterEnd(s().flags)).toBe(false);
+  });
+
+  it('plays through Milestone 2.2: the notice, Lim, Pell, Mara and the map', () => {
+    s().startChapter(2);
+    s().dismissChapterCard();
+    finishDialogue();
+    placeIn('boat', 'arrival', BOAT_DONE);
+    // A save from the old 2.1 cliffhanger: the cabin leads straight to the village.
+    use('boat-cabin');
+    expect(s().dialogue?.def.id).toBe('c2_to_jetty');
+    finishDialogue();
+    arrive();
+    expect(s().scene).toBe('village_c2');
+    expect(s().spawn).toEqual(SCENES.village_c2.spawns.jetty);
+    expect(s().dialogue?.def.id).toBe('c2_village_arrival');
+    finishDialogue();
+    expect(objective()).toBe('c2_notice');
+
+    // Out of order: Lim and Pell point you onward, Mara sends you back out.
+    use('npc-lim-c2');
+    expect(s().dialogue?.def.id).toBe('c2_lim_early');
+    finishDialogue();
+    use('npc-pell');
+    expect(s().dialogue?.def.id).toBe('c2_pell_busy');
+    finishDialogue();
+    use('npc-ahhock-village');
+    finishDialogue();
+    use('survey-peg');
+    finishDialogue();
+
+    use('notice-board');
+    expect(s().dialogue?.def.id).toBe('c2_notice');
+    finishDialogue();
+    expect(objective()).toBe('c2_lim');
+
+    use('npc-lim-c2');
+    expect(s().dialogue?.def.id).toBe('c2_lim');
+    finishDialogue();
+    expect(objective()).toBe('c2_pell');
+    use('npc-siti'); // optional
+    expect(s().dialogue?.def.id).toBe('c2_siti');
+    finishDialogue();
+    use('npc-siti');
+    expect(s().dialogue?.def.id).toBe('c2_siti_after');
+    finishDialogue();
+
+    use('npc-pell');
+    expect(s().dialogue?.def.id).toBe('c2_pell');
+    finishDialogue();
+    expect(objective()).toBe('c2_home');
+
+    use('family-home-door-c2');
+    arrive();
+    expect(s().scene).toBe('home_c2');
+    expect(s().dialogue).toBeNull(); // no arrival speech at home
+    use('portrait-c2');
+    expect(s().dialogue?.def.id).toBe('c2_portrait_elias');
+    finishDialogue();
+    use('npc-mara-home-c2');
+    expect(s().dialogue?.def.id).toBe('c2_mara_home');
+    finishDialogue();
+    expect(objective()).toBe('c2_map');
+
+    use('portrait-c2');
+    expect(s().dialogue?.def.id).toBe('c2_portrait_map');
+    finishDialogue();
+    expect(s().flags.c2_found_map).toBe(true);
     expect(s().mode).toBe('ending');
     expect(isAtChapterEnd(s().flags)).toBe(true);
+  });
+
+  it('Mara at home waits until Adrian has met Pell', () => {
+    s().startChapter(2);
+    s().dismissChapterCard();
+    placeIn('home_c2', 'door', [...BOAT_DONE, 'c2_village_arrived', 'c2_read_notice']);
+    expect(s().scene).toBe('home_c2');
+    use('npc-mara-home-c2');
+    expect(s().dialogue?.def.id).toBe('c2_mara_home_early');
+    finishDialogue();
+    use('home-exit-c2');
+    expect(s().transition?.to).toBe('village_c2');
   });
 
   it('a mid-boat save reloads on the boat; a finished one reopens the card', () => {
@@ -146,10 +243,22 @@ describe('Chapter 2 flow', () => {
     expect(s().mode).toBe('explore');
     expect(objective()).toBe('c2_news');
 
-    s().setFlags(['c2_saw_news', 'c2_talked_captain', 'c2_reached_jetty']);
-    const end = validateSave(JSON.parse(JSON.stringify(buildSave(s(), SCENES.boat.spawns.arrival))));
+    s().setFlags([...BOAT_DONE, 'c2_village_arrived', 'c2_read_notice', 'c2_talked_lim', 'c2_met_pell', 'c2_home_talked', 'c2_found_map']);
+    const end = validateSave(JSON.parse(JSON.stringify(buildSave({ ...s(), scene: 'home_c2' }, SCENES.home_c2.spawns.door))));
     if (end.ok) s().loadGame(end.data);
     expect(s().mode).toBe('ending');
+  });
+
+  it('a save in the Chapter 2 village before reaching the jetty is sent back to the prologue village', () => {
+    const r = validateSave({
+      schemaVersion: 1,
+      scene: 'village_c2',
+      position: { x: 1.6, z: -4.6, facing: 'south' },
+      flags: [...CHAPTER1_DONE, 'chapter2_started'],
+      playTimeMs: 0,
+      prologueComplete: true,
+    });
+    expect(r.ok && r.data.scene).toBe('village');
   });
 
   it('a save claiming the boat without starting Chapter 2 is sent back to the village', () => {

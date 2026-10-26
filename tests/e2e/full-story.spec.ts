@@ -1,7 +1,7 @@
 /**
  * Plays the whole game as it stands, with real keyboard input in a real browser:
  * Chapter 0 from New Game to CHAPTER 0 COMPLETE, then Chapter 1 (Milestones 1.1–1.2:
- * the Kuching waterfront, the Royal Archives, the vault battle, the sealed records and the Chapter 2 express boat) to the "to be continued" card. Also checks that Chapter 1 is only downloaded
+ * the Kuching waterfront, the Royal Archives, the vault battle, the sealed records, the Chapter 2 express boat and Sungai Awan) to the "to be continued" card. Also checks that Chapter 1 is only downloaded
  * when the player reaches it.
  */
 import { expect, test } from '@playwright/test';
@@ -240,6 +240,53 @@ test('full story: Chapters 0 and 1, and Chapter 2 so far', async ({ page }) => {
   await walk(page, 'KeyS', 0.3);
   await walk(page, 'KeyA', 7);
   await expect(testId(page, 'interaction-prompt')).toContainText('Inspect Cabin');
+  await press(page, 'KeyE');
+  await finishDialogue(page);
+
+  // ── Chapter 2.2: Sungai Awan, changed ─────────────────
+  await arriveIn(page, 'Sungai Awan — Village Square');
+  await expect(testId(page, 'objective')).toContainText('Read the notice on the village board.');
+  await expect(testId(page, 'interaction-prompt')).toContainText('Inspect Notice Board');
+  await press(page, 'KeyE');
+  await finishDialogue(page);
+  await expect(testId(page, 'objective')).toContainText('Talk to Uncle Lim at the kedai.');
+
+  // West along the boardwalk, south between the clinic and the crates, to the kedai.
+  await walk(page, 'KeyA', 5.4);
+  await walk(page, 'KeyS', 5.9);
+  await walk(page, 'KeyA', 1.2);
+  await expect(testId(page, 'interaction-prompt')).toContainText('Talk to Uncle Lim');
+  await press(page, 'KeyE');
+  await finishDialogue(page);
+  await expect(testId(page, 'objective')).toContainText('Find the man in charge of the survey.');
+
+  // Back east across the square, up to the boardwalk, along to the survey boat.
+  await walk(page, 'KeyD', 7.4);
+  await walk(page, 'KeyW', 5.9);
+  await walk(page, 'KeyD', 5.8);
+  await expect(testId(page, 'interaction-prompt')).toContainText('Talk to Survey Manager');
+  await press(page, 'KeyE');
+  await finishDialogue(page);
+  await expect(testId(page, 'objective')).toContainText('Go home to Aunt Mara.');
+
+  // Step back from Pell, round the east side of the Vale house to its front stairs.
+  await walk(page, 'KeyS', 1.0);
+  await walk(page, 'KeyD', 2.4);
+  await walk(page, 'KeyS', 6.2);
+  await walk(page, 'KeyA', 3.4);
+  await expect(testId(page, 'interaction-prompt')).toContainText('Enter Vale Family Home');
+  await press(page, 'KeyE');
+  await arriveIn(page, 'Vale Family Home', false);
+  await page.waitForTimeout(1200); // no arrival speech here: wait out the fade-in before walking
+  await walk(page, 'KeyW', 2.3);
+  await walk(page, 'KeyD', 1.8);
+  await expect(testId(page, 'interaction-prompt')).toContainText('Talk to Aunt Mara');
+  await press(page, 'KeyE');
+  await finishDialogue(page);
+  await expect(testId(page, 'objective')).toContainText("Look behind Elias's portrait.");
+  await walk(page, 'KeyA', 1.8);
+  await walk(page, 'KeyW', 1.6);
+  await expect(testId(page, 'interaction-prompt')).toContainText("Inspect Elias's Portrait");
   await press(page, 'KeyE');
   await finishDialogue(page);
   await expect(testId(page, 'c2-to-be-continued')).toBeVisible({ timeout: 10_000 });

@@ -1,5 +1,5 @@
 import { useFrame } from '@react-three/fiber';
-import { useMemo, useRef } from 'react';
+import { useMemo, useRef, type ReactNode } from 'react';
 import * as THREE from 'three';
 import {
   FURNITURE,
@@ -14,6 +14,7 @@ import {
 import type { SpawnPoint } from '../../data/scenes';
 import { useGame } from '../core/gameStore';
 import { ExplorationRig } from './ExplorationRig';
+import type { SceneLayout } from './layout';
 import { getInsigniaTexture } from './insignia';
 
 const WALL = '#8a6544';
@@ -22,8 +23,22 @@ const T = 0.3; // wall thickness
 /** Passage steps, nearest first, darkening as they descend. */
 const STEP_COLORS = ['#4a3626', '#36281c', '#261c14', '#18120d', '#0d0a07'];
 
-/** Area B — the Vale family home. Front wall is cut away so the room reads clearly. */
-export function FamilyHome({ spawn }: { spawn: SpawnPoint }) {
+/**
+ * Area B — the Vale family home. Front wall is cut away so the room reads clearly.
+ * Later chapters reuse it with their own layout and extra props.
+ */
+export function FamilyHome({
+  spawn,
+  layout = HOME_LAYOUT,
+  showPortrait = true,
+  children,
+}: {
+  spawn: SpawnPoint;
+  layout?: SceneLayout;
+  /** False once the portrait has been taken off the wall (Chapter 2). */
+  showPortrait?: boolean;
+  children?: ReactNode;
+}) {
   const { minX, maxX, minZ, maxZ } = HOME_ROOM;
   const w = maxX - minX;
   const d = maxZ - minZ;
@@ -82,14 +97,15 @@ export function FamilyHome({ spawn }: { spawn: SpawnPoint }) {
         </mesh>
       ))}
 
-      <Portrait />
+      {showPortrait && <Portrait />}
       {FURNITURE.map((f, i) => (
         <Furniture key={i} def={f} />
       ))}
       <Heirloom />
       <HiddenPassage />
 
-      <ExplorationRig layout={HOME_LAYOUT} spawn={spawn} />
+      {children}
+      <ExplorationRig layout={layout} spawn={spawn} />
     </>
   );
 }
