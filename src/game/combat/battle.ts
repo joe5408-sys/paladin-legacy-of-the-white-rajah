@@ -16,8 +16,10 @@ export interface BattleState {
   enemyHp: number;
   enemyMaxHp: number;
   skillCharges: number;
-  /** Set by Defend; consumed by the next enemy hit. */
+  /** Set by Defend; lasts until the end of the enemy's next turn. */
   defending: boolean;
+  /** The enemy is winding up a heavy blow for its next turn. */
+  charging: boolean;
   phase: BattlePhase;
   /** 1-based round counter (increments after each enemy turn). */
   turn: number;
@@ -26,7 +28,8 @@ export interface BattleState {
 export type BattleEvent =
   | { kind: 'attack' | 'skill'; actor: 'player'; damage: number }
   | { kind: 'defend'; actor: 'player'; damage: 0 }
-  | { kind: 'enemy_attack'; actor: 'enemy'; damage: number; defended: boolean };
+  | { kind: 'enemy_attack'; actor: 'enemy'; damage: number; defended: boolean; heavy: boolean }
+  | { kind: 'enemy_charge'; actor: 'enemy'; damage: 0 };
 
 export interface StepResult {
   state: BattleState;
@@ -41,7 +44,8 @@ export function createBattle(player: PlayerBattleStats, enc: EncounterDef): Batt
     enemyMaxHp: enc.enemyMaxHp,
     skillCharges: player.skillCharges,
     defending: false,
-    phase: 'player', // player always opens the tutorial encounter
+    charging: false,
+    phase: 'player', // the player always opens
     turn: 1,
   };
 }
@@ -79,25 +83,40 @@ export function playerAction(
   };
 }
 
-/** Enemy's simple attack. Returns null if it isn't the enemy's turn. */
+/**
+ * Enemy's turn: a normal attack, or with a heavy-attack encounter, a charging
+ * turn every Nth round followed by a heavy blow. Returns null if it isn't the enemy's turn.
+ */
 export function enemyAction(
   state: BattleState,
   player: PlayerBattleStats,
   enc: EncounterDef,
 ): StepResult | null {
   if (state.phase !== 'enemy') return null;
+
+  if (enc.heavy && !state.charging && state.turn % enc.heavy.every === 0) {
+    return {
+      state: { ...state, charging: true, defending: false, phase: 'player', turn: state.turn + 1 },
+      event: { kind: 'enemy_charge', actor: 'enemy', damage: 0 },
+    };
+  }
+
+  const heavy = state.charging && !!enc.heavy;
+  const base = heavy ? enc.heavy!.damage : enc.enemyAttack;
   const defended = state.defending;
-  const damage = defended ? Math.round(enc.enemyAttack * player.defendMultiplier) : enc.enemyAttack;
+  const guard = heavy ? enc.heavy!.guardedMultiplier : player.defendMultiplier;
+  const damage = defended ? Math.round(base * guard) : base;
   const playerHp = Math.max(0, state.playerHp - damage);
   return {
     state: {
       ...state,
       playerHp,
       defending: false,
+      charging: false,
       phase: playerHp <= 0 ? 'defeat' : 'player',
       turn: state.turn + 1,
     },
-    event: { kind: 'enemy_attack', actor: 'enemy', damage, defended },
+    event: { kind: 'enemy_attack', actor: 'enemy', damage, defended, heavy },
   };
 }
 
@@ -110,10 +129,17 @@ export function describeEvent(event: BattleEvent, player: PlayerBattleStats, enc
       return `${player.skillName}! Light bursts from the blade for ${event.damage} damage.`;
     case 'defend':
       return 'Adrian raises his guard and braces for the next blow.';
-    case 'enemy_attack':
+    case 'enemy_charge':
+      return enc.heavy?.chargeText ?? `The ${enc.enemyName} gathers its strength.`;
+    case 'enemy_attack': {
+      const verb = event.heavy && enc.heavy ? enc.heavy.attackText : enc.enemyAttackText;
+      if (event.defended && event.damage === 0) {
+        return `The ${enc.enemyName} ${verb}, but Adrian's guard turns the blow aside!`;
+      }
       return event.defended
-        ? `The ${enc.enemyName} ${enc.enemyAttackText}! Adrian's guard holds: only ${event.damage} damage.`
-        : `The ${enc.enemyName} ${enc.enemyAttackText}! Adrian takes ${event.damage} damage.`;
+        ? `The ${enc.enemyName} ${verb}! Adrian's guard holds: only ${event.damage} damage.`
+        : `The ${enc.enemyName} ${verb}! Adrian takes ${event.damage} damage.`;
+    }
   }
 }
 

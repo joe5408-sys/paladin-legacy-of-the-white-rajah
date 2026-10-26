@@ -1,13 +1,13 @@
 /**
  * Plays the whole game as it stands, with real keyboard input in a real browser:
  * Chapter 0 from New Game to CHAPTER 0 COMPLETE, then Chapter 1 (Milestones 1.1–1.2:
- * the Kuching waterfront and the Royal Archives) to its "to be continued" card. Also checks that Chapter 1 is only downloaded
+ * the Kuching waterfront, the Royal Archives and the vault battle) to its "to be continued" card. Also checks that Chapter 1 is only downloaded
  * when the player reaches it.
  */
 import { expect, test } from '@playwright/test';
 import { arriveIn, expectLocation, finishDialogue, press, testId, trackErrors, walk } from './helpers';
 
-test('full story: Chapter 0 and Chapter 1 milestones 1.1–1.2', async ({ page }) => {
+test('full story: Chapter 0 and Chapter 1 milestones 1.1–1.3', async ({ page }) => {
   const errors = trackErrors(page);
   const requested: string[] = [];
   page.on('request', (r) => requested.push(r.url()));
@@ -149,6 +149,35 @@ test('full story: Chapter 0 and Chapter 1 milestones 1.1–1.2', async ({ page }
   await walk(page, 'KeyW', 6.2);
   await walk(page, 'KeyD', 1.5);
   await expect(testId(page, 'interaction-prompt')).toContainText('Inspect Iron Door');
+  await press(page, 'KeyE');
+  await finishDialogue(page);
+
+  // ── Chapter 1.3: the vault and the Hollow Sentinel ─────
+  await arriveIn(page, 'Royal Archives — Vault');
+  await expect(testId(page, 'objective')).toContainText('Get past the brass figure in the vault.');
+  await walk(page, 'KeyW', 2.4);
+  await expect(testId(page, 'interaction-prompt')).toContainText('Inspect Brass Figure');
+  await press(page, 'KeyE');
+  await finishDialogue(page);
+  await expect(testId(page, 'battle-ui')).toBeVisible();
+  await expect(testId(page, 'battle-tip')).toBeVisible({ timeout: 15_000 });
+  await expect(testId(page, 'enemy-status')).toContainText('Hollow Sentinel');
+
+  // Defend whenever it charges; the heavy blow is blocked.
+  for (const cmd of ['skill', 'skill', 'attack', 'defend', 'attack', 'attack', 'defend', 'attack']) {
+    await expect(testId(page, `cmd-${cmd}`)).toBeEnabled({ timeout: 15_000 });
+    if (cmd === 'defend') await expect(testId(page, 'enemy-charging')).toBeVisible();
+    await testId(page, `cmd-${cmd}`).click();
+  }
+  await expect(testId(page, 'battle-victory')).toBeVisible({ timeout: 15_000 });
+  await expect(testId(page, 'enemy-hp')).toHaveText('0/42');
+  await press(page, 'KeyE', 600);
+  await finishDialogue(page);
+  await expect(testId(page, 'objective')).toContainText('Open the inner gate.');
+
+  // Past the fallen Sentinel to the inner gate
+  await walk(page, 'KeyW', 4.0);
+  await expect(testId(page, 'interaction-prompt')).toContainText('Inspect Inner Gate');
   await press(page, 'KeyE');
   await finishDialogue(page);
   await expect(testId(page, 'to-be-continued')).toBeVisible({ timeout: 10_000 });

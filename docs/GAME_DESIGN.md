@@ -22,5 +22,7 @@
 ## Combat (Phase 4) — starting balance
 Player HP 30 · Guardian HP 24 · Attack 6 · Radiant Strike 10 (2 uses) · Guardian hit 4 · Defend halves the next hit.
 
+Chapter 1 · Hollow Sentinel: HP 42 · slash 7 · heavy blow 16 after a one-round wind-up (every 3rd round). Defending the heavy blow blocks it completely. Tuning lives in `src/data/encounters.ts`; balance is checked in `tests/unit/sentinel.test.ts`.
+
 ## Cultural guardrails
 Represent Sarawak's multicultural society respectfully; don't present invented sacred traditions as authentic; never link supernatural corruption to any real ethnic or religious group.

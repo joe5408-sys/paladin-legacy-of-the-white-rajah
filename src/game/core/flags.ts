@@ -25,7 +25,10 @@ export type StoryFlag =
   | 'c1_clue_gap' // found the gap where the Vale folder should be
   | 'c1_hint_household' // the Archivist pointed to the household ledgers
   | 'c1_file_found' // read the redacted Vale file
-  | 'c1_vault_found'; // the sealed iron door woke (milestone 1.2 cliffhanger)
+  | 'c1_vault_found' // the sealed iron door woke and opened
+  | 'c1_entered_vault'
+  | 'c1_sentinel_defeated' // won the battle against the Hollow Sentinel
+  | 'c1_inner_gate_open'; // opened the inner vault (milestone 1.3 cliffhanger)
 
 export type StoryFlags = Partial<Record<StoryFlag, true>>;
 

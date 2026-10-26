@@ -1,5 +1,6 @@
 /**
  * Chapter 1, Milestone 1.2 — inside the Royal Archives. Pure data.
+ * The iron door leads to the vault (milestone 1.3, vaultData.ts).
  *
  * One tall reading hall, front wall cut away (like the family home).
  * Room: x -6..6, z -4..3.5. North wall: high windows and the sealed iron door.
@@ -111,10 +112,22 @@ export const ARCHIVE_INTERACTABLES: Interactable[] = [
     x: VAULT_DOOR.x,
     z: -3.3,
     radius: 1.2,
+    when: { unless: ['c1_vault_found'] },
     dialogue: [
       { dialogue: 'c1_vault_door', requires: ['c1_file_found'] },
       { dialogue: 'c1_vault_early' },
     ],
+  },
+  {
+    // Once the door has opened (also for saves from the old 1.2 cliffhanger).
+    id: 'vault-enter',
+    kind: 'enter',
+    label: 'Vault',
+    x: VAULT_DOOR.x,
+    z: -3.3,
+    radius: 1.2,
+    when: { requires: ['c1_vault_found'] },
+    enter: { scene: 'vault', spawn: 'entrance' },
   },
   {
     id: 'npc-daniel-archives',
@@ -256,9 +269,10 @@ export const ARCHIVES_DIALOGUE: DialogueDef[] = [
       { speaker: null, text: 'As Adrian steps close, the medallion under his shirt grows warm.' },
       { speaker: null, text: 'The carving on the iron door begins to glow, line by line: sword, then river.', setFlags: ['c1_vault_found'] },
       { speaker: 'daniel', text: 'Adrian... the floor is shaking.' },
-      { speaker: null, text: 'Behind the door, something vast and patient begins to wake.' },
+      { speaker: null, text: 'With a groan of old iron, the door swings inward. Cold air breathes out of the dark.' },
+      { speaker: 'daniel', text: 'I will hold the hall. Shout if you need me.' },
     ],
-    endChapter: true,
+    enterScene: { scene: 'vault', spawn: 'entrance' },
   },
   {
     id: 'c1_daniel_archives',

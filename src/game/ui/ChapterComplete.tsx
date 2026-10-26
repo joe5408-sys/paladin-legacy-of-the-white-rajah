@@ -77,7 +77,7 @@ export function ChapterComplete() {
         <>
           <div className="chapter-kicker">Chapter 1 · The Capital's Shadow</div>
           <h1 className="chapter-title" data-testid="to-be-continued">To Be Continued</h1>
-          <p className="chapter-quote">Behind the iron door, something is waking.</p>
+          <p className="chapter-quote">Every box has a name on it. One of them is yours.</p>
           {playtime}
           <div className="chapter-next">The rest of Chapter 1 arrives in a future update. Your progress is saved.</div>
         </>

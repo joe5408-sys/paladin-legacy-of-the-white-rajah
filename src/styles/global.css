@@ -498,6 +498,26 @@ body,
   color: #ff8a7a;
 }
 
+.battle-popup.charge {
+  color: #cfe9ff;
+  font-size: 18px;
+  animation-delay: 0s;
+}
+
+.battle-charging {
+  margin-top: 0.3em;
+  font-size: 0.85em;
+  color: #cfe9ff;
+  text-shadow: 0 0 6px #7fc8ff;
+  animation: charging-blink 0.6s steps(2) infinite;
+}
+
+@keyframes charging-blink {
+  50% {
+    opacity: 0.45;
+  }
+}
+
 .battle-popup.guard {
   color: #7fc8ff;
   font-size: 18px;

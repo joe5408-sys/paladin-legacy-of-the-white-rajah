@@ -1,10 +1,18 @@
 # Progress
 
-**Current phase:** Phase 7 — Chapter 1. Milestones 1.1 (Arrival in Kuching) and 1.2 (The Royal Archives) ✅ done; 1.3 (The Hollow Sentinel) next. See `docs/CHAPTER_1.md`.
+**Current phase:** Phase 7 — Chapter 1. Milestones 1.1 (Arrival in Kuching), 1.2 (The Royal Archives) and 1.3 (The Hollow Sentinel) ✅ done; 1.4 (The Redacted Name) next. See `docs/CHAPTER_1.md`.
 **MVP:** ✅ complete (phases 0–6); Chapter 0 is live.
 **Live site:** https://legacyofwhiterajah.netlify.app
 **Repository:** https://github.com/joe5408-sys/paladin-legacy-of-the-white-rajah (public, `master`; Netlify auto-deploys on push)
 **Last updated:** 2026-10-26
+
+### Phase 7 — Chapter 1, Milestone 1.3: The Hollow Sentinel (2026-10-26) ✅
+- The iron door now opens (no ending): **the vault** (`src/chapters/chapter1/Vault.tsx` + `vaultData.ts`, lazy-loaded), a narrow stone hall with sealed cabinets, flickering oil lamps and a barred inner gate. After the door opens, the Archives offer a plain "Enter Vault"; saves from the old 1.2 cliffhanger continue from there.
+- **The Hollow Sentinel** (original pixel art, `src/game/combat/sentinelSprite.ts`): a palace construct of brass and ironwood. It stands dormant before the gate and blocks the way until it falls; afterwards its wreckage lies on the floor.
+- **Second battle**, reusing the battle system. Encounters now choose their sprite and backdrop (the vault arena has a cold stone floor and the inner gate behind the enemy). New, data-driven **heavy attack**: every 3rd round the Sentinel charges ("Charging a heavy blow!" in its panel, rears back, pulses white-blue), then strikes for 16. Defend blocks that blow completely ("Blocked!"); Defend still halves normal hits. A first-turn tip explains it, and it shows again after a retry.
+- **Balance** (checked by unit tests): HP 42, slash 7. Going all-out and ignoring the wind-up loses (37 damage vs 30 HP); defending whenever it charges wins with about 9 HP left; even plain Attacks win if every heavy blow is defended. The Covenant Guardian is unchanged. No new Paladin skill: the scope rule said only if the fight needed one, and it doesn't.
+- Victory → the brass plate from its chest unlocks the inner gate (the bars sink into the floor) → rows of sealed boxes, one marked VALE → "To Be Continued". The chapter end moved to `c1_inner_gate_open`. New vault ambience (low drone, dripping water).
+- **Test results:** `npm test` 143/143 (new `sentinel.test.ts` for the battle rules and balance; `chapter1.test.ts` covers the vault flow, the battle, defeat and retry, the Sentinel's collider, and old-save migration and save validation for the vault). `npm run e2e` 3/3: the full-story test now also walks into the vault, wins the Sentinel fight by defending its heavy blows, and opens the gate (1.8 min). I checked the vault and battle visually with screenshots: brightened the hall, moved the lamps out of the cabinets, removed a jagged wall shadow, and made the gate bars sink into the floor instead of rising through the ceiling.
 
 ### Phase 7 — Chapter 1, Milestone 1.2: The Royal Archives (2026-10-26) ✅
 - The Archives door no longer ends the chapter: a night passes ("Aunt Mara snores, gently") and the doors open at dawn. Dialogue can now move the player to another scene when it ends (`enterScene`).

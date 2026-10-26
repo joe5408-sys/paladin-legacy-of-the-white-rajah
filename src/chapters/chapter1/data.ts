@@ -173,6 +173,8 @@ export const CHAPTER1_OBJECTIVES: Objective[] = [
   { id: 'c1_ask', text: 'Ask the Archivist about the missing folder.', completeWhen: 'c1_hint_household' },
   { id: 'c1_ledgers', text: 'Search the household ledgers.', completeWhen: 'c1_file_found' },
   { id: 'c1_vault', text: 'Investigate the iron door.', completeWhen: 'c1_vault_found' },
+  { id: 'c1_sentinel', text: 'Get past the brass figure in the vault.', completeWhen: 'c1_sentinel_defeated' },
+  { id: 'c1_inner_gate', text: 'Open the inner gate.', completeWhen: 'c1_inner_gate_open' },
 ];
 
 export const CHAPTER1_DIALOGUE: DialogueDef[] = [

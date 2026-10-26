@@ -20,6 +20,8 @@ Every asset in the game must be original, properly licensed, or explicitly autho
 | Kak Jamilah placeholder sprite sheet | Pixel art (generated at runtime) | `pixelSprite.ts` + `characters.ts` | Original, project code | Project-owned | Headscarf and long skirt via palette and features |
 | Kuching waterfront (shophouses, Archives, Palace, fort, stall, bandstand, pier, boat) | Procedural low-poly | `src/chapters/chapter1/Waterfront.tsx` | Original, project code | Project-owned | Fictional, alternate-history versions of recognisable waterfront features |
 | The Archivist placeholder sprite sheet | Pixel art (generated at runtime) | `pixelSprite.ts` + `characters.ts` | Original, project code | Project-owned | Glasses, bun, long skirt |
+| Hollow Sentinel sprite | Pixel art (generated at runtime) | `src/game/combat/sentinelSprite.ts` | Original, project code | Project-owned | Brass-and-ironwood palace construct, original design |
+| Vault interior (cabinets, oil lamps, inner gate, Sentinel wreckage) | Procedural low-poly | `src/chapters/chapter1/Vault.tsx` | Original, project code | Project-owned | |
 | Royal Archives interior (bookcases, desk, iron door, light shafts) | Procedural low-poly | `src/chapters/chapter1/Archives.tsx` | Original, project code | Project-owned | |
 | Dialogue text | Writing | `src/data/dialogue.ts` | Original | Project-owned | |
 | Village buildings, props, terrain | Procedural low-poly geometry | `src/game/scenes/environment.tsx` | Original, project code | Project-owned | Three.js primitives only |

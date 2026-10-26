@@ -6,6 +6,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { gameStore } from '../../src/game/core/gameStore';
 import { CHAMBER_LAYOUT } from '../../src/data/ancientChamber';
 import { WATERFRONT_LAYOUT } from '../../src/chapters/chapter1/data';
+import { VAULT_LAYOUT } from '../../src/chapters/chapter1/vaultData';
 import { ARCHIVES_LAYOUT } from '../../src/chapters/chapter1/archivesData';
 import '../../src/chapters/chapter1/content'; // registers Chapter 1 dialogue and objectives
 import { HOME_LAYOUT } from '../../src/data/familyHome';
@@ -27,6 +28,7 @@ const LAYOUTS: Record<SceneId, SceneLayout> = {
   chamber: CHAMBER_LAYOUT,
   waterfront: WATERFRONT_LAYOUT,
   archives: ARCHIVES_LAYOUT,
+  vault: VAULT_LAYOUT,
 };
 
 function finishDialogue() {

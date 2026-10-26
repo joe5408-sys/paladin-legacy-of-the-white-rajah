@@ -75,6 +75,7 @@ export function BattleHud() {
   if (!battle || !state) return null;
   const { encounter } = battle;
   const showTutorial = encounter.tutorial && state.turn === 1 && stage === 'command';
+  const showTip = !encounter.tutorial && !!encounter.tip && state.turn === 1 && stage === 'command';
 
   return (
     <div className="battle-ui" data-testid="battle-ui">
@@ -83,6 +84,11 @@ export function BattleHud() {
       <div className="battle-status enemy pixel-panel" data-testid="enemy-status">
         <div className="battle-name">{encounter.enemyName}</div>
         <HpBar hp={state.enemyHp} max={state.enemyMaxHp} enemy />
+        {state.charging && (
+          <div className="battle-charging" data-testid="enemy-charging">
+            Charging a heavy blow!
+          </div>
+        )}
       </div>
 
       <div className="battle-bottom">
@@ -130,6 +136,12 @@ export function BattleHud() {
           })}
         </div>
       </div>
+
+      {showTip && (
+        <div className="battle-tutorial pixel-panel" data-testid="battle-tip">
+          <strong>Tip</strong> · {encounter.tip}
+        </div>
+      )}
 
       {showTutorial && (
         <div className="battle-tutorial pixel-panel" data-testid="battle-tutorial">

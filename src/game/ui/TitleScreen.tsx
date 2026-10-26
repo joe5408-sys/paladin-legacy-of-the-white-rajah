@@ -107,7 +107,7 @@ export function TitleScreen() {
 /** Short description of where a save is, for the Continue hint. */
 function describeSave(data: SaveData): string {
   const flags = new Set(data.flags);
-  if (flags.has('c1_vault_found')) return "Chapter 1 · The Capital's Shadow (to be continued)";
+  if (flags.has('c1_inner_gate_open')) return "Chapter 1 · The Capital's Shadow (to be continued)";
   if (flags.has('chapter1_started')) return `Chapter 1 · ${SCENES[data.scene].name}`;
   if (data.prologueComplete) return 'Chapter 0 complete';
   return SCENES[data.scene].name;

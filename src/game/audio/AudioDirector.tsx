@@ -54,7 +54,7 @@ export function AudioDirector() {
       const b = s.battle;
       const pb = prev.battle;
       if (b && b.seq !== pb?.seq && b.lastEvent) {
-        const sfx = { attack: 'hit', skill: 'radiant', defend: 'guard', enemy_attack: 'enemy_hit' } as const;
+        const sfx = { attack: 'hit', skill: 'radiant', defend: 'guard', enemy_attack: 'enemy_hit', enemy_charge: 'awaken' } as const;
         audio.play(sfx[b.lastEvent.kind]);
       }
       if (b?.stage === 'victory' && pb?.stage !== 'victory') audio.play('victory');

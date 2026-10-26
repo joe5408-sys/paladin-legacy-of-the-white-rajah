@@ -117,7 +117,7 @@ describe('battle rules', () => {
 
   it('describes events for the battle log', () => {
     expect(describeEvent({ kind: 'attack', actor: 'player', damage: 6 }, P, G)).toContain('6 damage');
-    expect(describeEvent({ kind: 'enemy_attack', actor: 'enemy', damage: 2, defended: true }, P, G)).toContain(
+    expect(describeEvent({ kind: 'enemy_attack', actor: 'enemy', damage: 2, defended: true, heavy: false }, P, G)).toContain(
       'guard holds',
     );
   });

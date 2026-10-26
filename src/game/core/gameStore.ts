@@ -314,7 +314,7 @@ export const gameStore = createStore<GameState>()((set, get) => ({
       case 'player_action': {
         if (b.state.phase === 'victory') {
           set({
-            battle: { ...b, stage: 'victory', message: `The ${b.encounter.enemyName} falls to one knee!` },
+            battle: { ...b, stage: 'victory', message: b.encounter.victoryText ?? `The ${b.encounter.enemyName} falls to one knee!` },
           });
           return;
         }

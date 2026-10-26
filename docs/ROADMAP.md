@@ -12,6 +12,6 @@ Goal: a complete, playable 5–10 minute prologue ("Chapter 0: The Forgotten Hei
 | 5 — Complete Prologue | Connect scenes, revelation, Daniel Rengas, completion screen, pacing | Full prologue playable in ~5–10 min | ✅ Done (est. 4–6½ min; confirm with a human play-through) |
 | 6 — Save & Deployment | localStorage save/load, pause menu, basic audio, polish, regression tests, Netlify | Deployed game runs; save/load works; no critical progression bugs | ✅ Done. Live at https://legacyofwhiterajah.netlify.app, verified end to end |
 
-| 7 — Chapter 1: The Capital's Shadow | Lazy-loaded chapter system; Kuching milestones 1.1–1.4 (see `CHAPTER_1.md`) | Each milestone playable, tested (unit + Playwright) and deployed | 🟡 1.1–1.2 done · 1.3 next |
+| 7 — Chapter 1: The Capital's Shadow | Lazy-loaded chapter system; Kuching milestones 1.1–1.4 (see `CHAPTER_1.md`) | Each milestone playable, tested (unit + Playwright) and deployed | 🟡 1.1–1.3 done · 1.4 next |
 
 See `MASTER_PROMPT.md` §19 for the detailed pass/fail acceptance tests.

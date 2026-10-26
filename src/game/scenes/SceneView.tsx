@@ -8,6 +8,7 @@ import { VillageSquare } from './VillageSquare';
 // Chapter 1 scenes are split into their own download, fetched only when needed.
 const Waterfront = lazy(() => import('../../chapters/chapter1/Waterfront'));
 const Archives = lazy(() => import('../../chapters/chapter1/Archives'));
+const Vault = lazy(() => import('../../chapters/chapter1/Vault'));
 
 /**
  * Renders the active scene, or the battle arena during a battle.
@@ -35,6 +36,12 @@ export function SceneView() {
       return (
         <Suspense fallback={null}>
           <Archives key="archives" spawn={spawn} />
+        </Suspense>
+      );
+    case 'vault':
+      return (
+        <Suspense fallback={null}>
+          <Vault key="vault" spawn={spawn} />
         </Suspense>
       );
   }
