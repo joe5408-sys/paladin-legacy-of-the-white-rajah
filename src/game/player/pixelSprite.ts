@@ -46,13 +46,27 @@ function rect(ctx: Ctx, x: number, y: number, w: number, h: number, color: strin
   ctx.fillRect(x, y, w, h);
 }
 
+/**
+ * Arm pose for east-facing frames (west mirrors east).
+ * 'down' is the normal walk/idle arm; the others are used by battle poses.
+ * Hand positions (frame pixels, by = body top): forward → (12, by+3),
+ * raised → (3, by-6) behind the head, extended → (13, by+1).
+ */
+export type ArmPose = 'down' | 'forward' | 'raised' | 'extended';
+
+/** Body-top row for a frame column (body dips by 1px on every frame but the first). */
+export function bodyTop(col: number): number {
+  return 10 + (col === 0 ? 0 : 1);
+}
+
 /** Draws one 16x24 frame at the canvas origin. */
-function drawFrame(
+export function drawCharacterFrame(
   ctx: Ctx,
   C: CharacterPalette,
   f: CharacterFeatures,
   facing: Facing,
   col: number,
+  arm: ArmPose = 'down',
 ) {
   const bob = col === 0 ? 0 : 1; // body dips on breath and on each step
   const hy = 2 + bob; // head top
@@ -98,8 +112,23 @@ function drawFrame(
     rect(ctx, 12, by + 1, 1, 5 + swing, C.jacketShade); rect(ctx, 12, by + 6 + swing, 1, 1, C.skin);
   } else {
     rect(ctx, 10, by, 2, 5, C.trim);
-    const armX = col === 2 ? 8 : col === 3 ? 6 : 7;
-    rect(ctx, armX, by + 1, 2, 5, C.jacketShade); rect(ctx, armX, by + 6, 2, 1, C.skin);
+    if (arm === 'forward') {
+      // Elbow bent, hand held out in front at chest height
+      rect(ctx, 8, by + 1, 2, 3, C.jacketShade);
+      rect(ctx, 9, by + 3, 3, 2, C.jacketShade);
+      rect(ctx, 12, by + 3, 1, 2, C.skin);
+    } else if (arm === 'raised') {
+      // Arm swung up and back over the shoulder (behind the head)
+      rect(ctx, 3, by - 4, 2, 5, C.jacketShade);
+      rect(ctx, 3, by - 6, 2, 2, C.skin);
+    } else if (arm === 'extended') {
+      // Arm thrust straight forward
+      rect(ctx, 8, by + 1, 5, 2, C.jacketShade);
+      rect(ctx, 13, by + 1, 2, 2, C.skin);
+    } else {
+      const armX = col === 2 ? 8 : col === 3 ? 6 : 7;
+      rect(ctx, armX, by + 1, 2, 5, C.jacketShade); rect(ctx, armX, by + 6, 2, 1, C.skin);
+    }
   }
 
   // Head
@@ -178,7 +207,7 @@ export function createCharacterSheet(
   for (const [row, facing, mirror] of rows) {
     for (let col = 0; col < SHEET_COLS; col++) {
       fctx.clearRect(0, 0, FW, FH);
-      drawFrame(fctx, palette, features, facing, col);
+      drawCharacterFrame(fctx, palette, features, facing, col);
       addOutline(fctx, FW, FH, palette.outline);
       out.save();
       if (mirror) {

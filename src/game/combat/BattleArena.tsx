@@ -5,14 +5,21 @@
  */
 import { Html } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
-import { useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import { CHARACTERS } from '../../data/characters';
 import { FollowCamera } from '../camera/FollowCamera';
 import { CAMERA_PITCH_DEG } from '../core/constants';
 import { gameStore, useGame, type ActiveBattle } from '../core/gameStore';
 import { frameColumn } from '../player/animation';
-import { setSpriteFrame, SPRITE_WORLD_HEIGHT, useCharacterTexture } from '../player/spriteBody';
+import { SPRITE_WORLD_HEIGHT } from '../player/spriteBody';
+import {
+  BATTLE_FRAME_H,
+  BATTLE_FRAME_W,
+  createHeroBattleTexture,
+  setBattlePose,
+  type BattlePose,
+} from './heroBattleSprite';
 import { Brazier } from '../scenes/AncientChamber';
 import { getInsigniaTexture } from '../scenes/insignia';
 import type { BattleEvent } from './battle';
@@ -30,22 +37,54 @@ const GUARDIAN_HEIGHT = GUARDIAN_WIDTH * (GUARDIAN_H / GUARDIAN_W) * HEIGHT_COMP
 
 /** Timing of an action animation, in seconds. */
 const LUNGE_TIME = 0.45;
-const HIT_TIME = 0.2; // when the blow lands
+const HIT_TIME = 0.2; // when the blow lands (sound and damage numbers sync to this)
+const HIT_STOP = 0.1; // attacker and target freeze for a beat on impact
 const HURT_TIME = 0.45;
 
-/** Forward offset (0..1) of a quick lunge-and-return. */
+/** How far Adrian lunges so the blade tip reaches the Guardian (world units). */
+const STRIKE_REACH = 2.45;
+
+const PLAYER_SPRITE_W = BATTLE_FRAME_W / 16; // 16 px per world unit, like every sprite
+const PLAYER_SPRITE_H = (BATTLE_FRAME_H / 16) * (1 / Math.cos(THREE.MathUtils.degToRad(CAMERA_PITCH_DEG)));
+
+/** Forward offset (0..1) of a quick lunge-and-return (the Guardian's attack). */
 function lunge(t: number): number {
   if (t >= LUNGE_TIME) return 0;
   return Math.sin((t / LUNGE_TIME) * Math.PI);
 }
 
+const easeOut = (k: number) => 1 - (1 - k) * (1 - k);
+
+/**
+ * Adrian's sword attack: wind up, dash in, hold on impact (hit-stop), step back.
+ * Returns his forward offset and pose, or null once the move is finished.
+ */
+function playerStrike(t: number): { offset: number; pose: BattlePose } | null {
+  const windup = 0.12;
+  const recover = 0.62;
+  if (t < windup) return { offset: -0.15 * (t / windup), pose: 'windup' };
+  if (t < HIT_TIME) {
+    const k = (t - windup) / (HIT_TIME - windup);
+    return { offset: -0.15 + (STRIKE_REACH + 0.15) * easeOut(k), pose: k < 0.45 ? 'windup' : 'strike' };
+  }
+  if (t < HIT_TIME + HIT_STOP) return { offset: STRIKE_REACH, pose: 'strike' };
+  if (t < recover) {
+    const k = (t - HIT_TIME - HIT_STOP) / (recover - HIT_TIME - HIT_STOP);
+    return { offset: STRIKE_REACH * (1 - easeOut(k)), pose: k < 0.35 ? 'strike' : 'ready' };
+  }
+  return null;
+}
+
 /** Sideways shake and whether to show the hit flash, for the side taking damage. */
 function hurt(t: number): { shake: number; flash: boolean } {
   const k = t - HIT_TIME;
-  if (k < 0 || k > HURT_TIME) return { shake: 0, flash: false };
+  if (k < 0) return { shake: 0, flash: false };
+  if (k < HIT_STOP) return { shake: 0, flash: true }; // frozen on impact
+  const s = k - HIT_STOP;
+  if (s > HURT_TIME) return { shake: 0, flash: false };
   return {
-    shake: Math.sin(k * 70) * 0.09 * (1 - k / HURT_TIME),
-    flash: Math.floor(k * 16) % 2 === 0,
+    shake: Math.sin(s * 70) * 0.09 * (1 - s / HURT_TIME),
+    flash: Math.floor(s * 16) % 2 === 0,
   };
 }
 
@@ -116,6 +155,7 @@ export function BattleArena() {
 
       <BattlePlayer />
       <BattleGuardian />
+      <SlashTrail />
       <DamagePopups />
       <FollowCamera target={target} viewHeight={7} />
     </>
@@ -123,12 +163,15 @@ export function BattleArena() {
 }
 
 function BattlePlayer() {
-  const texture = useCharacterTexture(CHARACTERS.adrian);
+  // Adrian in battle: dedicated poses holding the blade of light.
+  const texture = useMemo(() => createHeroBattleTexture(CHARACTERS.adrian), []);
+  useEffect(() => () => texture.dispose(), [texture]);
   const group = useRef<THREE.Group>(null);
   const body = useRef<THREE.Group>(null);
   const mat = useRef<THREE.MeshBasicMaterial>(null);
   const shield = useRef<THREE.Mesh>(null);
   const shieldMat = useRef<THREE.MeshBasicMaterial>(null);
+  const bladeLight = useRef<THREE.PointLight>(null);
   const idle = useRef(0);
   const fall = useRef(0);
   const tick = useEventClock();
@@ -141,19 +184,31 @@ function BattlePlayer() {
     idle.current += dt;
 
     let x = PLAYER_POS.x;
-    let walking = false;
+    let pose: BattlePose = frameColumn(false, idle.current) === 0 ? 'ready' : 'ready2';
     let flash = false;
-    if (c.event?.actor === 'player' && c.event.kind !== 'defend') {
-      x += lunge(c.t) * 1.1;
-      walking = c.t < LUNGE_TIME;
+    let striking = false;
+    if (c.event?.kind === 'attack' || c.event?.kind === 'skill') {
+      const s = playerStrike(c.t);
+      if (s) {
+        x += s.offset;
+        pose = s.pose;
+        striking = s.pose === 'strike';
+      }
     } else if (c.event?.kind === 'enemy_attack') {
       const h = hurt(c.t);
       x += h.shake;
       flash = h.flash;
     }
+    if (b.stage === 'victory') pose = 'windup'; // blade raised in triumph
     group.current.position.set(x, 0, PLAYER_POS.z);
-    setSpriteFrame(texture, 'east', walking ? frameColumn(true, c.t) : frameColumn(false, idle.current));
+    setBattlePose(texture, pose);
     mat.current.color.set(flash ? '#ff7070' : '#ffffff');
+
+    // The blade glows softly, flaring on each strike (brighter for Radiant Strike).
+    if (bladeLight.current) {
+      const flare = striking ? (c.event?.kind === 'skill' ? 9 : 5) : 0;
+      bladeLight.current.intensity = b.stage === 'defeat' ? 0 : 1.6 + Math.sin(idle.current * 4) * 0.3 + flare;
+    }
 
     // Collapse sideways on defeat; stand back up on retry.
     fall.current = b.stage === 'defeat' ? Math.min(1, fall.current + dt * 2.5) : 0;
@@ -175,11 +230,13 @@ function BattlePlayer() {
       </mesh>
       {/* Pivot at the feet so the defeat fall rotates naturally */}
       <group ref={body}>
-        <mesh position-y={SPRITE_WORLD_HEIGHT / 2}>
-          <planeGeometry args={[1, SPRITE_WORLD_HEIGHT]} />
+        {/* 40x32 pose frame: the character is centred, with room for the blade */}
+        <mesh position-y={PLAYER_SPRITE_H / 2}>
+          <planeGeometry args={[PLAYER_SPRITE_W, PLAYER_SPRITE_H]} />
           <meshBasicMaterial ref={mat} map={texture} alphaTest={0.5} toneMapped={false} />
         </mesh>
       </group>
+      <pointLight ref={bladeLight} position={[0.6, 1.1, 0.4]} color="#ffd98a" intensity={1.6} distance={3} />
       <mesh ref={shield} position={[0.15, SPRITE_WORLD_HEIGHT / 2, 0.2]} visible={false}>
         <circleGeometry args={[1.0, 24]} />
         <meshBasicMaterial
@@ -270,6 +327,62 @@ function BattleGuardian() {
         />
       </mesh>
       <pointLight ref={light} position={[ENEMY_POS.x, 1.6, ENEMY_POS.z + 1]} color="#ffd27a" intensity={0} distance={8} />
+    </group>
+  );
+}
+
+/**
+ * The arc of light left by Adrian's blade as it cuts across the Guardian.
+ * Radiant Strike leaves a bigger, golden double arc.
+ */
+function SlashTrail() {
+  const group = useRef<THREE.Group>(null);
+  const mats = useRef<(THREE.MeshBasicMaterial | null)[]>([]);
+  const tick = useEventClock();
+  const DURATION = 0.32;
+
+  useFrame((_, rawDt) => {
+    const b = gameStore.getState().battle;
+    if (!b || !group.current) return;
+    const c = tick(b, Math.min(rawDt, 0.1));
+    const kind = c.event?.kind;
+    const p = (c.t - (HIT_TIME - 0.04)) / DURATION;
+    const show = (kind === 'attack' || kind === 'skill') && p >= 0 && p <= 1;
+    group.current.visible = show;
+    if (!show) return;
+    const radiant = kind === 'skill';
+    // Sweep from upper-left to lower-right, swelling slightly as it fades.
+    group.current.rotation.z = 0.8 - easeOut(p) * 1.5;
+    group.current.scale.setScalar((radiant ? 1.45 : 1) * (0.9 + p * 0.25));
+    mats.current.forEach((m, i) => {
+      if (!m) return;
+      m.color.set(radiant ? (i === 0 ? '#fff2c4' : '#ffc85a') : i === 0 ? '#ffffff' : '#bfe2ff');
+      m.opacity = (1 - p) * (i === 0 ? 1 : radiant ? 0.85 : 0.5);
+    });
+  });
+
+  const arcs: Array<[number, number]> = [
+    [0.98, 1.16], // bright leading edge
+    [0.78, 0.94], // fainter trailing edge
+  ];
+  return (
+    <group ref={group} position={[ENEMY_POS.x - 0.2, 1.55, ENEMY_POS.z + 0.7]} visible={false}>
+      {arcs.map(([inner, outer], i) => (
+        <mesh key={i}>
+          <ringGeometry args={[inner, outer, 40, 1, Math.PI * 0.12, Math.PI * 0.76]} />
+          <meshBasicMaterial
+            ref={(m) => {
+              mats.current[i] = m;
+            }}
+            transparent
+            opacity={0}
+            depthWrite={false}
+            toneMapped={false}
+            blending={THREE.AdditiveBlending}
+            side={THREE.DoubleSide}
+          />
+        </mesh>
+      ))}
     </group>
   );
 }

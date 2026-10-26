@@ -5,6 +5,14 @@
 **Repository:** https://github.com/joe5408-sys/paladin-legacy-of-the-white-rajah (public, `master`; Netlify auto-deploys on push)
 **Last updated:** 2026-10-26
 
+### Post-launch: sword combat visuals (2026-10-26) ✅
+Playtest feedback said attacks showed no sword action. In battle, Adrian now holds the **blade of light** the heirloom forms.
+- **New 40×32 battle poses** (`src/game/combat/heroBattleSprite.ts`, original pixel art): ready (two breathing frames), wind-up (blade drawn back over the shoulder) and strike (arm and blade thrust forward). Victory raises the blade.
+- **Attack timeline:** wind-up and pull back → dash in → strike lands at 0.2 s → **hit-stop** (both sides freeze 0.1 s) → step back. Sound and damage numbers stay in sync.
+- **Slash trail:** a white arc sweeps across the Guardian on Attack. Radiant Strike gets a bigger golden double arc on top of the existing burst. The blade also casts a soft glow that flares on each strike.
+- **Unchanged:** battle rules and numbers, and exploration (Adrian is unarmed outside battle).
+- **Verified in the browser** by freezing frames at impact for both Attack and Radiant Strike, plus the wind-up pose. 105/105 tests pass; the build succeeds.
+
 ### Deployment verification (2026-10-26, live site) ✅
 - HTTP 200. The JS and CSS files are byte-identical to the local production build (same content hashes). Hashed assets are served with `max-age=31536000, immutable`; the favicon loads.
 - **The full prologue was played on the live site:**
