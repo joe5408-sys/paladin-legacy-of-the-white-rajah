@@ -19,6 +19,7 @@
   - `npm run e2e` builds and runs them. `E2E_BASE_URL=https://legacyofwhiterajah.netlify.app npx playwright test` tests the live site.
   - `smoke.spec.ts`: title, settings, New Game, walk into the house, autosave, pause, Save, return to the title, refresh, Continue; corrupt save.
   - `full-story.spec.ts`: **plays all of Chapter 0 and Chapter 1 milestone 1.1 with real keyboard input**, and checks that Chapter 1 isn't downloaded before it's reached.
+- **Live:** deployed with commit `401eeeb`. The full Playwright suite also passed **against the live site** (3/3, full-story run 1.0 min).
 - **Test results:** `npm test` 117/117 (12 new). `npx playwright test` 3/3 passed against the production build (the full-story run takes about 58 s). The build splits Chapter 1 into its own files. I also checked the waterfront visually with Playwright screenshots and fixed three things: the Palace was out of view, the boat was facing the wrong way, and the south edge was empty.
 
 ### Post-launch: sword combat visuals (2026-10-26) ✅
