@@ -22,8 +22,8 @@ The vault behind the iron door and the Hollow Sentinel battle (telegraphed heavy
 ### Milestone 1.4 (done this session)
 The sealed records, the VALE box (Elias Vale's unredacted name), the Rajah's reply, Harrow's arrival, lights out, and the flood-door escape → Chapter 1 Complete. Files: `src/chapters/chapter1/{Records.tsx,recordsData.ts}`; characters `harrow` and `officer` in `data/characters.ts`; the card in `ChapterComplete.tsx`. Latest results: `npm test` 151/151, `npm run e2e` 3/3 (the full-story test plays the whole game).
 
-### Next exact task — design Chapter 2 (no code yet)
-Chapter 1 is finished. Before writing any Chapter 2 code, draft `docs/CHAPTER_2.md` with the user: premise, 3–5 milestones, characters and scope. Hooks from Chapter 1 are listed at the end of `docs/CHAPTER_1.md` (Sungai Awan threatened, Daniel in custody, what Elias hid upriver). Also still open: a human play-through to confirm pacing, and a listen to the audio.
+### Next exact task — review the Chapter 2 draft (no code yet)
+Chapter 1 is finished. `docs/CHAPTER_2.md` is agreed (defaults accepted); Milestone 2.1 (Upriver) is next. The draft covers the premise, five milestones, characters, balance, tech notes and cultural notes. Hooks from Chapter 1 are listed at the end of `docs/CHAPTER_1.md` (Sungai Awan threatened, Daniel in custody, what Elias hid upriver). Also still open: a human play-through to confirm pacing, and a listen to the audio.
 
 ### Watch out
 - Pushing to `master` deploys to the public site.
