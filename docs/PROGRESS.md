@@ -13,7 +13,7 @@
 - **Full screen:** a "Full Screen" title-menu option on touch devices that support it (Android; also tries to lock landscape). A web-app manifest (`public/manifest.webmanifest`) makes "Add to Home Screen" open the game full screen in landscape.
 - **Fixed on the way:** the pause menu (and other overlays) slid in from half a screen to the left as they opened, because they borrowed the interaction prompt's animation; they now fade in.
 - **Test results:** `npm test` 276/276 (new `touch.test.ts`: the joystick's direction logic). New browser test `mobile.spec.ts` on a phone-sized touch screen held sideways (844×390): taps New Game, taps through dialogue, walks to the family home with the joystick, enters with the action button, opens and closes the pause menu with ☰ Menu, and checks the portrait notice. `npm run e2e` 5/5 (the mobile test takes 9 s; the desktop tests are unchanged). Visual checks by screenshots of exploring, dialogue, the pause menu, the title screen, a battle and portrait.
-- **Live:** not yet checked on the live site. Not yet tried on a physical phone (only Edge's phone emulation).
+- **Live:** deployed as `f8ab31c`; `E2E_BASE_URL=https://legacyofwhiterajah.netlify.app npx playwright test` 5/5 against the live site (6.8 min), and the manifest is served. Not yet tried on a physical phone (only Edge's phone emulation).
 
 ### Phase 9 — Chapter 3, Milestone 3.4: The Petition Hour (2026-10-27) ✅
 - The 3.3 ending now leaves the gates held open: walk through them into **the audience hall** (a new invented palace interior: white columns, tall windows, a red carpet to a gilded throne, banners, benches, and the Crowned Sentinel standing beside the throne again).
