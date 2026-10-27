@@ -14,5 +14,6 @@ Goal: a complete, playable 5–10 minute prologue ("Chapter 0: The Forgotten Hei
 
 | 7 — Chapter 1: The Capital's Shadow | Lazy-loaded chapter system; Kuching milestones 1.1–1.4 (see `CHAPTER_1.md`) | Each milestone playable, tested (unit + Playwright) and deployed | ✅ Done (1.1–1.4), live |
 | 8 — Chapter 2: The River Remembers (working title) | Five milestones 2.1–2.5, drafted in `CHAPTER_2.md` | Design doc agreed before any code; then each milestone playable, tested and deployed | ✅ Done (2.1–2.5), live |
+| 9 — Chapter 3: The Crown's Word (working title) | Five milestones 3.1–3.5, drafted in `CHAPTER_3.md` | Design doc agreed before any code; then each milestone playable, tested and deployed | 📝 Design draft, awaiting review |
 
 See `MASTER_PROMPT.md` §19 for the detailed pass/fail acceptance tests.

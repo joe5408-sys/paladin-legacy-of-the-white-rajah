@@ -13,7 +13,7 @@
 `npm test` 224/224 · `npm run e2e` 3/3 (production build, Edge; the whole game to the Chapter 2 Complete card takes 4.8 min, test limit 8 min) · `npx tsc -b` OK.
 
 ### Next steps
-1. **Chapter 3 design doc** before any code (as with `CHAPTER_1.md` and `CHAPTER_2.md`): Adrian takes the River Charter to the capital and the Rajah. Hooks left open: Julian Pell's doubts (a possible ally), Daniel choosing between his badge and the village, Harrow knowing the Charter exists, the medallion's two arts (Radiant Strike, River Ward). Then `hasChapterAfter(2)` → true and a "Continue to Chapter 3" on the card.
+1. **Chapter 3 design doc: drafted** in `docs/CHAPTER_3.md` ("The Crown's Word": the night boat, Kuching as a wanted man, Pell sponsoring a petition, the Palace gate, a hearing where Adrian presents evidence, and the Crowned Sentinel, which yields). **Waiting for the owner to agree its Decisions list; write no Chapter 3 code before that.** Then `hasChapterAfter(2)` → true and a "Continue to Chapter 3" on the card.
 2. A human play-through of Chapter 2 for pacing and difficulty (the boss has only been tuned by strategy tests).
 3. Before release, someone from the region could read the Chapter 2 characters and dialogue (see `CHAPTER_2.md`, Cultural notes).
 4. The full-story browser test now plays the whole game (about 5 of its 8 minutes). Split it per chapter, with saved games as starting points, before Chapter 3 makes it longer.

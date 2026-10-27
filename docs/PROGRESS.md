@@ -1,6 +1,6 @@
 # Progress
 
-**Current phase:** Phase 8 — Chapter 2: The River Remembers ✅ complete (all five milestones, 2.1–2.5). Next: a Chapter 3 design doc. See `docs/CHAPTER_2.md`.
+**Current phase:** Phase 8 — Chapter 2: The River Remembers ✅ complete (all five milestones, 2.1–2.5). Next: Chapter 3, drafted in `docs/CHAPTER_3.md` (awaiting the owner's review; no code yet). See `docs/CHAPTER_2.md`.
 **MVP:** ✅ complete (phases 0–6); Chapter 0 is live.
 **Live site:** https://legacyofwhiterajah.netlify.app
 **Repository:** https://github.com/joe5408-sys/paladin-legacy-of-the-white-rajah (public, `master`; Netlify auto-deploys on push)
