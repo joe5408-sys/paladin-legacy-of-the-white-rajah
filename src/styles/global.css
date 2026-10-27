@@ -534,6 +534,24 @@ body,
   color: #9ff0e0;
 }
 
+/* The Iron Warden's armour (Chapter 2 boss) */
+.battle-popup.glance {
+  color: #c0c4cc;
+  font-size: 20px;
+}
+
+.battle-popup.armor-break {
+  color: #ffb45a;
+  font-size: 24px;
+  white-space: nowrap;
+}
+
+.battle-armored {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #c8ccd4;
+}
+
 @keyframes popup {
   0% {
     opacity: 0;

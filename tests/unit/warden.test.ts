@@ -1,7 +1,7 @@
 /**
  * Chapter 2, Milestone 2.4 — The River Charter: the waystation hall (journal,
  * oath, Charter), Daniel's return, the Hollow Warden's balance and battle,
- * saves and the "to be continued" ending.
+ * saves, and the race home to the jetty (Milestone 2.5).
  */
 import { beforeEach, describe, expect, it } from 'vitest';
 import { createBattle, enemyAction, playerAction, type BattleState, type Command } from '../../src/game/combat/battle';
@@ -124,7 +124,7 @@ describe('Milestone 2.4 flow', () => {
     expect(s().transition?.to).toBe('waystation_hall');
   });
 
-  it('journal → Charter → Daniel → the Hollow Warden → To Be Continued', () => {
+  it('journal → Charter → Daniel → the Hollow Warden → home to the jetty', () => {
     placeIn('waystation_landing', 'after_battle', AFTER_SPIRIT);
     use('waystation-enter');
     arrive();
@@ -161,10 +161,10 @@ describe('Milestone 2.4 flow', () => {
     expect(fight(wardWhenHurt)).toBe('done');
     expect(s().flags.c2_warden_defeated).toBe(true);
     expect(s().dialogue?.def.id).toBe('c2_warden_defeated');
-    finishDialogue();
-    expect(s().mode).toBe('ending');
-    expect(isAtChapterEnd(s().flags)).toBe(true);
-    expect(objective()).toBeUndefined();
+    finishDialogue(); // and straight into the race downriver
+    expect(isAtChapterEnd(s().flags)).toBe(false);
+    expect(s().transition?.to).toBe('jetty_dusk');
+    expect(objective()).toBe('c2_dusk');
   });
 
   it('Daniel stands on the landing once he is back, and the Warden can be faced again after a reload', () => {
@@ -193,11 +193,17 @@ describe('Milestone 2.4 flow', () => {
     expect(r.ok && r.data.scene).toBe('village');
   });
 
-  it('a save at the end reopens the To Be Continued card', () => {
-    placeIn('waystation_landing', 'after_battle', [
-      ...AFTER_SPIRIT, 'c2_entered_hall', 'c2_read_journal', 'c2_found_charter', 'c2_daniel_returned', 'c2_warden_seen',
-      'c2_warden_defeated',
-    ]);
-    expect(s().mode).toBe('ending');
+  it('a save from the old 2.4 cliffhanger sets off home from Mara or Ah Hock', () => {
+    for (const who of ['npc-mara-landing', 'npc-ahhock-landing']) {
+      placeIn('waystation_landing', 'after_battle', [
+        ...AFTER_SPIRIT, 'c2_entered_hall', 'c2_read_journal', 'c2_found_charter', 'c2_daniel_returned', 'c2_warden_seen',
+        'c2_warden_defeated',
+      ]);
+      expect(s().mode).toBe('explore');
+      use(who);
+      expect(s().dialogue?.def.id).toBe('c2_home_go');
+      finishDialogue();
+      expect(s().transition?.to).toBe('jetty_dusk');
+    }
   });
 });

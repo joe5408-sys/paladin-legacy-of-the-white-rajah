@@ -63,7 +63,10 @@ export type StoryFlag =
   | 'c2_found_charter' // the River Charter of 1921
   | 'c2_daniel_returned'
   | 'c2_warden_seen' // the Hollow Warden on the landing
-  | 'c2_warden_defeated'; // (milestone 2.4 cliffhanger)
+  | 'c2_warden_defeated' // the Hollow Warden; set off home with the Charter
+  | 'c2_dusk_arrived' // back at Sungai Awan at dusk, ahead of the barge
+  | 'c2_iron_seen' // confronted Pell; the Iron Warden steps off the barge
+  | 'c2_iron_defeated'; // Chapter 2 complete
 
 export type StoryFlags = Partial<Record<StoryFlag, true>>;
 

@@ -2,15 +2,16 @@
  * Plays the whole game as it stands, with real keyboard input in a real browser:
  * Chapter 0 from New Game to CHAPTER 0 COMPLETE, all of Chapter 1 (the Kuching
  * waterfront, the Royal Archives, the vault battle, the sealed records), then
- * Chapter 2 so far (the express boat, Sungai Awan, and the waystation's stone
- * puzzle and River Ward battle) to the "to be continued" card. Also checks that
+ * all of Chapter 2 (the express boat, Sungai Awan, the waystation's stone puzzle
+ * and River Ward battle, the hall and the Hollow Warden, then the jetty at dusk
+ * and the Iron Warden boss) to the CHAPTER 2 COMPLETE card. Also checks that
  * each chapter's files are only downloaded when the player reaches them.
  */
 import { expect, test } from '@playwright/test';
 import { arriveIn, expectLocation, finishDialogue, press, testId, trackErrors, walk } from './helpers';
 
-test('full story: Chapters 0 and 1, and Chapter 2 so far', async ({ page }) => {
-  test.setTimeout(360_000); // the whole game, played in real time
+test('full story: Chapters 0, 1 and 2', async ({ page }) => {
+  test.setTimeout(480_000); // the whole game, played in real time
   const errors = trackErrors(page);
   const requested: string[] = [];
   page.on('request', (r) => requested.push(r.url()));
@@ -382,14 +383,43 @@ test('full story: Chapters 0 and 1, and Chapter 2 so far', async ({ page }) => {
   await expect(testId(page, 'enemy-hp')).toHaveText('0/48');
   await expect(testId(page, 'player-hp')).toHaveText('12/30');
   await press(page, 'KeyE', 600);
-  await finishDialogue(page);
-  await expect(testId(page, 'c2-to-be-continued')).toBeVisible({ timeout: 10_000 });
+  await finishDialogue(page); // the plate in its chest, then the race downriver
 
-  // The cliffhanger is saved; after a refresh, Continue says so.
+  // ── Milestone 2.5: the jetty at dusk ─────────────────
+  await expectLocation(page, 'Sungai Awan — The Jetty at Dusk');
+  await expect(testId(page, 'dialogue-box')).toBeVisible({ timeout: 10_000 });
+  await finishDialogue(page);
+  await expect(testId(page, 'objective')).toContainText('Confront Julian Pell at the barge.');
+  await page.screenshot({ path: 'test-results/jetty-dusk.png' });
+  // East along the boardwalk, past the villagers, to Pell at the gangway.
+  await walk(page, 'KeyD', 15.6);
+  await expect(testId(page, 'interaction-prompt')).toContainText('Julian Pell');
+  await press(page, 'KeyE');
+  await finishDialogue(page);
+
+  // The Iron Warden: break the armour, ward the first heavy blow, defend the next.
+  await expect(testId(page, 'battle-ui')).toBeVisible();
+  await expect(testId(page, 'enemy-status')).toContainText('Iron Warden');
+  await expect(testId(page, 'enemy-armored')).toBeVisible();
+  for (const cmd of ['skill', 'skill', 'attack', 'ward', 'attack', 'attack', 'defend', 'attack', 'attack']) {
+    await expect(testId(page, `cmd-${cmd}`)).toBeEnabled({ timeout: 15_000 });
+    if (cmd === 'ward' || cmd === 'defend') await expect(testId(page, 'enemy-charging')).toBeVisible();
+    if (cmd === 'attack') await expect(testId(page, 'enemy-armored')).toHaveCount(0);
+    await testId(page, `cmd-${cmd}`).click();
+  }
+  await expect(testId(page, 'battle-victory')).toBeVisible({ timeout: 15_000 });
+  await expect(testId(page, 'enemy-hp')).toHaveText('0/50');
+  await expect(testId(page, 'player-hp')).toHaveText('13/30');
+  await press(page, 'KeyE', 600);
+  await finishDialogue(page);
+  await expect(testId(page, 'chapter2-complete')).toBeVisible({ timeout: 10_000 });
+  await expect(testId(page, 'menu-next-chapter')).toHaveCount(0); // no Chapter 3 yet
+
+  // The end is saved; after a refresh, Continue says so.
   await page.waitForTimeout(500);
   await page.reload();
   await expect(testId(page, 'menu-continue')).toBeVisible({ timeout: 10_000 });
-  await expect(page.locator('.menu-hint')).toContainText('Chapter 2');
+  await expect(page.locator('.menu-hint')).toContainText('Chapter 2 complete');
 
   expect(errors).toEqual([]);
 });

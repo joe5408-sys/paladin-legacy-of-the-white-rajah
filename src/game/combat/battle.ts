@@ -4,6 +4,9 @@
  * to test and the UI can pace the turns however it likes.
  *
  * Turn order: player acts → (victory?) → enemy acts → (defeat?) → player…
+ *
+ * Boss phases (Chapter 2): an armoured enemy shrugs off ordinary attacks until
+ * Radiant Strike breaks its armour; only then does it start winding up heavy blows.
  */
 import type { EncounterDef, PlayerBattleStats } from '../../data/encounters';
 
@@ -22,6 +25,8 @@ export interface BattleState {
   warded: boolean;
   /** Set by Defend; lasts until the end of the enemy's next turn. */
   defending: boolean;
+  /** The enemy's armour is still on (phase 1 of a boss): Attack barely scratches it. */
+  armored: boolean;
   /** The enemy is winding up a heavy blow for its next turn. */
   charging: boolean;
   phase: BattlePhase;
@@ -30,7 +35,15 @@ export interface BattleState {
 }
 
 export type BattleEvent =
-  | { kind: 'attack' | 'skill'; actor: 'player'; damage: number }
+  | {
+      kind: 'attack' | 'skill';
+      actor: 'player';
+      damage: number;
+      /** Set only against armour: the blow glanced off the plates. */
+      armored?: true;
+      /** Set only when this Radiant Strike broke the enemy's armour. */
+      brokeArmor?: true;
+    }
   | { kind: 'defend'; actor: 'player'; damage: 0 }
   | { kind: 'ward'; actor: 'player'; damage: 0; heal: number }
   | { kind: 'enemy_attack'; actor: 'enemy'; damage: number; defended: boolean; heavy: boolean; warded: boolean }
@@ -50,6 +63,7 @@ export function createBattle(player: PlayerBattleStats, enc: EncounterDef): Batt
     skillCharges: player.skillCharges,
     wardCharges: player.ward?.charges ?? 0,
     warded: false,
+    armored: !!enc.armor,
     defending: false,
     charging: false,
     phase: 'player', // the player always opens
@@ -64,11 +78,15 @@ export function canUse(state: BattleState, cmd: Command): boolean {
   return true;
 }
 
-/** Player's action. Returns null if the command isn't allowed right now. */
+/**
+ * Player's action. Returns null if the command isn't allowed right now.
+ * Pass the encounter for armoured enemies (without it, armour has no effect).
+ */
 export function playerAction(
   state: BattleState,
   player: PlayerBattleStats,
   cmd: Command,
+  enc?: EncounterDef,
 ): StepResult | null {
   if (!canUse(state, cmd)) return null;
 
@@ -87,16 +105,27 @@ export function playerAction(
     };
   }
 
-  const damage = cmd === 'skill' ? player.skillDamage : player.attack;
+  const armor = state.armored ? enc?.armor : undefined;
+  // Radiant Strike cracks armour and lands in full; an ordinary blow glances off.
+  const glances = !!armor && cmd === 'attack';
+  const breaks = !!armor && cmd === 'skill';
+  const damage = cmd === 'skill' ? player.skillDamage : glances ? armor!.attackDamage : player.attack;
   const enemyHp = Math.max(0, state.enemyHp - damage);
   return {
     state: {
       ...state,
       enemyHp,
+      armored: breaks ? false : state.armored,
       skillCharges: cmd === 'skill' ? state.skillCharges - 1 : state.skillCharges,
       phase: enemyHp <= 0 ? 'victory' : 'enemy',
     },
-    event: { kind: cmd, actor: 'player', damage },
+    event: {
+      kind: cmd,
+      actor: 'player',
+      damage,
+      ...(glances ? { armored: true as const } : {}),
+      ...(breaks ? { brokeArmor: true as const } : {}),
+    },
   };
 }
 
@@ -111,7 +140,8 @@ export function enemyAction(
 ): StepResult | null {
   if (state.phase !== 'enemy') return null;
 
-  if (enc.heavy && !state.charging && state.turn % enc.heavy.every === 0) {
+  // An armoured boss only fights normally; heavy blows start once its armour is broken.
+  if (enc.heavy && !state.charging && !state.armored && state.turn % enc.heavy.every === 0) {
     return {
       state: { ...state, charging: true, defending: false, phase: 'player', turn: state.turn + 1 },
       event: { kind: 'enemy_charge', actor: 'enemy', damage: 0 },
@@ -144,8 +174,14 @@ export function enemyAction(
 export function describeEvent(event: BattleEvent, player: PlayerBattleStats, enc: EncounterDef): string {
   switch (event.kind) {
     case 'attack':
+      if (event.armored) {
+        return enc.armor?.glanceText ?? `Adrian's blade skids off the ${enc.enemyName}'s armour: only ${event.damage} damage.`;
+      }
       return `Adrian strikes! The ${enc.enemyName} takes ${event.damage} damage.`;
     case 'skill':
+      if (event.brokeArmor) {
+        return `${player.skillName}! ${enc.armor?.breakText ?? 'The armour cracks apart!'} (${event.damage} damage)`;
+      }
       return `${player.skillName}! Light bursts from the blade for ${event.damage} damage.`;
     case 'defend':
       return 'Adrian raises his guard and braces for the next blow.';

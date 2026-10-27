@@ -14,7 +14,7 @@ export function formatPlaytime(ms: number): string {
 
 /**
  * Closing card for a chapter. Chapters 0 and 1 offer to continue into the next;
- * the in-progress Chapter 2 ends on a "to be continued" card.
+ * Chapter 2, the latest written, points ahead to Chapter 3.
  */
 export function ChapterComplete() {
   const startedAt = useGame((s) => s.startedAt);
@@ -86,10 +86,10 @@ export function ChapterComplete() {
       ) : (
         <>
           <div className="chapter-kicker">Chapter 2 · The River Remembers</div>
-          <h1 className="chapter-title" data-testid="c2-to-be-continued">To Be Continued</h1>
+          <h1 className="chapter-title" data-testid="chapter2-complete">Chapter 2 Complete</h1>
           <p className="chapter-quote">“When the Crown forgets its word, I will remember it for them.”</p>
           {playtime}
-          <div className="chapter-next">The rest of Chapter 2 arrives in a future update. Your progress is saved.</div>
+          <div className="chapter-next">Chapter 3 arrives in a future update. Your progress is saved.</div>
         </>
       )}
       <div className={`chapter-menu${ready ? '' : ' waiting'}`}>

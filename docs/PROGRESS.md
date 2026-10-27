@@ -1,10 +1,19 @@
 # Progress
 
-**Current phase:** Phase 8 — Chapter 2: The River Remembers (design agreed, `docs/CHAPTER_2.md`). Milestones 2.1 (Upriver), 2.2 (Home, Changed) and 2.3 (The Waystation) ✅ done and live; 2.4 (The River Charter) ✅ done and live; 2.5 (The Iron Warden) next. See `docs/CHAPTER_1.md`.
+**Current phase:** Phase 8 — Chapter 2: The River Remembers ✅ complete (all five milestones, 2.1–2.5). Next: a Chapter 3 design doc. See `docs/CHAPTER_2.md`.
 **MVP:** ✅ complete (phases 0–6); Chapter 0 is live.
 **Live site:** https://legacyofwhiterajah.netlify.app
 **Repository:** https://github.com/joe5408-sys/paladin-legacy-of-the-white-rajah (public, `master`; Netlify auto-deploys on push)
 **Last updated:** 2026-10-27
+
+### Phase 8 — Chapter 2, Milestone 2.5: The Iron Warden (2026-10-27) ✅ Chapter 2 complete
+- The Hollow Warden's defeat now leads into **the race downriver** (no ending). Saves from the old 2.4 cliffhanger set off from Mara or Ah Hock on the landing.
+- **Sungai Awan at dusk** (`src/chapters/chapter2/JettyDusk.tsx` + `jettyData.ts`, lazy-loaded): the Chapter 2 village with a new `lighting="dusk"` option on `VillageSquare` (low red sun, lamps lit). The villagers are out on the boardwalk; **Harrow's black barge** (orange stripe, floodlights on a crane) ties up at the east end with a great shape under a tarpaulin on deck.
+- **Story:** "We beat it. Just." → Julian Pell at the gangway (he didn't order it: "I ordered a consultation and a tea urn!") → the **Iron Warden** steps off the barge → boss battle → it topples through the rail into the river → Pell reads the River Charter and, for the first time, doesn't know which side he's on → Adrian will take the Charter to the capital, to the Rajah himself → **Chapter 2 Complete** (a real card; "Chapter 3 arrives in a future update"). Everyone on the boardwalk has an optional line.
+- **Boss phases** (a small, data-driven addition to `battle.ts`): an encounter can have `armor`. While it holds, Attack does 1 damage ("Clang!") and the boss never winds up. The first Radiant Strike breaks it (full damage, iron plates flying off), and only then do heavy blows start. The HUD shows "Armoured", and the sprite changes from bolted plates to an open furnace.
+- **The Iron Warden:** a new 40×52 pixel-art construct (`ironWardenSprite.ts`) on a dusk boardwalk backdrop with the barge behind, and a deeper, faster **boss battle loop**. HP 50, hits for 4, and once exposed an 18-damage heavy blow every 3rd round that Defend only halves. Break the armour at once, ward the first heavy blow, defend the second: wins with 13/30 HP. Going all-out, ignoring the armour, or never using River Ward all lose. Max HP stays 30.
+- **Test results:** `npm test` 224/224 (new `ironWarden.test.ts`, 16 tests: armour rules, four balance strategies, the full 2.5 story to the card, retrying a defeat, a reload mid-battle, the end save, a too-early jetty save; 2.4 tests now end on the trip home). `npm run e2e` 3/3: the full-story test now plays all three chapters to the Chapter 2 Complete card (4.8 min; its limit was raised to 8 min). Visual checks by screenshots of the jetty, the barge and both boss phases; after them I brightened the dusk light, shrank the boss sprite slightly and shortened the "Armoured" label so the boss's head isn't hidden behind the status panel.
+- **Live:** not yet checked on the live site.
 
 ### Phase 8 — Chapter 2, Milestone 2.4: The River Charter (2026-10-27) ✅
 - After the spirit's test the door stays open (no ending): **Enter Waystation** leads into **the waystation hall** (`src/chapters/chapter2/Hall.tsx` + `hallData.ts`, lazy-loaded), a round hall cut into the cliff with roots through the ceiling and river-light from a stone basin. Saves from the old 2.3 cliffhanger can walk straight in.

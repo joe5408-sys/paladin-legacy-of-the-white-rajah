@@ -49,7 +49,7 @@ const ALL_FLAGS: readonly StoryFlag[] = [
   'c2_village_arrived', 'c2_read_notice', 'c2_talked_lim', 'c2_met_siti', 'c2_met_pell', 'c2_home_talked', 'c2_found_map',
   'c2_went_upriver', 'c2_landing_arrived', 'c2_stone_deep', 'c2_stone_bright', 'c2_stones_woken', 'c2_spirit_defeated',
   'c2_learned_ward', 'c2_entered_hall', 'c2_read_journal', 'c2_read_oath', 'c2_found_charter', 'c2_daniel_returned',
-  'c2_warden_seen', 'c2_warden_defeated',
+  'c2_warden_seen', 'c2_warden_defeated', 'c2_dusk_arrived', 'c2_iron_seen', 'c2_iron_defeated',
 ];
 const DIRECTIONS: readonly Direction[] = ['north', 'south', 'east', 'west'];
 
@@ -67,6 +67,7 @@ const SCENE_REQUIRES: Record<SceneId, StoryFlag[]> = {
   home_c2: ['c2_reached_jetty'],
   waystation_landing: ['c2_went_upriver'],
   waystation_hall: ['c2_spirit_defeated'],
+  jetty_dusk: ['c2_warden_defeated'],
 };
 
 /** Browser localStorage, or null where it's unavailable (private mode, blocked, tests). */

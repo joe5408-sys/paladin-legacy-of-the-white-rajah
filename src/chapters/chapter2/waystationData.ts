@@ -133,6 +133,7 @@ export const LANDING_INTERACTABLES: Interactable[] = [
     radius: 1.3,
     npc: 'mara',
     dialogue: [
+      { dialogue: 'c2_home_go', requires: ['c2_warden_defeated'] },
       { dialogue: 'c2_mara_landing_after', requires: ['c2_stones_woken'] },
       { dialogue: 'c2_mara_landing' },
     ],
@@ -145,7 +146,11 @@ export const LANDING_INTERACTABLES: Interactable[] = [
     z: 3.4,
     radius: 1.3,
     npc: 'ahhock',
-    dialogue: [{ dialogue: 'c2_ahhock_landing' }],
+    dialogue: [
+      // Saves from the old 2.4 cliffhanger: the Warden is beaten, so set off home.
+      { dialogue: 'c2_home_go', requires: ['c2_warden_defeated'] },
+      { dialogue: 'c2_ahhock_landing' },
+    ],
   },
 ];
 
@@ -291,7 +296,22 @@ export const LANDING_DIALOGUE: DialogueDef[] = [
       { speaker: 'mara', text: 'Then we go home, and we get there first. Ah Hock! The engine!' },
       { speaker: 'adrian', text: 'With the Charter.' },
     ],
-    endChapter: true,
+    next: 'c2_downriver',
+  },
+  {
+    id: 'c2_home_go',
+    lines: [{ speaker: 'mara', text: 'The barge, Adrian! Into the boat. Ah Hock, the engine!' }],
+    next: 'c2_downriver',
+  },
+  {
+    // The race home: a time skip to Sungai Awan at dusk.
+    id: 'c2_downriver',
+    lines: [
+      { speaker: null, text: 'Ah Hock takes the rapids faster than any sane man should. Daniel holds on to the gunwale and says nothing at all.' },
+      { speaker: 'ahhock', text: 'My grandmother would have been ashamed of me. Then she would have asked me to do it again.' },
+      { speaker: null, text: 'The sun is low and red when Sungai Awan comes round the bend. Downriver, floodlights are moving on the water.' },
+    ],
+    enterScene: { scene: 'jetty_dusk', spawn: 'arrival' },
   },
   {
     id: 'c2_daniel_landing',

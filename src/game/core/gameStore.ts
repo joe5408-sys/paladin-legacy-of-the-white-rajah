@@ -311,7 +311,7 @@ export const gameStore = createStore<GameState>()((set, get) => ({
   chooseCommand(cmd) {
     const b = get().battle;
     if (!b || b.stage !== 'command') return false;
-    const result = playerAction(b.state, b.player, cmd);
+    const result = playerAction(b.state, b.player, cmd, b.encounter);
     if (!result) return false; // e.g. no Radiant Strike charges left
     set({
       battle: {

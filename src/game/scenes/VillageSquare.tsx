@@ -13,30 +13,39 @@ const FAR_TREES: Array<[number, number, number]> = Array.from({ length: 22 }, (_
   return [x, z, s];
 });
 
+/** Sky and sun for each time of day. Dusk is Chapter 2's finale. */
+const LIGHTING = {
+  day: { sky: '#9fc6c9', fog: '#b9d3cf', hemi: ['#fff3dc', '#4d6b4a', 0.9], sun: [-8, 14, 6], sunColor: '#ffe2b8', sunIntensity: 2.2 },
+  dusk: { sky: '#4a3448', fog: '#5e4250', hemi: ['#ffb898', '#3a3446', 0.8], sun: [-14, 6, 4], sunColor: '#ff9a5a', sunIntensity: 1.9 },
+} as const;
+
 /**
  * Area A — the riverside village square of Sungai Awan.
- * Later chapters reuse it with their own layout (people, interactions) and extra props.
+ * Later chapters reuse it with their own layout (people, interactions), extra props and lighting.
  */
 export function VillageSquare({
   spawn,
   layout = VILLAGE_LAYOUT,
+  lighting = 'day',
   children,
 }: {
   spawn: SpawnPoint;
   layout?: SceneLayout;
+  lighting?: keyof typeof LIGHTING;
   children?: ReactNode;
 }) {
+  const L = LIGHTING[lighting];
   return (
     <>
-      <color attach="background" args={['#9fc6c9']} />
-      <fog attach="fog" args={['#b9d3cf', 30, 55]} />
+      <color attach="background" args={[L.sky]} />
+      <fog attach="fog" args={[L.fog, 30, 55]} />
 
-      {/* Warm late-afternoon light with soft sky fill */}
-      <hemisphereLight args={['#fff3dc', '#4d6b4a', 0.9]} />
+      {/* Warm late-afternoon light with soft sky fill (or a low red sun at dusk) */}
+      <hemisphereLight args={[L.hemi[0], L.hemi[1], L.hemi[2]]} />
       <directionalLight
-        position={[-8, 14, 6]}
-        intensity={2.2}
-        color="#ffe2b8"
+        position={[L.sun[0], L.sun[1], L.sun[2]]}
+        intensity={L.sunIntensity}
+        color={L.sunColor}
         castShadow
         shadow-mapSize={[2048, 2048]}
         shadow-camera-left={-16}

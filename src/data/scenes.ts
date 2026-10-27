@@ -5,7 +5,7 @@
 import type { Direction } from '../game/core/input';
 import type { DialogueRule } from '../game/dialogue/types';
 
-export type SceneId = 'village' | 'home' | 'chamber' | 'waterfront' | 'archives' | 'vault' | 'records' | 'boat' | 'village_c2' | 'home_c2' | 'waystation_landing' | 'waystation_hall';
+export type SceneId = 'village' | 'home' | 'chamber' | 'waterfront' | 'archives' | 'vault' | 'records' | 'boat' | 'village_c2' | 'home_c2' | 'waystation_landing' | 'waystation_hall' | 'jetty_dusk';
 
 export interface SpawnPoint {
   x: number;
@@ -136,6 +136,16 @@ export const SCENES: Record<SceneId, SceneDef> = {
     },
     arrival: [{ dialogue: 'c2_hall_arrival', unless: ['c2_entered_hall'] }],
   },
+  // Sungai Awan at dusk, with Harrow's barge at the jetty (src/chapters/chapter2/jettyData.ts).
+  jetty_dusk: {
+    id: 'jetty_dusk',
+    name: 'Sungai Awan — The Jetty at Dusk',
+    spawns: {
+      arrival: { x: -8.4, z: -4.7, facing: 'east' },
+      after_battle: { x: 7.2, z: -4.7, facing: 'east' },
+    },
+    arrival: [{ dialogue: 'c2_dusk_arrival', unless: ['c2_dusk_arrived'] }],
+  },
 };
 
 /** Chapter a scene belongs to (0 = prologue). */
@@ -152,6 +162,7 @@ export const SCENE_CHAPTER: Record<SceneId, number> = {
   home_c2: 2,
   waystation_landing: 2,
   waystation_hall: 2,
+  jetty_dusk: 2,
 };
 
 export const NEW_GAME_SCENE: SceneId = 'village';

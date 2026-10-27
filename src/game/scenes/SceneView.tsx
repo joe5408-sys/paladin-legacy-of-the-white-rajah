@@ -16,6 +16,7 @@ const VillageC2 = lazy(() => import('../../chapters/chapter2/VillageC2'));
 const HomeC2 = lazy(() => import('../../chapters/chapter2/HomeC2'));
 const Waystation = lazy(() => import('../../chapters/chapter2/Waystation'));
 const Hall = lazy(() => import('../../chapters/chapter2/Hall'));
+const JettyDusk = lazy(() => import('../../chapters/chapter2/JettyDusk'));
 
 /**
  * Renders the active scene, or the battle arena during a battle.
@@ -85,6 +86,12 @@ export function SceneView() {
       return (
         <Suspense fallback={null}>
           <Hall key="waystation_hall" spawn={spawn} />
+        </Suspense>
+      );
+    case 'jetty_dusk':
+      return (
+        <Suspense fallback={null}>
+          <JettyDusk key="jetty_dusk" spawn={spawn} />
         </Suspense>
       );
   }

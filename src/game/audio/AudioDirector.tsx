@@ -7,7 +7,7 @@ import { audio, type AmbienceName } from './audio';
 function ambienceFor(s: GameState): AmbienceName {
   if (s.screen === 'title') return 'title';
   if (s.mode === 'ending') return 'ending';
-  if (s.battle) return 'battle';
+  if (s.battle) return s.battle.encounter.armor ? 'boss' : 'battle';
   return SCENE_AMBIENCE[s.scene] ?? (s.scene as AmbienceName);
 }
 
@@ -17,6 +17,7 @@ const SCENE_AMBIENCE: Partial<Record<GameState['scene'], AmbienceName>> = {
   home_c2: 'home',
   waystation_landing: 'village', // river and birds
   waystation_hall: 'chamber', // the same Paladin stillness as the first chamber
+  jetty_dusk: 'village',
 };
 
 /**

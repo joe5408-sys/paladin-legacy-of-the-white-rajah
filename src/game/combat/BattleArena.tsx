@@ -25,6 +25,7 @@ import { getInsigniaTexture } from '../scenes/insignia';
 import type { BattleEvent } from './battle';
 import { getGuardianTexture, getSpiritTexture, GUARDIAN_H, GUARDIAN_W } from './guardianSprite';
 import { getSentinelTexture, getWardenTexture, SENTINEL_H, SENTINEL_W } from './sentinelSprite';
+import { getIronWardenTexture, IRON_H, IRON_W } from './ironWardenSprite';
 import type { EncounterDef } from '../../data/encounters';
 
 const PLAYER_POS = new THREE.Vector3(-2.3, 0, 0.7);
@@ -34,12 +35,13 @@ const CAMERA_TARGET = new THREE.Vector3(0, 0, 0.2);
 const POPUP_Z: [number, number] = [5, 0];
 
 const HEIGHT_COMP = 1 / Math.cos(THREE.MathUtils.degToRad(CAMERA_PITCH_DEG));
-/** World size and texture of each enemy sprite. */
-const ENEMY_SPRITES: Record<EncounterDef['sprite'], { width: number; height: number; texture: () => THREE.Texture }> = {
+/** World size and texture of each enemy sprite (the Iron Warden's depends on its armour). */
+const ENEMY_SPRITES: Record<EncounterDef['sprite'], { width: number; height: number; texture: (armored: boolean) => THREE.Texture }> = {
   guardian: { width: 2.3, height: 2.3 * (GUARDIAN_H / GUARDIAN_W) * HEIGHT_COMP, texture: getGuardianTexture },
   sentinel: { width: 2.2, height: 2.2 * (SENTINEL_H / SENTINEL_W) * HEIGHT_COMP, texture: getSentinelTexture },
   spirit: { width: 2.3, height: 2.3 * (GUARDIAN_H / GUARDIAN_W) * HEIGHT_COMP, texture: getSpiritTexture },
   warden: { width: 2.2, height: 2.2 * (SENTINEL_H / SENTINEL_W) * HEIGHT_COMP, texture: getWardenTexture },
+  iron: { width: 2.45, height: 2.45 * (IRON_H / IRON_W) * HEIGHT_COMP, texture: getIronWardenTexture },
 };
 
 /** Colours of each battle backdrop. */
@@ -74,6 +76,16 @@ const ARENAS: Record<
     under: '#1d2a22',
     wall: '#3c4a3e',
     sign: '#8fd0e0',
+  },
+  // The Sungai Awan boardwalk at dusk, with the dark hull of Harrow's barge behind.
+  jetty: {
+    sky: '#2a1c2c',
+    ambient: '#e0a888',
+    key: '#ffb47a',
+    floor: ['#7a5a3e', '#705238'],
+    under: '#1e1610',
+    wall: '#2c2a30',
+    sign: '#ff9a4a',
   },
 };
 
@@ -184,14 +196,30 @@ export function BattleArena() {
         <boxGeometry args={[13, 3.2, 0.4]} />
         <meshStandardMaterial color={arena.wall} />
       </mesh>
-      <mesh position={[0, 1.9, -3.09]}>
-        <planeGeometry args={[1.3, 1.3]} />
-        <meshBasicMaterial map={getInsigniaTexture(arena.sign)} transparent alphaTest={0.3} />
-      </mesh>
+      {arenaId === 'jetty' ? (
+        // The barge's hull: an orange company stripe and a row of floodlights
+        <group position={[0, 0, -3.08]}>
+          <mesh position={[0, 1.2, 0]}>
+            <planeGeometry args={[13, 0.18]} />
+            <meshBasicMaterial color="#d8742a" toneMapped={false} />
+          </mesh>
+          {[-4.5, -1.5, 1.5, 4.5].map((x) => (
+            <mesh key={x} position={[x, 2.8, 0]}>
+              <planeGeometry args={[0.5, 0.22]} />
+              <meshBasicMaterial color="#fff2c8" toneMapped={false} />
+            </mesh>
+          ))}
+        </group>
+      ) : (
+        <mesh position={[0, 1.9, -3.09]}>
+          <planeGeometry args={[1.3, 1.3]} />
+          <meshBasicMaterial map={getInsigniaTexture(arena.sign)} transparent alphaTest={0.3} />
+        </mesh>
+      )}
       <Brazier x={-4.2} z={-2.6} />
       <Brazier x={4.2} z={-2.6} />
 
-      {arenaId !== 'vault' ? (
+      {arenaId === 'jetty' ? null : arenaId !== 'vault' ? (
         // Glowing sign the Guardian (or the river spirit) rose from
         <mesh rotation-x={-Math.PI / 2} position={[ENEMY_POS.x, 0.02, ENEMY_POS.z]}>
           <planeGeometry args={[2.8, 2.8]} />
@@ -224,6 +252,7 @@ export function BattleArena() {
       <BattlePlayer />
       <BattleEnemy />
       <SlashTrail />
+      <ArmorShards />
       <DamagePopups />
       <FollowCamera target={target} viewHeight={7} />
     </>
@@ -324,7 +353,8 @@ function BattlePlayer() {
 function BattleEnemy() {
   const encounter = useEncounter();
   const sprite = ENEMY_SPRITES[encounter?.sprite ?? 'guardian'];
-  const texture = sprite.texture();
+  const armored = useGame((s) => !!s.battle?.state.armored);
+  const texture = sprite.texture(armored);
   const chargeLight = useRef<THREE.PointLight>(null);
   const group = useRef<THREE.Group>(null);
   const mat = useRef<THREE.MeshBasicMaterial>(null);
@@ -469,6 +499,43 @@ function SlashTrail() {
   );
 }
 
+/** Iron plates thrown off the boss when Radiant Strike breaks its armour; they fall and sink. */
+const SHARDS: Array<{ vx: number; vy: number; spin: number; size: [number, number, number] }> = [
+  { vx: 1.6, vy: 3.2, spin: 7, size: [0.5, 0.36, 0.08] },
+  { vx: 2.4, vy: 2.2, spin: -9, size: [0.36, 0.3, 0.08] },
+  { vx: 0.6, vy: 4.0, spin: 5, size: [0.42, 0.28, 0.08] },
+  { vx: 2.9, vy: 3.0, spin: -6, size: [0.3, 0.24, 0.08] },
+  { vx: 1.2, vy: 1.6, spin: 11, size: [0.46, 0.2, 0.08] },
+];
+function ArmorShards() {
+  const group = useRef<THREE.Group>(null);
+  const tick = useEventClock();
+  useFrame((_, rawDt) => {
+    const b = gameStore.getState().battle;
+    if (!b || !group.current) return;
+    const c = tick(b, Math.min(rawDt, 0.1));
+    const t = c.event?.kind === 'skill' && c.event.brokeArmor ? c.t - HIT_TIME : -1;
+    const show = t >= 0 && t < 1.2;
+    group.current.visible = show;
+    if (!show) return;
+    group.current.children.forEach((m, i) => {
+      const s = SHARDS[i];
+      m.position.set(s.vx * t, 1.6 + s.vy * t - 4.9 * t * t, 0.3 + i * 0.05);
+      m.rotation.z = s.spin * t;
+    });
+  });
+  return (
+    <group ref={group} position={[ENEMY_POS.x, 0, ENEMY_POS.z]} visible={false}>
+      {SHARDS.map((s, i) => (
+        <mesh key={i}>
+          <boxGeometry args={s.size} />
+          <meshStandardMaterial color={i % 2 ? '#474b52' : '#6e737c'} metalness={0.5} roughness={0.5} />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
 /** Floating damage numbers anchored above whoever was hit. */
 function DamagePopups() {
   const seq = useGame((s) => s.battle?.seq ?? 0);
@@ -496,6 +563,15 @@ function DamagePopups() {
     return (
       <Html key={seq} position={[PLAYER_POS.x, SPRITE_WORLD_HEIGHT + 0.3, PLAYER_POS.z]} center zIndexRange={POPUP_Z}>
         <div className="battle-popup ward">{event.heal > 0 ? `+${event.heal}` : 'Ward!'}</div>
+      </Html>
+    );
+  }
+  if ((event.kind === 'attack' || event.kind === 'skill') && (event.armored || event.brokeArmor)) {
+    return (
+      <Html key={seq} position={[ENEMY_POS.x, enemyHeight * 0.85, ENEMY_POS.z]} center zIndexRange={POPUP_Z}>
+        <div className={`battle-popup ${event.brokeArmor ? 'skill armor-break' : 'glance'}`}>
+          {event.brokeArmor ? `Armour broken! -${event.damage}` : `Clang! -${event.damage}`}
+        </div>
       </Html>
     );
   }

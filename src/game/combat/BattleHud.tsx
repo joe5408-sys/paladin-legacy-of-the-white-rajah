@@ -87,6 +87,11 @@ export function BattleHud() {
       <div className="battle-status enemy pixel-panel" data-testid="enemy-status">
         <div className="battle-name">{encounter.enemyName}</div>
         <HpBar hp={state.enemyHp} max={state.enemyMaxHp} enemy />
+        {state.armored && (
+          <div className="battle-armored" data-testid="enemy-armored">
+            Armoured
+          </div>
+        )}
         {state.charging && (
           <div className="battle-charging" data-testid="enemy-charging">
             Charging a heavy blow!

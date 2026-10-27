@@ -36,6 +36,16 @@ export interface HeavyAttackDef {
   attackText: string;
 }
 
+/** Boss armour (phase 1): ordinary attacks barely scratch it; Radiant Strike breaks it. */
+export interface ArmorDef {
+  /** Damage an ordinary Attack does while the armour holds. */
+  attackDamage: number;
+  /** Battle-log text when an Attack glances off. */
+  glanceText: string;
+  /** Battle-log text when Radiant Strike breaks the armour. */
+  breakText: string;
+}
+
 export interface EncounterDef {
   id: string;
   enemyName: string;
@@ -49,13 +59,15 @@ export interface EncounterDef {
   tutorial: boolean;
   /** Short hint shown on the first turn instead of the tutorial. */
   tip?: string;
-  /** Optional telegraphed heavy blow. */
+  /** Optional telegraphed heavy blow (for an armoured enemy, only once the armour is broken). */
   heavy?: HeavyAttackDef;
+  /** Optional armour: a two-phase boss. */
+  armor?: ArmorDef;
   /** Message when the enemy's HP reaches zero. */
   victoryText?: string;
   /** Which enemy sprite and battle backdrop to show. */
-  sprite: 'guardian' | 'sentinel' | 'spirit' | 'warden';
-  arena: 'chamber' | 'vault' | 'waystation';
+  sprite: 'guardian' | 'sentinel' | 'spirit' | 'warden' | 'iron';
+  arena: 'chamber' | 'vault' | 'waystation' | 'jetty';
   /** Adrian may use River Ward here before he has learned it: this battle is the lesson. */
   teachesWard?: boolean;
   /** Flags set on victory. */
@@ -178,5 +190,40 @@ export const ENCOUNTERS: Record<string, EncounterDef> = {
     victoryFlags: ['c2_warden_defeated'],
     victoryDialogue: 'c2_warden_defeated',
     returnTo: { scene: 'waystation_landing', spawn: 'after_battle' },
+  },
+  // Chapter 2, Milestone 2.5: the chapter boss, in two phases. Armoured, Attack
+  // does 1 damage and it never winds up; Radiant Strike breaks the armour. Then
+  // it swings heavy blows that Defend only halves, so River Ward matters.
+  // Breaking the armour at once, warding the first heavy blow and defending the
+  // rest wins with about 13 HP. Going all-out, ignoring the armour or never
+  // warding loses; warding late or breaking the armour late only just scrapes
+  // through. See ironWarden.test.ts.
+  iron_warden: {
+    id: 'iron_warden',
+    enemyName: 'Iron Warden',
+    enemyMaxHp: 50,
+    enemyAttack: 4,
+    enemyAttackText: 'swings an iron fist',
+    intro: "The Iron Warden steps off the barge, and the boardwalk groans under it. Light gathers in Adrian's hand!",
+    tutorial: false,
+    tip: 'Iron plates cover it: ordinary attacks will barely scratch them. Radiant Strike can crack armour. Then watch for its heavy blows.',
+    armor: {
+      attackDamage: 1,
+      glanceText: "Adrian's blade rings off the iron plates. Only 1 damage. Ordinary blows won't get through.",
+      breakText: 'The blade bites deep, and the iron plates split and crash into the river! The furnace inside blazes.',
+    },
+    heavy: {
+      every: 3,
+      damage: 18,
+      guardedMultiplier: 0.5,
+      chargeText: 'The Iron Warden opens its furnace. Fire roars up its arms. A heavy blow is coming!',
+      attackText: 'brings a blazing fist down',
+    },
+    victoryText: 'The Iron Warden reels back to the edge of the boardwalk. Its furnace gutters!',
+    sprite: 'iron',
+    arena: 'jetty',
+    victoryFlags: ['c2_iron_defeated'],
+    victoryDialogue: 'c2_iron_defeated',
+    returnTo: { scene: 'jetty_dusk', spawn: 'after_battle' },
   },
 };

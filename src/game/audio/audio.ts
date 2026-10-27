@@ -23,7 +23,7 @@ export type SfxName =
   | 'defeat'
   | 'save';
 
-export type AmbienceName = 'title' | 'village' | 'home' | 'chamber' | 'battle' | 'ending' | 'waterfront' | 'archives' | 'vault' | 'records' | 'boat';
+export type AmbienceName = 'title' | 'village' | 'home' | 'chamber' | 'battle' | 'ending' | 'waterfront' | 'archives' | 'vault' | 'records' | 'boat' | 'boss';
 
 type Ctx = AudioContext;
 
@@ -306,6 +306,18 @@ class AudioEngine {
           const t = ctx.currentTime;
           this.tone(70, t, 0.18, { to: 50, gain: 0.18, dest: bus });
           this.tone(70, t + 0.2, 0.15, { to: 50, gain: 0.1, dest: bus });
+        });
+        break;
+      }
+      case 'boss': {
+        // The battle loop, deeper and faster, with an iron clank on every other beat
+        pad([41.2, 61.7, 82.4], 0.055, 'sawtooth');
+        let beat = 0;
+        every(520, 520, () => {
+          const t = ctx.currentTime;
+          this.tone(60, t, 0.2, { to: 40, gain: 0.2, dest: bus });
+          this.tone(60, t + 0.16, 0.15, { to: 40, gain: 0.12, dest: bus });
+          if (beat++ % 2 === 1) this.tone(880, t + 0.26, 0.05, { to: 620, gain: 0.03, dest: bus, type: 'square' });
         });
         break;
       }

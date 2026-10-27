@@ -21,7 +21,7 @@ export default function VillageC2({ spawn }: { spawn: SpawnPoint }) {
   );
 }
 
-function NoticeBoard() {
+export function NoticeBoard() {
   return (
     <group position={[NOTICE_BOARD.x, 0, NOTICE_BOARD.z]}>
       {[-0.42, 0.42].map((x) => (
@@ -51,7 +51,7 @@ function NoticeBoard() {
   );
 }
 
-function SurveyPeg({ x, z }: { x: number; z: number }) {
+export function SurveyPeg({ x, z }: { x: number; z: number }) {
   return (
     <group position={[x, 0, z]}>
       <mesh position-y={0.25} castShadow>
@@ -71,7 +71,7 @@ function SurveyPeg({ x, z }: { x: number; z: number }) {
   );
 }
 
-function MooredBoat({
+export function MooredBoat({
   x,
   z,
   length,

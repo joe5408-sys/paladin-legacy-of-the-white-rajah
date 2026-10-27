@@ -1,7 +1,7 @@
 /**
  * Chapter 2, Milestones 2.1 (Upriver) and 2.2 (Home, Changed): lazy loading, the
  * hand-off from the Chapter 1 Complete card, the conversations in order, saves
- * and the "to be continued" ending.
+ * and the Chapter 2 Complete ending.
  */
 import { beforeEach, describe, expect, it } from 'vitest';
 import { gameStore } from '../../src/game/core/gameStore';
@@ -59,7 +59,7 @@ describe('Chapter 2 loading', () => {
     await loadChapter(2);
     expect(DIALOGUES.c2_boat_arrival).toBeDefined();
     expect(getLayout('boat')).toBeDefined();
-    expect(OBJECTIVES_BY_CHAPTER[2]?.length).toBe(14);
+    expect(OBJECTIVES_BY_CHAPTER[2]?.length).toBe(17);
   });
 
   it('knows that Chapter 1 now leads on, and which chapter a save needs', () => {
@@ -249,9 +249,10 @@ describe('Chapter 2 flow', () => {
       ...BOAT_DONE, 'c2_village_arrived', 'c2_read_notice', 'c2_talked_lim', 'c2_met_pell', 'c2_home_talked', 'c2_found_map',
       'c2_went_upriver', 'c2_landing_arrived', 'c2_stones_woken', 'c2_spirit_defeated', 'c2_learned_ward',
       'c2_entered_hall', 'c2_read_journal', 'c2_found_charter', 'c2_daniel_returned', 'c2_warden_seen', 'c2_warden_defeated',
+      'c2_dusk_arrived', 'c2_iron_seen', 'c2_iron_defeated',
     ]);
     const end = validateSave(
-      JSON.parse(JSON.stringify(buildSave({ ...s(), scene: 'waystation_landing' }, SCENES.waystation_landing.spawns.after_battle))),
+      JSON.parse(JSON.stringify(buildSave({ ...s(), scene: 'jetty_dusk' }, SCENES.jetty_dusk.spawns.after_battle))),
     );
     if (end.ok) s().loadGame(end.data);
     expect(s().mode).toBe('ending');

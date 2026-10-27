@@ -15,6 +15,7 @@ import type { Objective } from '../../data/quests';
 import { VILLAGE_C2_OBJECTIVES } from './villageData';
 import { LANDING_OBJECTIVES } from './waystationData';
 import { HALL_OBJECTIVES } from './hallData';
+import { JETTY_OBJECTIVES } from './jettyData';
 
 export const DECK: Box = { minX: -4.6, maxX: 4.6, minZ: -1.4, maxZ: 1.4 };
 export const BENCH = { x: -2.0, z: -1.15, width: 2.0, depth: 0.4 };
@@ -120,6 +121,7 @@ export const CHAPTER2_OBJECTIVES: Objective[] = [
   ...VILLAGE_C2_OBJECTIVES,
   ...LANDING_OBJECTIVES,
   ...HALL_OBJECTIVES,
+  ...JETTY_OBJECTIVES,
 ];
 
 export const BOAT_DIALOGUE: DialogueDef[] = [

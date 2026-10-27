@@ -9,6 +9,7 @@ import { BOAT_DIALOGUE, BOAT_LAYOUT, CHAPTER2_OBJECTIVES } from './boatData';
 import { HOME_C2_LAYOUT, VILLAGE_C2_DIALOGUE, VILLAGE_C2_LAYOUT } from './villageData';
 import { LANDING_DIALOGUE, LANDING_LAYOUT } from './waystationData';
 import { HALL_DIALOGUE, HALL_LAYOUT } from './hallData';
+import { JETTY_DIALOGUE, JETTY_LAYOUT } from './jettyData';
 
 registerDialogues(BOAT_DIALOGUE);
 registerDialogues(VILLAGE_C2_DIALOGUE);
@@ -16,6 +17,8 @@ registerDialogues(LANDING_DIALOGUE);
 registerLayout('waystation_landing', LANDING_LAYOUT);
 registerDialogues(HALL_DIALOGUE);
 registerLayout('waystation_hall', HALL_LAYOUT);
+registerDialogues(JETTY_DIALOGUE);
+registerLayout('jetty_dusk', JETTY_LAYOUT);
 registerLayout('boat', BOAT_LAYOUT);
 registerLayout('village_c2', VILLAGE_C2_LAYOUT);
 registerLayout('home_c2', HOME_C2_LAYOUT);
