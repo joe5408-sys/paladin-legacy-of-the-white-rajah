@@ -23,7 +23,7 @@ export type SfxName =
   | 'defeat'
   | 'save';
 
-export type AmbienceName = 'title' | 'village' | 'home' | 'chamber' | 'battle' | 'ending' | 'waterfront' | 'archives' | 'vault' | 'records' | 'boat' | 'boss';
+export type AmbienceName = 'title' | 'village' | 'home' | 'chamber' | 'battle' | 'ending' | 'waterfront' | 'archives' | 'vault' | 'records' | 'boat' | 'boss' | 'boat_night';
 
 type Ctx = AudioContext;
 
@@ -306,6 +306,16 @@ class AudioEngine {
           const t = ctx.currentTime;
           this.tone(70, t, 0.18, { to: 50, gain: 0.18, dest: bus });
           this.tone(70, t + 0.2, 0.15, { to: 50, gain: 0.1, dest: bus });
+        });
+        break;
+      }
+      case 'boat_night': {
+        // The engine, quieter, the river in the dark, and insects on the bank
+        pad([55, 82.4], 0.035, 'sawtooth');
+        wash(500, 0.07);
+        every(1200, 3200, () => {
+          const t = ctx.currentTime;
+          for (let k = 0; k < 3; k++) this.tone(4200, t + k * 0.07, 0.03, { type: 'square', gain: 0.01, dest: bus });
         });
         break;
       }

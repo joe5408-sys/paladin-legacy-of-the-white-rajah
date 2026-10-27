@@ -135,8 +135,8 @@ export interface GameState {
   returnToTitle(): void;
   /** Begins Chapter 1 (its content must already be loaded). Keeps story flags and play time. */
   startChapter1(): void;
-  /** Starts a later chapter (1 or 2) after the previous chapter's closing card. */
-  startChapter(chapter: 1 | 2): void;
+  /** Starts a later chapter (1, 2 or 3) after the previous chapter's closing card. */
+  startChapter(chapter: 1 | 2 | 3): void;
   /** Called when the chapter title card has been shown: hands control to the player. */
   dismissChapterCard(): void;
   /** Whether the pause menu may open right now. */
@@ -173,9 +173,10 @@ function initialState() {
 }
 
 /** Where each later chapter begins. */
-const CHAPTER_STARTS: Record<1 | 2, { flag: StoryFlag; scene: SceneId; spawn: string; card: string }> = {
+const CHAPTER_STARTS: Record<1 | 2 | 3, { flag: StoryFlag; scene: SceneId; spawn: string; card: string }> = {
   1: { flag: 'chapter1_started', scene: 'waterfront', spawn: 'arrival', card: "Chapter 1 · The Capital's Shadow" },
   2: { flag: 'chapter2_started', scene: 'boat', spawn: 'arrival', card: 'Chapter 2 · The River Remembers' },
+  3: { flag: 'chapter3_started', scene: 'boat_night', spawn: 'arrival', card: "Chapter 3 · The Crown's Word" },
 };
 
 function freshBattle(encounter: EncounterDef, flags: StoryFlags, stage: BattleStage, message: string): ActiveBattle {

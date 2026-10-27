@@ -5,7 +5,7 @@
 import type { Direction } from '../game/core/input';
 import type { DialogueRule } from '../game/dialogue/types';
 
-export type SceneId = 'village' | 'home' | 'chamber' | 'waterfront' | 'archives' | 'vault' | 'records' | 'boat' | 'village_c2' | 'home_c2' | 'waystation_landing' | 'waystation_hall' | 'jetty_dusk';
+export type SceneId = 'village' | 'home' | 'chamber' | 'waterfront' | 'archives' | 'vault' | 'records' | 'boat' | 'village_c2' | 'home_c2' | 'waystation_landing' | 'waystation_hall' | 'jetty_dusk' | 'boat_night';
 
 export interface SpawnPoint {
   x: number;
@@ -146,6 +146,15 @@ export const SCENES: Record<SceneId, SceneDef> = {
     },
     arrival: [{ dialogue: 'c2_dusk_arrival', unless: ['c2_dusk_arrived'] }],
   },
+  // Chapter 3. Loaded on demand (src/chapters/chapter3). The express boat again, overnight to Kuching.
+  boat_night: {
+    id: 'boat_night',
+    name: 'Night Express — Down the Rajang',
+    spawns: {
+      arrival: { x: -3.4, z: 0.2, facing: 'east' },
+    },
+    arrival: [{ dialogue: 'c3_boat_arrival', unless: ['c3_arrived'] }],
+  },
 };
 
 /** Chapter a scene belongs to (0 = prologue). */
@@ -163,6 +172,7 @@ export const SCENE_CHAPTER: Record<SceneId, number> = {
   waystation_landing: 2,
   waystation_hall: 2,
   jetty_dusk: 2,
+  boat_night: 3,
 };
 
 export const NEW_GAME_SCENE: SceneId = 'village';

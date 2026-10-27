@@ -1,10 +1,18 @@
 # Progress
 
-**Current phase:** Phase 8 — Chapter 2: The River Remembers ✅ complete (all five milestones, 2.1–2.5). Next: Chapter 3, drafted in `docs/CHAPTER_3.md` (awaiting the owner's review; no code yet). See `docs/CHAPTER_2.md`.
+**Current phase:** Phase 9 — Chapter 3: The Crown's Word (design agreed, `docs/CHAPTER_3.md`). Milestone 3.1 (The Long Way Down) ✅ done; 3.2 (A Wanted Man) next. Chapter 2 is complete (`docs/CHAPTER_2.md`).
 **MVP:** ✅ complete (phases 0–6); Chapter 0 is live.
 **Live site:** https://legacyofwhiterajah.netlify.app
 **Repository:** https://github.com/joe5408-sys/paladin-legacy-of-the-white-rajah (public, `master`; Netlify auto-deploys on push)
 **Last updated:** 2026-10-27
+
+### Phase 9 — Chapter 3, Milestone 3.1: The Long Way Down (2026-10-27) ✅
+- **Design:** `docs/CHAPTER_3.md` agreed with all its draft defaults (the first story ends with Chapter 3; the Rajah on screen, fictional and unnamed; dialogue choices and a battle yield as the two new systems; max HP 36; Pell a story ally; Harrow never fights; no new Paladin art; five milestones).
+- **Chapter hand-off:** the Chapter 2 Complete card now offers **Continue to Chapter 3**, which downloads Chapter 3 on demand and shows the title card "Chapter 3 · The Crown's Word".
+- **The night boat** (`src/chapters/chapter3/`): the Chapter 2 express boat with a new night palette (moon, deck lamp, lit windows, lamplit longhouses), not a copy. Pell came aboard unasked; the Student from the 2.1 boat shows Adrian the news (*Vale heir sought over Royal Archives break-in*); Daniel calls (suspended; the Petition Hour; go to Kak Jamilah's); rest in the cabin → Kuching before dawn → **To Be Continued**.
+- **Max HP 30 → 36** for every battle from Chapter 3 on; earlier chapters keep 30.
+- **Test results:** `npm test` 235/235 (new `chapter3.test.ts`, 7 tests: lazy loading, the card hand-off, the max-HP raise, the whole flow in order with locked steps, saves mid-boat and at the end, a too-early boat save). New browser test `chapter3.spec.ts` (starts from a Chapter 2 Complete save; 19 s). `npm run e2e` 4/4 (the full-story test still plays Chapters 0–2 in 4.8 min). Visual check by screenshot of the night deck.
+- **Live:** not yet checked on the live site.
 
 ### Phase 8 — Chapter 2, Milestone 2.5: The Iron Warden (2026-10-27) ✅ Chapter 2 complete
 - The Hollow Warden's defeat now leads into **the race downriver** (no ending). Saves from the old 2.4 cliffhanger set off from Mara or Ah Hock on the landing.

@@ -19,6 +19,7 @@ export function currentObjective(objectives: readonly Objective[], flags: StoryF
 
 /** The chapter the story is currently in, from story flags. */
 export function activeChapter(flags: StoryFlags): number {
+  if (flags.chapter3_started) return 3;
   if (flags.chapter2_started) return 2;
   return flags.chapter1_started ? 1 : 0;
 }
@@ -30,6 +31,7 @@ export function objectivesFor(flags: StoryFlags): readonly Objective[] {
 
 /** True when the story sits on a chapter's closing card. */
 export function isAtChapterEnd(flags: StoryFlags): boolean {
+  if (flags.chapter3_started) return !!flags.c3_reached_kuching;
   if (flags.chapter2_started) return !!flags.c2_iron_defeated;
   if (flags.chapter1_started) return !!flags.c1_escaped;
   return !!flags.prologue_complete;

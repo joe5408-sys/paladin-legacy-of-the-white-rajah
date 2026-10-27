@@ -64,7 +64,7 @@ describe('Chapter 2 loading', () => {
 
   it('knows that Chapter 1 now leads on, and which chapter a save needs', () => {
     expect(hasChapterAfter(1)).toBe(true);
-    expect(hasChapterAfter(2)).toBe(false);
+    expect(hasChapterAfter(2)).toBe(true); // Chapter 3 follows
     expect(chaptersNeededFor([...CHAPTER1_DONE, 'chapter2_started'])).toEqual([2]);
   });
 });

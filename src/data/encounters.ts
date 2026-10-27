@@ -90,9 +90,13 @@ export const PLAYER_BATTLE_STATS: PlayerBattleStats = {
 /** Chapter 2, Milestone 2.3: the second Paladin art. Tuned in waystation.test.ts. */
 export const RIVER_WARD: WardDef = { name: 'River Ward', heal: 10, charges: 1 };
 
-/** Adrian's stats for an encounter: with River Ward once learned (or while it is being taught). */
+/** Chapter 3: Adrian has grown (the "growth moment" Chapter 2 deferred). Earlier battles keep 30. */
+export const CHAPTER3_MAX_HP = 36;
+
+/** Adrian's stats for an encounter: with River Ward once learned (or while it is being taught), and more HP from Chapter 3. */
 export function playerStatsFor(flags: StoryFlags, enc: EncounterDef): PlayerBattleStats {
-  return flags.c2_learned_ward || enc.teachesWard ? { ...PLAYER_BATTLE_STATS, ward: RIVER_WARD } : PLAYER_BATTLE_STATS;
+  const base = flags.chapter3_started ? { ...PLAYER_BATTLE_STATS, maxHp: CHAPTER3_MAX_HP } : PLAYER_BATTLE_STATS;
+  return flags.c2_learned_ward || enc.teachesWard ? { ...base, ward: RIVER_WARD } : base;
 }
 
 export const ENCOUNTERS: Record<string, EncounterDef> = {

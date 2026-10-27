@@ -66,7 +66,14 @@ export type StoryFlag =
   | 'c2_warden_defeated' // the Hollow Warden; set off home with the Charter
   | 'c2_dusk_arrived' // back at Sungai Awan at dusk, ahead of the barge
   | 'c2_iron_seen' // confronted Pell; the Iron Warden steps off the barge
-  | 'c2_iron_defeated'; // Chapter 2 complete
+  | 'c2_iron_defeated' // Chapter 2 complete
+  // Chapter 3 — The Crown's Word
+  | 'chapter3_started'
+  | 'c3_arrived' // on the overnight boat to Kuching
+  | 'c3_talked_pell'
+  | 'c3_saw_news' // Adrian is wanted
+  | 'c3_daniel_called' // Daniel is suspended; go to Kak Jamilah's
+  | 'c3_reached_kuching'; // (milestone 3.1 cliffhanger)
 
 export type StoryFlags = Partial<Record<StoryFlag, true>>;
 

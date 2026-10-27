@@ -1,13 +1,15 @@
 /**
  * Chapter 2 — the rear deck of an express boat on the Rajang at morning (lazy-loaded scene).
+ * Chapter 3 reuses it at night (`BoatScene` with its own layout and `time="night"`).
  * The boat itself stands still; the river, the far bank and its jungle slide past
  * to give the feeling of travel cheaply (a few moving groups that wrap around).
  */
 import { useFrame } from '@react-three/fiber';
-import { useMemo, useRef, type ReactElement } from 'react';
+import { createContext, useContext, useMemo, useRef, type ReactElement } from 'react';
 import * as THREE from 'three';
 import type { SpawnPoint } from '../../data/scenes';
 import { ExplorationRig } from '../../game/scenes/ExplorationRig';
+import type { SceneLayout } from '../../game/scenes/layout';
 import { BENCH, BOAT_LAYOUT, CARGO, DECK, ENGINE } from './boatData';
 
 /** How fast the scenery drifts past (world units per second). */
@@ -24,15 +26,68 @@ function rng(seed: number) {
   };
 }
 
+/** Colours for each time of day. Night is Chapter 3's overnight boat. */
+const PALETTES = {
+  day: {
+    night: false,
+    sky: '#e9dcc0',
+    hemi: ['#fff1d8', '#6b5a40', 1.0] as const,
+    sun: { position: [9, 7, 4] as const, intensity: 1.3, color: '#ffe2b0' },
+    water: '#8a6e4a',
+    streak: '#b89c74',
+    wake: '#efe4cc',
+    mud: '#9a7a52',
+    forest: '#3a5a30',
+    trunk: '#5a4632',
+    greens: ['#3f6a34', '#4d7a3a', '#35582c', '#5a8540'],
+    longhouse: '#8a6a48',
+    roof: '#6a5a4a',
+    window: '#3a4a58',
+  },
+  night: {
+    night: true,
+    sky: '#0b1322',
+    hemi: ['#8094c8', '#16161e', 0.55] as const,
+    sun: { position: [-6, 9, 3] as const, intensity: 0.7, color: '#b8c8ff' },
+    water: '#1e2a36',
+    streak: '#3e5266',
+    wake: '#8a9aae',
+    mud: '#2e2a24',
+    forest: '#16241a',
+    trunk: '#2a2420',
+    greens: ['#1e3320', '#24402a', '#1a2c1c', '#2a4630'],
+    longhouse: '#3a2e24',
+    roof: '#2a2620',
+    window: '#ffcc80',
+  },
+};
+type Palette = (typeof PALETTES)['day'] | (typeof PALETTES)['night'];
+const PaletteContext = createContext<Palette>(PALETTES.day);
+const usePalette = () => useContext(PaletteContext);
+
 export default function Boat({ spawn }: { spawn: SpawnPoint }) {
+  return <BoatScene spawn={spawn} layout={BOAT_LAYOUT} />;
+}
+
+/** The express boat with any layout (people and interactions), by day or by night. */
+export function BoatScene({
+  spawn,
+  layout,
+  time = 'day',
+}: {
+  spawn: SpawnPoint;
+  layout: SceneLayout;
+  time?: keyof typeof PALETTES;
+}) {
+  const P = PALETTES[time];
   return (
-    <>
-      <color attach="background" args={['#e9dcc0']} />
-      <hemisphereLight args={['#fff1d8', '#6b5a40', 1.0]} />
+    <PaletteContext.Provider value={P}>
+      <color attach="background" args={[P.sky]} />
+      <hemisphereLight args={[P.hemi[0], P.hemi[1], P.hemi[2]]} />
       <directionalLight
-        position={[9, 7, 4]}
-        intensity={1.3}
-        color="#ffe2b0"
+        position={[P.sun.position[0], P.sun.position[1], P.sun.position[2]]}
+        intensity={P.sun.intensity}
+        color={P.sun.color}
         castShadow
         shadow-mapSize={[1024, 1024]}
         shadow-camera-left={-8}
@@ -46,9 +101,19 @@ export default function Boat({ spawn }: { spawn: SpawnPoint }) {
       <FarBank />
       <Hull />
       <Deck />
+      {P.night && (
+        // A deck lamp over the cabin door, and the moon over the far bank
+        <>
+          <pointLight position={[DECK.minX + 0.4, 1.9, 0]} color="#ffd8a0" intensity={7} distance={7} decay={1.5} />
+          <mesh position={[-10, 9, -22]}>
+            <circleGeometry args={[1.1, 24]} />
+            <meshBasicMaterial color="#e8eeff" toneMapped={false} fog={false} />
+          </mesh>
+        </>
+      )}
 
-      <ExplorationRig layout={BOAT_LAYOUT} spawn={spawn} />
-    </>
+      <ExplorationRig layout={layout} spawn={spawn} />
+    </PaletteContext.Provider>
   );
 }
 
@@ -66,6 +131,7 @@ function useDrift(speed = SPEED) {
 
 /** Muddy brown water with drifting streaks of foam. */
 function River() {
+  const P = usePalette();
   const streaks = useMemo(() => {
     const r = rng(7);
     return Array.from({ length: 70 }, () => ({
@@ -80,7 +146,7 @@ function River() {
     <group>
       <mesh rotation-x={-Math.PI / 2} position-y={-0.45}>
         <planeGeometry args={[80, 40]} />
-        <meshStandardMaterial color="#8a6e4a" />
+        <meshStandardMaterial color={P.water} />
       </mesh>
       {/* Two copies of the streak field, offset by one span, so the wrap is seamless */}
       {[a, b].map((ref, k) => (
@@ -88,7 +154,7 @@ function River() {
           {streaks.map((s, i) => (
             <mesh key={i} rotation-x={-Math.PI / 2} position={[s.x, -0.43, s.z]}>
               <planeGeometry args={[s.len, 0.05]} />
-              <meshBasicMaterial color="#b89c74" transparent opacity={0.7} depthWrite={false} />
+              <meshBasicMaterial color={P.streak} transparent opacity={0.7} depthWrite={false} />
             </mesh>
           ))}
         </group>
@@ -97,7 +163,7 @@ function River() {
       {[-1, 1].map((side) => (
         <mesh key={side} rotation={[-Math.PI / 2, 0, side * 0.18]} position={[7.4, -0.42, side * 1.3]}>
           <planeGeometry args={[5, 0.14]} />
-          <meshBasicMaterial color="#efe4cc" transparent opacity={0.8} depthWrite={false} />
+          <meshBasicMaterial color={P.wake} transparent opacity={0.8} depthWrite={false} />
         </mesh>
       ))}
     </group>
@@ -106,6 +172,7 @@ function River() {
 
 /** The far (north) bank: a mud strip, jungle, and now and then a longhouse on stilts. */
 function FarBank() {
+  const P = usePalette();
   const items = useMemo(() => {
     const r = rng(42);
     const out: ReactElement[] = [];
@@ -113,12 +180,12 @@ function FarBank() {
       const x = -SPAN / 2 + (i / 46) * SPAN + r() * 0.6;
       const z = -5.4 - r() * 1.4;
       const h = 1.6 + r() * 2.4;
-      const green = ['#3f6a34', '#4d7a3a', '#35582c', '#5a8540'][Math.floor(r() * 4)];
+      const green = P.greens[Math.floor(r() * 4)];
       out.push(
         <group key={`t${i}`} position={[x, 0, z]}>
           <mesh position-y={h / 2}>
             <cylinderGeometry args={[0.08, 0.12, h, 5]} />
-            <meshStandardMaterial color="#5a4632" />
+            <meshStandardMaterial color={P.trunk} />
           </mesh>
           <mesh position-y={h + 0.3}>
             <sphereGeometry args={[0.7 + r() * 0.6, 7, 5]} />
@@ -139,12 +206,20 @@ function FarBank() {
           ))}
           <mesh position-y={1.6}>
             <boxGeometry args={[5.6, 0.9, 1.4]} />
-            <meshStandardMaterial color="#8a6a48" />
+            <meshStandardMaterial color={P.longhouse} />
           </mesh>
           <mesh position-y={2.3} rotation-x={0}>
             <boxGeometry args={[5.9, 0.35, 1.7]} />
-            <meshStandardMaterial color="#6a5a4a" />
+            <meshStandardMaterial color={P.roof} />
           </mesh>
+          {/* Lamplit windows at night */}
+          {P.night &&
+            [-1.8, -0.6, 0.6, 1.8].map((wx) => (
+              <mesh key={wx} position={[wx, 1.65, 0.71]}>
+                <planeGeometry args={[0.36, 0.3]} />
+                <meshBasicMaterial color={P.window} toneMapped={false} />
+              </mesh>
+            ))}
           <mesh position={[0, -0.3, 1.4]}>
             <boxGeometry args={[0.8, 0.08, 2.0]} />
             <meshStandardMaterial color="#5a4632" />
@@ -153,7 +228,7 @@ function FarBank() {
       );
     }
     return out;
-  }, []);
+  }, [P]);
   const a = useDrift();
   const b = useDrift();
   return (
@@ -161,11 +236,11 @@ function FarBank() {
       {/* Mud bank and a dark band of distant forest, fixed in place */}
       <mesh rotation-x={-Math.PI / 2} position={[0, -0.4, -5.0]}>
         <planeGeometry args={[80, 1.0]} />
-        <meshStandardMaterial color="#9a7a52" />
+        <meshStandardMaterial color={P.mud} />
       </mesh>
       <mesh rotation-x={-Math.PI / 2} position={[0, -0.39, -9.5]}>
         <planeGeometry args={[80, 8]} />
-        <meshStandardMaterial color="#3a5a30" />
+        <meshStandardMaterial color={P.forest} />
       </mesh>
       {[a, b].map((ref, k) => (
         <group key={k} ref={ref} position-x={k === 0 ? 0 : -SPAN}>
@@ -178,6 +253,7 @@ function FarBank() {
 
 /** The long hull of the express boat, its cabin and its rails. */
 function Hull() {
+  const P = usePalette();
   const { minX, maxX, minZ, maxZ } = DECK;
   const width = maxZ - minZ + 0.4;
   return (
@@ -211,7 +287,7 @@ function Hull() {
         {[-1.0, -0.2, 0.6].map((x) => (
           <mesh key={x} position={[x, 1.15, width / 2 + 0.005]}>
             <planeGeometry args={[0.6, 0.45]} />
-            <meshStandardMaterial color="#3a4a58" />
+            {P.night ? <meshBasicMaterial color={P.window} toneMapped={false} /> : <meshStandardMaterial color={P.window} />}
           </mesh>
         ))}
       </group>

@@ -413,7 +413,7 @@ test('full story: Chapters 0, 1 and 2', async ({ page }) => {
   await press(page, 'KeyE', 600);
   await finishDialogue(page);
   await expect(testId(page, 'chapter2-complete')).toBeVisible({ timeout: 10_000 });
-  await expect(testId(page, 'menu-next-chapter')).toHaveCount(0); // no Chapter 3 yet
+  await expect(testId(page, 'menu-next-chapter')).toBeVisible(); // Chapter 3 is played in chapter3.spec.ts
 
   // The end is saved; after a refresh, Continue says so.
   await page.waitForTimeout(500);

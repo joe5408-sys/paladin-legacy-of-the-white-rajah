@@ -18,11 +18,13 @@ import { BOAT_LAYOUT } from '../../src/chapters/chapter2/boatData';
 import { LANDING_LAYOUT } from '../../src/chapters/chapter2/waystationData';
 import { HALL_LAYOUT } from '../../src/chapters/chapter2/hallData';
 import { JETTY_LAYOUT } from '../../src/chapters/chapter2/jettyData';
+import { BOAT_NIGHT_LAYOUT } from '../../src/chapters/chapter3/boatNightData';
 import { RECORDS_LAYOUT } from '../../src/chapters/chapter1/recordsData';
 import { VAULT_LAYOUT } from '../../src/chapters/chapter1/vaultData';
 import { ARCHIVES_LAYOUT } from '../../src/chapters/chapter1/archivesData';
 import '../../src/chapters/chapter1/content'; // registers Chapter 1 dialogue and objectives
 import '../../src/chapters/chapter2/content';
+import '../../src/chapters/chapter3/content';
 import { findNearestInteractable, isAvailable } from '../../src/game/interaction/interaction';
 import { circleOverlapsBox, moveWithCollision } from '../../src/game/core/collision';
 import { PLAYER_RADIUS } from '../../src/game/core/constants';
@@ -44,6 +46,7 @@ const LAYOUTS: Record<SceneId, SceneLayout> = {
   waystation_landing: LANDING_LAYOUT,
   waystation_hall: HALL_LAYOUT,
   jetty_dusk: JETTY_LAYOUT,
+  boat_night: BOAT_NIGHT_LAYOUT,
 };
 const ALL_FLAGS = Object.fromEntries(
   ([

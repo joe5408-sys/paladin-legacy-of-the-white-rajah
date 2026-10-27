@@ -220,7 +220,7 @@ describe('Milestone 2.5 flow', () => {
     expect(s().mode).toBe('ending');
     expect(isAtChapterEnd(s().flags)).toBe(true);
     expect(objective()).toBeUndefined();
-    expect(hasChapterAfter(2)).toBe(false); // no Chapter 3 yet
+    expect(hasChapterAfter(2)).toBe(true); // the card offers Chapter 3
   });
 
   it('a defeat can be retried at full strength, armour and all', () => {
