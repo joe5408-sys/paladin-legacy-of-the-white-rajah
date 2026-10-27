@@ -391,6 +391,8 @@ test('full story: Chapters 0, 1 and 2', async ({ page }) => {
   await finishDialogue(page);
   await expect(testId(page, 'objective')).toContainText('Confront Julian Pell at the barge.');
   await page.screenshot({ path: 'test-results/jetty-dusk.png' });
+  // Let the game hand control back after the arrival speech (one live run's walk was lost here).
+  await page.waitForTimeout(600);
   // East along the boardwalk, past the villagers, to Pell at the gangway.
   await walk(page, 'KeyD', 15.6);
   await expect(testId(page, 'interaction-prompt')).toContainText('Julian Pell');

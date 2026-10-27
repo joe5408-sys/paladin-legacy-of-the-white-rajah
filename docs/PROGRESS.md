@@ -14,7 +14,7 @@
 - **Bug fix (from 3.2):** dialogue replies could not be clicked with the mouse, because the HUD layer ignores the mouse and the reply buttons didn't opt back in (the 3.2 browser test only used the keyboard). The Chapter 3 browser test now picks the hearing's evidence by mouse.
 - A reload mid-hearing resumes at the first unanswered claim.
 - **Test results:** `npm test` 273/273 (new `hearing.test.ts`, 7 tests: the evidence menu, the full hearing trying every wrong answer before each right one, Pell's evidence accepted for claim 4, all four versions of Pell's testimony, resuming after a reload at each stage, the end save and a too-early hall save; 3.3's tests now end at the open gate). `npm run e2e` 4/4: the Chapter 3 browser test now also walks into the hall and wins the hearing, trying one wrong piece of evidence first (1.4 min); full story unchanged (4.8 min). Visual check by screenshot of the hall with the evidence menu.
-- **Live:** not yet checked on the live site.
+- **Live:** deployed as `03e2eac`. Against the live site the Chapter 3 test and both smoke tests passed first time; the full-story test failed once (Adrian's walk to Pell at the dusk jetty, a 2.5 step that hasn't changed, didn't register) and passed on an immediate rerun (4.9 min). Treated as a timing flake: the test now pauses briefly after the jetty's arrival speech before walking.
 
 ### Phase 9 — Chapter 3, Milestone 3.3: The Palace Gate (2026-10-27) ✅
 - **New system: yield.** An enemy can stop fighting at a set HP; the battle ends in victory with it still standing. First used here, gently.
