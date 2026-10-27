@@ -1,7 +1,7 @@
 # Session Handoff
 
 ## Last session — 2026-10-27 (Claude Code): Chapter 2 finished; Chapter 3 designed; Milestone 3.1
-**Result:** Chapter 2 is complete and live (2.5 as `91e592a`). `docs/CHAPTER_3.md` ("The Crown's Word") was drafted and **agreed with all its default decisions**. Milestone 3.1 (The Long Way Down) is built: the Chapter 2 card continues into Chapter 3, the night express boat down the Rajang, Pell aboard, Adrian in the news as a wanted man, Daniel's call about the Petition Hour, Kuching before dawn → "To Be Continued". Not yet checked on the live site.
+**Result:** Chapter 2 is complete and live (2.5 as `91e592a`). `docs/CHAPTER_3.md` ("The Crown's Word") was drafted and **agreed with all its default decisions**. Milestone 3.1 (The Long Way Down) is built: the Chapter 2 card continues into Chapter 3, the night express boat down the Rajang, Pell aboard, Adrian in the news as a wanted man, Daniel's call about the Petition Hour, Kuching before dawn → "To Be Continued". 3.1 is **live** as `04646ca`; the browser tests pass 4/4 against the live site.
 
 ### Key files
 - 2.5: `src/chapters/chapter2/{JettyDusk.tsx,jettyData.ts}`; boss armour in `game/combat/battle.ts` (`armored`, `armor` on `EncounterDef`; pass the encounter as `playerAction`'s 4th argument); `game/combat/ironWardenSprite.ts`; `lighting="dusk"` on `VillageSquare`

@@ -12,7 +12,7 @@
 - **The night boat** (`src/chapters/chapter3/`): the Chapter 2 express boat with a new night palette (moon, deck lamp, lit windows, lamplit longhouses), not a copy. Pell came aboard unasked; the Student from the 2.1 boat shows Adrian the news (*Vale heir sought over Royal Archives break-in*); Daniel calls (suspended; the Petition Hour; go to Kak Jamilah's); rest in the cabin → Kuching before dawn → **To Be Continued**.
 - **Max HP 30 → 36** for every battle from Chapter 3 on; earlier chapters keep 30.
 - **Test results:** `npm test` 235/235 (new `chapter3.test.ts`, 7 tests: lazy loading, the card hand-off, the max-HP raise, the whole flow in order with locked steps, saves mid-boat and at the end, a too-early boat save). New browser test `chapter3.spec.ts` (starts from a Chapter 2 Complete save; 19 s). `npm run e2e` 4/4 (the full-story test still plays Chapters 0–2 in 4.8 min). Visual check by screenshot of the night deck.
-- **Live:** not yet checked on the live site.
+- **Live:** deployed as `04646ca`; `E2E_BASE_URL=https://legacyofwhiterajah.netlify.app npx playwright test` 4/4 against the live site (5.5 min).
 
 ### Phase 8 — Chapter 2, Milestone 2.5: The Iron Warden (2026-10-27) ✅ Chapter 2 complete
 - The Hollow Warden's defeat now leads into **the race downriver** (no ending). Saves from the old 2.4 cliffhanger set off from Mara or Ah Hock on the landing.
