@@ -56,7 +56,14 @@ export type StoryFlag =
   | 'c2_stone_bright' // puzzle: second stone lit (cleared by a wrong order)
   | 'c2_stones_woken' // all three stones lit; the waystation door opens
   | 'c2_spirit_defeated' // passed the training spirit's test
-  | 'c2_learned_ward'; // River Ward learned (milestone 2.3 cliffhanger)
+  | 'c2_learned_ward' // River Ward learned
+  | 'c2_entered_hall' // inside the waystation
+  | 'c2_read_journal' // Elias's journal
+  | 'c2_read_oath' // the Paladin oath carved in full (optional)
+  | 'c2_found_charter' // the River Charter of 1921
+  | 'c2_daniel_returned'
+  | 'c2_warden_seen' // the Hollow Warden on the landing
+  | 'c2_warden_defeated'; // (milestone 2.4 cliffhanger)
 
 export type StoryFlags = Partial<Record<StoryFlag, true>>;
 

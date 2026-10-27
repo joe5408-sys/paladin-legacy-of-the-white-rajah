@@ -32,12 +32,17 @@ export const STONE_SIZE = { width: 0.7, depth: 0.5 };
 export const DOOR = { x: 0, width: 1.8, height: 2.6 };
 export const SPIRIT = { x: 0, z: -4.3 };
 
+/** Where the Hollow Warden climbs up from the river (Milestone 2.4). */
+export const WARDEN = { x: 0, z: 0.0 };
+export const WARDEN_SIZE = { width: 1.1, depth: 0.6 };
+
 /** The mossy steps from the river up to the terrace (decoration; walkable). */
 export const STEPS = { x: 0, width: 3, fromZ: 2.6, toZ: 0.6, count: 5 };
 
 export const LANDING_NPCS: NpcPlacement[] = [
   { id: 'npc-ahhock-landing', character: 'ahhock', x: -2.7, z: 3.4, facing: 'north' },
   { id: 'npc-mara-landing', character: 'mara', x: 2.0, z: 3.3, facing: 'north' },
+  { id: 'npc-daniel-landing', character: 'daniel', x: -1.6, z: -2.4, facing: 'south', when: { requires: ['c2_daniel_returned'] } },
 ];
 
 const stone = (
@@ -87,6 +92,39 @@ export const LANDING_INTERACTABLES: Interactable[] = [
     dialogue: [{ dialogue: 'c2_spirit_again' }],
   },
   {
+    // The open doorway, once the spirit's test is passed (also for saves from the old 2.3 cliffhanger).
+    id: 'waystation-enter',
+    kind: 'enter',
+    label: 'Waystation',
+    x: DOOR.x,
+    z: LANDING_BOUNDS.minZ + 0.7,
+    radius: 1.1,
+    when: { requires: ['c2_spirit_defeated'] },
+    enter: { scene: 'waystation_hall', spawn: 'entrance' },
+  },
+  {
+    // Only needed if the game was closed mid-battle.
+    id: 'hollow-warden',
+    kind: 'inspect',
+    label: 'Hollow Warden',
+    x: WARDEN.x,
+    z: WARDEN.z - 1.0,
+    radius: 1.3,
+    when: { requires: ['c2_warden_seen'], unless: ['c2_warden_defeated'] },
+    dialogue: [{ dialogue: 'c2_warden_again' }],
+  },
+  {
+    id: 'npc-daniel-landing',
+    kind: 'talk',
+    label: 'Daniel',
+    x: -1.6,
+    z: -2.4,
+    radius: 1.2,
+    npc: 'daniel',
+    when: { requires: ['c2_daniel_returned'] },
+    dialogue: [{ dialogue: 'c2_daniel_landing' }],
+  },
+  {
     id: 'npc-mara-landing',
     kind: 'talk',
     label: 'Aunt Mara',
@@ -113,15 +151,22 @@ export const LANDING_INTERACTABLES: Interactable[] = [
 
 const FIXED_COLLIDERS: Box[] = [
   ...Object.values(STONES).map((s) => boxFromCenter(s.x, s.z, STONE_SIZE.width, STONE_SIZE.depth)),
-  ...LANDING_NPCS.map((n) => boxFromCenter(n.x, n.z, NPC_COLLIDER_SIZE, NPC_COLLIDER_SIZE)),
+  ...LANDING_NPCS.filter((n) => !n.when).map((n) => boxFromCenter(n.x, n.z, NPC_COLLIDER_SIZE, NPC_COLLIDER_SIZE)),
 ];
 const SPIRIT_COLLIDER = boxFromCenter(SPIRIT.x, SPIRIT.z, 1.0, 0.5);
+const DANIEL_COLLIDER = boxFromCenter(-1.6, -2.4, NPC_COLLIDER_SIZE, NPC_COLLIDER_SIZE);
+const WARDEN_COLLIDER = boxFromCenter(WARDEN.x, WARDEN.z, WARDEN_SIZE.width, WARDEN_SIZE.depth);
 
 export const LANDING_LAYOUT: SceneLayout = {
   bounds: LANDING_BOUNDS,
-  // The spirit stands in the open doorway until its test is passed.
-  colliders: (flags: StoryFlags) =>
-    flags.c2_stones_woken && !flags.c2_spirit_defeated ? [...FIXED_COLLIDERS, SPIRIT_COLLIDER] : FIXED_COLLIDERS,
+  // The spirit stands in the open doorway until its test is passed; Daniel and
+  // the Hollow Warden only stand here in Milestone 2.4.
+  colliders: (flags: StoryFlags) => [
+    ...FIXED_COLLIDERS,
+    ...(flags.c2_stones_woken && !flags.c2_spirit_defeated ? [SPIRIT_COLLIDER] : []),
+    ...(flags.c2_daniel_returned ? [DANIEL_COLLIDER] : []),
+    ...(flags.c2_warden_seen && !flags.c2_warden_defeated ? [WARDEN_COLLIDER] : []),
+  ],
   interactables: LANDING_INTERACTABLES,
   npcs: LANDING_NPCS,
 };
@@ -218,7 +263,39 @@ export const LANDING_DIALOGUE: DialogueDef[] = [
       { speaker: null, text: 'The spirit flows back down the steps and into the river, and is gone.' },
       { speaker: 'mara', text: 'Well. Go on, then. I will hold the boat. And the balm.' },
     ],
+  },
+  {
+    id: 'c2_warden_appears',
+    lines: [
+      { speaker: null, text: 'On the steps, a tall figure of green-stained brass and dark ironwood is climbing out of the river, water pouring from its joints.', setFlags: ['c2_warden_seen'] },
+      { speaker: 'mara', text: 'Adrian! Something just walked up out of the river! Ah Hock, get the engine ready!' },
+      { speaker: null, text: 'An orange flame burns in the cage of its chest. Stencilled on its shoulder: AR · SITE CLEARANCE.' },
+      { speaker: 'daniel', text: 'A Sentinel, built for the jungle. Harrow sent it ahead to clear the site.' },
+      { speaker: null, text: 'A voice like grinding gears: "SURVEY AREA AR-7. NO PERSONS PERMITTED. CLEARING."' },
+      { speaker: 'adrian', text: 'Not this site.' },
+    ],
+    startBattle: 'hollow_warden',
+  },
+  {
+    id: 'c2_warden_again',
+    lines: [{ speaker: null, text: 'The Hollow Warden turns its faceless mask toward Adrian. "CLEARING."' }],
+    startBattle: 'hollow_warden',
+  },
+  {
+    id: 'c2_warden_defeated',
+    lines: [
+      { speaker: null, text: 'The Warden topples backwards off the steps into the shallows. Its flame hisses out.' },
+      { speaker: null, text: 'Riveted inside its chest is a brass plate: AWAN RIVERLANDS DEVELOPMENT · SITE CLEARANCE. Under it, the palace seal.' },
+      { speaker: 'daniel', text: 'Pell\'s company and Harrow\'s palace on one plate. That\'s evidence, if anyone is willing to look at it.' },
+      { speaker: 'adrian', text: 'And if that was only the scout, the barge is bringing something bigger. To the village.' },
+      { speaker: 'mara', text: 'Then we go home, and we get there first. Ah Hock! The engine!' },
+      { speaker: 'adrian', text: 'With the Charter.' },
+    ],
     endChapter: true,
+  },
+  {
+    id: 'c2_daniel_landing',
+    lines: [{ speaker: 'daniel', text: 'Whatever that thing is, it isn\'t here for the view. Careful, Adrian.' }],
   },
   {
     id: 'c2_door_sealed',

@@ -343,6 +343,46 @@ test('full story: Chapters 0 and 1, and Chapter 2 so far', async ({ page }) => {
   await expect(testId(page, 'enemy-hp')).toHaveText('0/42');
   await press(page, 'KeyE', 600);
   await finishDialogue(page);
+  await expect(testId(page, 'objective')).toContainText('Search the waystation.');
+
+  // ── Chapter 2.4: the River Charter ─────────────────────
+  await walk(page, 'KeyW', 1.0);
+  await expect(testId(page, 'interaction-prompt')).toContainText('Enter Waystation');
+  await press(page, 'KeyE');
+  await arriveIn(page, 'The Waystation');
+
+  // Elias's journal on the desk (west), then the Charter case (east).
+  await walk(page, 'KeyW', 2.5);
+  await walk(page, 'KeyA', 2.2);
+  await expect(testId(page, 'interaction-prompt')).toContainText("Inspect Elias's Journal");
+  await press(page, 'KeyE');
+  await finishDialogue(page);
+  await walk(page, 'KeyD', 4.4);
+  await expect(testId(page, 'interaction-prompt')).toContainText('Inspect Sealed Case');
+  await press(page, 'KeyE');
+  for (let i = 0; i < 4; i++) await press(page, 'Enter', 400); // into the Charter text
+  await page.screenshot({ path: 'test-results/waystation-hall.png' });
+  await finishDialogue(page); // the Charter, then Daniel, then out onto the landing
+
+  // The Hollow Warden climbs out of the river.
+  await expectLocation(page, 'The Waystation Landing');
+  await expect(testId(page, 'dialogue-box')).toBeVisible({ timeout: 10_000 });
+  await page.waitForTimeout(800);
+  await page.screenshot({ path: 'test-results/waystation-warden.png' });
+  await finishDialogue(page);
+  await expect(testId(page, 'battle-ui')).toBeVisible();
+  await expect(testId(page, 'enemy-status')).toContainText('Hollow Warden');
+  // Defend the heavy blows; River Ward once Adrian is hurt.
+  for (const cmd of ['skill', 'skill', 'attack', 'defend', 'attack', 'ward', 'defend', 'attack', 'attack', 'defend', 'attack']) {
+    await expect(testId(page, `cmd-${cmd}`)).toBeEnabled({ timeout: 15_000 });
+    if (cmd === 'defend') await expect(testId(page, 'enemy-charging')).toBeVisible();
+    await testId(page, `cmd-${cmd}`).click();
+  }
+  await expect(testId(page, 'battle-victory')).toBeVisible({ timeout: 15_000 });
+  await expect(testId(page, 'enemy-hp')).toHaveText('0/48');
+  await expect(testId(page, 'player-hp')).toHaveText('12/30');
+  await press(page, 'KeyE', 600);
+  await finishDialogue(page);
   await expect(testId(page, 'c2-to-be-continued')).toBeVisible({ timeout: 10_000 });
 
   // The cliffhanger is saved; after a refresh, Continue says so.

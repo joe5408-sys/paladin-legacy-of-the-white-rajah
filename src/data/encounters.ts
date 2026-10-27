@@ -54,7 +54,7 @@ export interface EncounterDef {
   /** Message when the enemy's HP reaches zero. */
   victoryText?: string;
   /** Which enemy sprite and battle backdrop to show. */
-  sprite: 'guardian' | 'sentinel' | 'spirit';
+  sprite: 'guardian' | 'sentinel' | 'spirit' | 'warden';
   arena: 'chamber' | 'vault' | 'waystation';
   /** Adrian may use River Ward here before he has learned it: this battle is the lesson. */
   teachesWard?: boolean;
@@ -150,6 +150,33 @@ export const ENCOUNTERS: Record<string, EncounterDef> = {
     teachesWard: true,
     victoryFlags: ['c2_spirit_defeated'],
     victoryDialogue: 'c2_spirit_defeated',
+    returnTo: { scene: 'waystation_landing', spawn: 'after_battle' },
+  },
+  // Chapter 2, Milestone 2.4. The Sentinel's rules, retuned for the jungle:
+  // more HP and a harder heavy blow. Going all-out loses; defending every
+  // heavy blow only just scrapes through (about 2 HP); defending heavy blows
+  // and using River Ward when hurt wins with about 12 HP. See warden.test.ts.
+  hollow_warden: {
+    id: 'hollow_warden',
+    enemyName: 'Hollow Warden',
+    enemyMaxHp: 48,
+    enemyAttack: 7,
+    enemyAttackText: 'swings its moss-green arm',
+    intro: "The Hollow Warden levels its long arms at the waystation door. Light gathers in Adrian's hand!",
+    tutorial: false,
+    tip: 'Like the Sentinel, it winds up heavy blows: Defend blocks them. Save River Ward for when you are hurt.',
+    heavy: {
+      every: 3,
+      damage: 18,
+      guardedMultiplier: 0,
+      chargeText: 'The Hollow Warden plants its feet in the moss. The flame in its chest roars orange. A heavy blow is coming!',
+      attackText: 'brings both arms crashing down',
+    },
+    victoryText: 'The Hollow Warden staggers back to the edge of the landing. Its flame gutters!',
+    sprite: 'warden',
+    arena: 'waystation',
+    victoryFlags: ['c2_warden_defeated'],
+    victoryDialogue: 'c2_warden_defeated',
     returnTo: { scene: 'waystation_landing', spawn: 'after_battle' },
   },
 };

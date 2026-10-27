@@ -24,7 +24,7 @@ import { Brazier } from '../scenes/AncientChamber';
 import { getInsigniaTexture } from '../scenes/insignia';
 import type { BattleEvent } from './battle';
 import { getGuardianTexture, getSpiritTexture, GUARDIAN_H, GUARDIAN_W } from './guardianSprite';
-import { getSentinelTexture, SENTINEL_H, SENTINEL_W } from './sentinelSprite';
+import { getSentinelTexture, getWardenTexture, SENTINEL_H, SENTINEL_W } from './sentinelSprite';
 import type { EncounterDef } from '../../data/encounters';
 
 const PLAYER_POS = new THREE.Vector3(-2.3, 0, 0.7);
@@ -39,6 +39,7 @@ const ENEMY_SPRITES: Record<EncounterDef['sprite'], { width: number; height: num
   guardian: { width: 2.3, height: 2.3 * (GUARDIAN_H / GUARDIAN_W) * HEIGHT_COMP, texture: getGuardianTexture },
   sentinel: { width: 2.2, height: 2.2 * (SENTINEL_H / SENTINEL_W) * HEIGHT_COMP, texture: getSentinelTexture },
   spirit: { width: 2.3, height: 2.3 * (GUARDIAN_H / GUARDIAN_W) * HEIGHT_COMP, texture: getSpiritTexture },
+  warden: { width: 2.2, height: 2.2 * (SENTINEL_H / SENTINEL_W) * HEIGHT_COMP, texture: getWardenTexture },
 };
 
 /** Colours of each battle backdrop. */

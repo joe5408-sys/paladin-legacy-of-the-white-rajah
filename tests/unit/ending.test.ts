@@ -9,6 +9,7 @@ import { WATERFRONT_LAYOUT } from '../../src/chapters/chapter1/data';
 import { HOME_C2_LAYOUT, VILLAGE_C2_LAYOUT } from '../../src/chapters/chapter2/villageData';
 import { BOAT_LAYOUT } from '../../src/chapters/chapter2/boatData';
 import { LANDING_LAYOUT } from '../../src/chapters/chapter2/waystationData';
+import { HALL_LAYOUT } from '../../src/chapters/chapter2/hallData';
 import { RECORDS_LAYOUT } from '../../src/chapters/chapter1/recordsData';
 import { VAULT_LAYOUT } from '../../src/chapters/chapter1/vaultData';
 import { ARCHIVES_LAYOUT } from '../../src/chapters/chapter1/archivesData';
@@ -39,6 +40,7 @@ const LAYOUTS: Record<SceneId, SceneLayout> = {
   village_c2: VILLAGE_C2_LAYOUT,
   home_c2: HOME_C2_LAYOUT,
   waystation_landing: LANDING_LAYOUT,
+  waystation_hall: HALL_LAYOUT,
 };
 
 function finishDialogue() {

@@ -9,12 +9,13 @@ import { useRef, type ReactElement } from 'react';
 import * as THREE from 'three';
 import type { SpawnPoint } from '../../data/scenes';
 import { getSpiritTexture, GUARDIAN_H, GUARDIAN_W } from '../../game/combat/guardianSprite';
+import { getWardenTexture, SENTINEL_H, SENTINEL_W } from '../../game/combat/sentinelSprite';
 import { CAMERA_PITCH_DEG } from '../../game/core/constants';
 import { useGame } from '../../game/core/gameStore';
 import { River } from '../../game/scenes/environment';
 import { ExplorationRig } from '../../game/scenes/ExplorationRig';
 import { getInsigniaTexture } from '../../game/scenes/insignia';
-import { DOOR, LANDING_BOUNDS, LANDING_LAYOUT, SPIRIT, STEPS, STONES } from './waystationData';
+import { DOOR, LANDING_BOUNDS, LANDING_LAYOUT, SPIRIT, STEPS, STONES, WARDEN } from './waystationData';
 
 const HEIGHT_COMP = 1 / Math.cos(THREE.MathUtils.degToRad(CAMERA_PITCH_DEG));
 const SPIRIT_WIDTH = 2.0;
@@ -54,6 +55,7 @@ export default function Waystation({ spawn }: { spawn: SpawnPoint }) {
       ))}
       <Jungle />
       <Spirit />
+      <Warden />
 
       <ExplorationRig layout={LANDING_LAYOUT} spawn={spawn} />
     </>
@@ -358,6 +360,53 @@ function Spirit() {
         </mesh>
       </group>
       <pointLight ref={light} position={[0, SPIRIT_HEIGHT * 0.5, 0.8]} color="#9fe0ff" intensity={2} distance={4} />
+    </group>
+  );
+}
+
+const WARDEN_WIDTH = 2.0;
+const WARDEN_HEIGHT = WARDEN_WIDTH * (SENTINEL_H / SENTINEL_W) * HEIGHT_COMP;
+
+/** The Hollow Warden: on the steps once it climbs out of the river, a wreck in the shallows after. */
+function Warden() {
+  const seen = useGame((s) => !!s.flags.c2_warden_seen);
+  const defeated = useGame((s) => !!s.flags.c2_warden_defeated);
+  const flame = useRef<THREE.PointLight>(null);
+  useFrame(({ clock }) => {
+    if (flame.current) flame.current.intensity = 1.6 + Math.sin(clock.elapsedTime * 3.1) * 0.5;
+  });
+  if (!seen) return null;
+
+  if (defeated) {
+    // Brass plates and ironwood limbs half-sunk at the water's edge.
+    const pieces: [number, number, number, number, string][] = [
+      [-0.6, 0.0, 0.8, 0.5, '#5f8a6a'],
+      [0.3, 0.2, 0.6, -0.4, '#2a2a1e'],
+      [0.8, -0.1, 0.5, 1.2, '#8fb890'],
+    ];
+    return (
+      <group position={[WARDEN.x, -0.15, LANDING_BOUNDS.maxZ + 0.6]}>
+        {pieces.map(([x, z, len, rot, color], i) => (
+          <mesh key={i} position={[x, 0, z]} rotation-y={rot}>
+            <boxGeometry args={[len, 0.2, 0.25]} />
+            <meshStandardMaterial color={color} metalness={0.3} roughness={0.7} />
+          </mesh>
+        ))}
+      </group>
+    );
+  }
+
+  return (
+    <group position={[WARDEN.x, 0, WARDEN.z]}>
+      <mesh rotation-x={-Math.PI / 2} position={[0, 0.02, 0.1]}>
+        <circleGeometry args={[0.7, 20]} />
+        <meshBasicMaterial color="#000" transparent opacity={0.45} depthWrite={false} />
+      </mesh>
+      <mesh position-y={WARDEN_HEIGHT / 2}>
+        <planeGeometry args={[WARDEN_WIDTH, WARDEN_HEIGHT]} />
+        <meshBasicMaterial map={getWardenTexture()} alphaTest={0.5} toneMapped={false} />
+      </mesh>
+      <pointLight ref={flame} position={[0, WARDEN_HEIGHT * 0.45, 0.5]} color="#ffb060" intensity={1.6} distance={3.5} />
     </group>
   );
 }

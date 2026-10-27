@@ -5,7 +5,7 @@
 import type { Direction } from '../game/core/input';
 import type { DialogueRule } from '../game/dialogue/types';
 
-export type SceneId = 'village' | 'home' | 'chamber' | 'waterfront' | 'archives' | 'vault' | 'records' | 'boat' | 'village_c2' | 'home_c2' | 'waystation_landing';
+export type SceneId = 'village' | 'home' | 'chamber' | 'waterfront' | 'archives' | 'vault' | 'records' | 'boat' | 'village_c2' | 'home_c2' | 'waystation_landing' | 'waystation_hall';
 
 export interface SpawnPoint {
   x: number;
@@ -120,8 +120,21 @@ export const SCENES: Record<SceneId, SceneDef> = {
     spawns: {
       arrival: { x: 0, z: 2.9, facing: 'north' },
       after_battle: { x: 0, z: -2.4, facing: 'north' },
+      from_hall: { x: 0, z: -2.9, facing: 'south' },
     },
-    arrival: [{ dialogue: 'c2_landing_arrival', unless: ['c2_landing_arrived'] }],
+    arrival: [
+      { dialogue: 'c2_warden_appears', requires: ['c2_daniel_returned'], unless: ['c2_warden_seen'] },
+      { dialogue: 'c2_landing_arrival', unless: ['c2_landing_arrived'] },
+    ],
+  },
+  // Inside the waystation (src/chapters/chapter2/hallData.ts).
+  waystation_hall: {
+    id: 'waystation_hall',
+    name: 'The Waystation',
+    spawns: {
+      entrance: { x: 0, z: 1.9, facing: 'north' },
+    },
+    arrival: [{ dialogue: 'c2_hall_arrival', unless: ['c2_entered_hall'] }],
   },
 };
 
@@ -138,6 +151,7 @@ export const SCENE_CHAPTER: Record<SceneId, number> = {
   village_c2: 2,
   home_c2: 2,
   waystation_landing: 2,
+  waystation_hall: 2,
 };
 
 export const NEW_GAME_SCENE: SceneId = 'village';

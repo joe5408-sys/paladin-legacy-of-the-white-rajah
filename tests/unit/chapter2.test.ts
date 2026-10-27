@@ -59,7 +59,7 @@ describe('Chapter 2 loading', () => {
     await loadChapter(2);
     expect(DIALOGUES.c2_boat_arrival).toBeDefined();
     expect(getLayout('boat')).toBeDefined();
-    expect(OBJECTIVES_BY_CHAPTER[2]?.length).toBe(12);
+    expect(OBJECTIVES_BY_CHAPTER[2]?.length).toBe(14);
   });
 
   it('knows that Chapter 1 now leads on, and which chapter a save needs', () => {
@@ -248,6 +248,7 @@ describe('Chapter 2 flow', () => {
     s().setFlags([
       ...BOAT_DONE, 'c2_village_arrived', 'c2_read_notice', 'c2_talked_lim', 'c2_met_pell', 'c2_home_talked', 'c2_found_map',
       'c2_went_upriver', 'c2_landing_arrived', 'c2_stones_woken', 'c2_spirit_defeated', 'c2_learned_ward',
+      'c2_entered_hall', 'c2_read_journal', 'c2_found_charter', 'c2_daniel_returned', 'c2_warden_seen', 'c2_warden_defeated',
     ]);
     const end = validateSave(
       JSON.parse(JSON.stringify(buildSave({ ...s(), scene: 'waystation_landing' }, SCENES.waystation_landing.spawns.after_battle))),

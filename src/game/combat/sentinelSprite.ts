@@ -9,7 +9,12 @@ import { addOutline } from '../player/pixelSprite';
 export const SENTINEL_W = 32;
 export const SENTINEL_H = 44;
 
-const C = {
+type Palette = Record<
+  'outline' | 'brass' | 'brassLight' | 'brassDark' | 'wood' | 'woodLight' | 'hollow' | 'flame' | 'flameCore' | 'livery' | 'liveryDark',
+  string
+>;
+
+const PALACE: Palette = {
   outline: '#0d0b0a',
   brass: '#b8893a',
   brassLight: '#e0b860',
@@ -28,7 +33,22 @@ function rect(g: CanvasRenderingContext2D, x: number, y: number, w: number, h: n
   g.fillRect(x, y, w, h);
 }
 
-function draw(g: CanvasRenderingContext2D) {
+/** The Hollow Warden (Chapter 2): the same frame built for the jungle, in verdigris and moss-green. */
+const JUNGLE: Palette = {
+  outline: '#0a0d0a',
+  brass: '#5f8a6a',
+  brassLight: '#8fb890',
+  brassDark: '#3c5a44',
+  wood: '#2a2a1e',
+  woodLight: '#46462e',
+  hollow: '#0e120e',
+  flame: '#ffb060',
+  flameCore: '#fff0c8',
+  livery: '#3a4a26',
+  liveryDark: '#26321a',
+};
+
+function draw(g: CanvasRenderingContext2D, C: Palette) {
   // Legs: thin ironwood with brass knee plates and feet
   for (const lx of [11, 18]) {
     rect(g, lx, 31, 3, 12, C.wood);
@@ -92,21 +112,32 @@ function draw(g: CanvasRenderingContext2D) {
   rect(g, 19, 0, 1, 2, C.brassLight);
 }
 
-let cached: THREE.CanvasTexture | null = null;
+const cache = new Map<Palette, THREE.CanvasTexture>();
 
-/** Shared Sentinel texture. Browser-only. */
-export function getSentinelTexture(): THREE.CanvasTexture {
-  if (cached) return cached;
+function texture(palette: Palette): THREE.CanvasTexture {
+  const hit = cache.get(palette);
+  if (hit) return hit;
   const canvas = document.createElement('canvas');
   canvas.width = SENTINEL_W;
   canvas.height = SENTINEL_H;
   const g = canvas.getContext('2d', { willReadFrequently: true })!;
-  draw(g);
-  addOutline(g, SENTINEL_W, SENTINEL_H, C.outline);
-  cached = new THREE.CanvasTexture(canvas);
-  cached.magFilter = THREE.NearestFilter;
-  cached.minFilter = THREE.NearestFilter;
-  cached.generateMipmaps = false;
-  cached.colorSpace = THREE.SRGBColorSpace;
-  return cached;
+  draw(g, palette);
+  addOutline(g, SENTINEL_W, SENTINEL_H, palette.outline);
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.magFilter = THREE.NearestFilter;
+  tex.minFilter = THREE.NearestFilter;
+  tex.generateMipmaps = false;
+  tex.colorSpace = THREE.SRGBColorSpace;
+  cache.set(palette, tex);
+  return tex;
+}
+
+/** Shared Sentinel texture. Browser-only. */
+export function getSentinelTexture(): THREE.CanvasTexture {
+  return texture(PALACE);
+}
+
+/** Shared Hollow Warden texture. Browser-only. */
+export function getWardenTexture(): THREE.CanvasTexture {
+  return texture(JUNGLE);
 }

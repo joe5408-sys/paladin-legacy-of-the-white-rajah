@@ -240,9 +240,12 @@ describe('Milestone 2.3 flow', () => {
     expect(s().dialogue?.def.id).toBe('c2_spirit_defeated');
     finishDialogue();
     expect(s().flags.c2_learned_ward).toBe(true);
-    expect(s().mode).toBe('ending');
-    expect(isAtChapterEnd(s().flags)).toBe(true);
-    expect(objective()).toBeUndefined();
+    // The story goes on through the open door (Milestone 2.4, warden.test.ts).
+    expect(s().mode).toBe('explore');
+    expect(isAtChapterEnd(s().flags)).toBe(false);
+    expect(objective()).toBe('c2_search');
+    use('waystation-enter');
+    expect(s().transition?.to).toBe('waystation_hall');
   });
 
   it('a defeat can be retried; closing the game mid-battle lets you face the spirit again', () => {
