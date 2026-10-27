@@ -88,7 +88,16 @@ export type StoryFlag =
   | 'c3_petition_registered' // the Clerk of Petitions writes it in the register
   | 'c3_sentinel_woken' // the Crowned Sentinel walks out of the gate
   | 'c3_sentinel_withdrew' // it withdraws at the sight of the medallion
-  | 'c3_gate_open'; // (milestone 3.3 cliffhanger)
+  | 'c3_gate_open' // the petitioners hold the gates open
+  | 'c3_hall_entered' // the audience hall
+  | 'c3_hearing_started' // on the petitioner's place
+  | 'c3_claim1_answered' // the seal: the Rajah's 1921 letter
+  | 'c3_claim2_answered' // no other grant: the River Charter
+  | 'c3_claim3_answered' // a forgery: Elias's journal
+  | 'c3_mara_spoke'
+  | 'c3_claim4_answered' // the palace and the company: the Warden's plate or Pell
+  | 'c3_pell_testified'
+  | 'c3_hearing_won'; // (milestone 3.4 cliffhanger: the Rajah rises to rule)
 
 export type StoryFlags = Partial<Record<StoryFlag, true>>;
 

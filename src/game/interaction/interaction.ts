@@ -27,6 +27,8 @@ export interface Interactable {
   enter?: { scene: SceneId; spawn: string };
   /** NPC that turns to face the player while talking. */
   npc?: CharacterId;
+  /** Overrides the kind's verb in the prompt, e.g. "Stand in" → "[E] Stand in the Petitioner's Place". */
+  verb?: string;
 }
 
 const VERBS: Record<InteractionKind, string> = {
@@ -38,7 +40,7 @@ const VERBS: Record<InteractionKind, string> = {
 };
 
 export function promptText(target: Interactable): string {
-  return `${VERBS[target.kind]} ${target.label}`;
+  return `${target.verb ?? VERBS[target.kind]} ${target.label}`;
 }
 
 export function isAvailable(target: Interactable, flags: StoryFlags): boolean {

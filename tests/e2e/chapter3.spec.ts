@@ -5,8 +5,9 @@
  * night boat to Kuching) and 3.2 (the waterfront before dawn, Kak Jamilah's
  * room, and Pell's choice, picked with the keyboard) and 3.3 (the Palace
  * forecourt and the first Crowned Sentinel fight, which ends when it withdraws)
- * to the "to be continued" card. Also checks that Chapter 3's files are only
- * downloaded when needed.
+ * and 3.4 (the hearing: one wrong piece of evidence, then the right one for each
+ * of Harrow's claims, chosen with the mouse) to the "to be continued" card. Also
+ * checks that Chapter 3's files are only downloaded when needed.
  */
 import { expect, test } from '@playwright/test';
 import { arriveIn, finishDialogue, press, testId, trackErrors, walk } from './helpers';
@@ -25,8 +26,8 @@ const CHAPTER2_DONE = [
   'c2_daniel_returned', 'c2_warden_seen', 'c2_warden_defeated', 'c2_dusk_arrived', 'c2_iron_seen', 'c2_iron_defeated',
 ];
 
-test('Chapter 3 so far: the night boat, the waterfront, Pell\'s choice, the Palace gate', async ({ page }) => {
-  test.setTimeout(240_000);
+test('Chapter 3 so far: the night boat, the waterfront, Pell\'s choice, the Palace gate, the hearing', async ({ page }) => {
+  test.setTimeout(300_000);
   const errors = trackErrors(page);
   const requested: string[] = [];
   page.on('request', (r) => requested.push(r.url()));
@@ -150,7 +151,41 @@ test('Chapter 3 so far: the night boat, the waterfront, Pell\'s choice, the Pala
   await expect(testId(page, 'enemy-hp')).toHaveText('12/56'); // it withdrew, still standing
   await expect(testId(page, 'player-hp')).toHaveText('15/36');
   await press(page, 'KeyE', 600);
-  await finishDialogue(page);
+  await finishDialogue(page); // it withdraws; the petitioners hold the gates open
+
+  // ── Milestone 3.4: the Petition Hour ─────────────────
+  await expect(testId(page, 'objective')).toContainText('Go through the gate to the audience hall.');
+  await walk(page, 'KeyW', 1.6);
+  await expect(testId(page, 'interaction-prompt')).toContainText('Enter Audience Hall');
+  await press(page, 'KeyE');
+  await arriveIn(page, 'The Palace — Audience Hall');
+  await page.screenshot({ path: 'test-results/audience-hall.png' });
+  await walk(page, 'KeyW', 4.2);
+  await expect(testId(page, 'interaction-prompt')).toContainText("Stand in the Petitioner's Place");
+  await press(page, 'KeyE');
+
+  const untilChoices = async () => {
+    for (let i = 0; i < 80 && (await choices.count()) === 0; i++) await press(page, 'Enter', 150);
+    await expect(choices).toBeVisible();
+  };
+  // Claim 1 (the seal): a wrong piece of evidence first, then the right one.
+  await untilChoices();
+  await expect(choices).toContainText("The Rajah's letter of 1921, refusing to sign.");
+  await page.screenshot({ path: 'test-results/hearing-evidence.png' });
+  await testId(page, 'choice-charter').click();
+  await expect(testId(page, 'dialogue-text')).toContainText('That does not touch the seal', { timeout: 5_000 });
+  await untilChoices();
+  await testId(page, 'choice-letter').click();
+  // Claims 2–4: the Charter, Elias's journal, the Warden's plate.
+  for (const evidence of ['charter', 'journal', 'plate']) {
+    await untilChoices();
+    await testId(page, `choice-${evidence}`).click();
+  }
+  // Pell testifies in his own words: Adrian persuaded him with "For your family's name."
+  await untilChoices();
+  await testId(page, 'choice-pell-family').click();
+  await expect(testId(page, 'dialogue-text')).toContainText('Julian Pell, Your Majesty', { timeout: 5_000 });
+  await finishDialogue(page); // "So is the Crown." The Rajah rises.
   await expect(testId(page, 'c3-to-be-continued')).toBeVisible({ timeout: 10_000 });
 
   // Saved; after a refresh, Continue says so.

@@ -1,10 +1,20 @@
 # Progress
 
-**Current phase:** Phase 9 — Chapter 3: The Crown's Word (design agreed, `docs/CHAPTER_3.md`). Milestones 3.1 (The Long Way Down), 3.2 (A Wanted Man) and 3.3 (The Palace Gate) ✅ done; 3.4 (The Petition Hour) next. Chapter 2 is complete (`docs/CHAPTER_2.md`).
+**Current phase:** Phase 9 — Chapter 3: The Crown's Word (design agreed, `docs/CHAPTER_3.md`). Milestones 3.1 (The Long Way Down), 3.2 (A Wanted Man), 3.3 (The Palace Gate) and 3.4 (The Petition Hour) ✅ done; 3.5 (The Crown Remembers) next. Chapter 2 is complete (`docs/CHAPTER_2.md`).
 **MVP:** ✅ complete (phases 0–6); Chapter 0 is live.
 **Live site:** https://legacyofwhiterajah.netlify.app
 **Repository:** https://github.com/joe5408-sys/paladin-legacy-of-the-white-rajah (public, `master`; Netlify auto-deploys on push)
 **Last updated:** 2026-10-27
+
+### Phase 9 — Chapter 3, Milestone 3.4: The Petition Hour (2026-10-27) ✅
+- The 3.3 ending now leaves the gates held open: walk through them into **the audience hall** (a new invented palace interior: white columns, tall windows, a red carpet to a gilded throne, banners, benches, and the Crowned Sentinel standing beside the throne again).
+- **New character: the Rajah**, fictional and unnamed, young, in a plain white uniform.
+- **The hearing:** stand in the petitioner's place; Lord Chamberlain Harrow makes four claims (the royal seal; no other grant; a forgery; the palace has nothing to do with the company), and Adrian answers each by **presenting evidence** from everything found across the game: the Rajah's 1921 letter, the River Charter, Elias's journal, the Hollow Warden's plate, or Pell's testimony. A wrong piece of evidence gets a rebuttal and another try. Mara speaks up for Sungai Awan halfway; the Archivist backs up the letter and the journal; Pell testifies in words that depend on how Adrian persuaded him in 3.2. "It is all very old, Your Majesty." "So is the Crown." The Rajah rises to rule → **To Be Continued**.
+- Small engine addition: an interactable can override its prompt verb ("Stand in the Petitioner's Place").
+- **Bug fix (from 3.2):** dialogue replies could not be clicked with the mouse, because the HUD layer ignores the mouse and the reply buttons didn't opt back in (the 3.2 browser test only used the keyboard). The Chapter 3 browser test now picks the hearing's evidence by mouse.
+- A reload mid-hearing resumes at the first unanswered claim.
+- **Test results:** `npm test` 273/273 (new `hearing.test.ts`, 7 tests: the evidence menu, the full hearing trying every wrong answer before each right one, Pell's evidence accepted for claim 4, all four versions of Pell's testimony, resuming after a reload at each stage, the end save and a too-early hall save; 3.3's tests now end at the open gate). `npm run e2e` 4/4: the Chapter 3 browser test now also walks into the hall and wins the hearing, trying one wrong piece of evidence first (1.4 min); full story unchanged (4.8 min). Visual check by screenshot of the hall with the evidence menu.
+- **Live:** not yet checked on the live site.
 
 ### Phase 9 — Chapter 3, Milestone 3.3: The Palace Gate (2026-10-27) ✅
 - **New system: yield.** An enemy can stop fighting at a set HP; the battle ends in victory with it still standing. First used here, gently.

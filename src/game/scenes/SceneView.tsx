@@ -21,6 +21,7 @@ const BoatNight = lazy(() => import('../../chapters/chapter3/BoatNight'));
 const WaterfrontNight = lazy(() => import('../../chapters/chapter3/WaterfrontNight'));
 const JamilahRoom = lazy(() => import('../../chapters/chapter3/JamilahRoom'));
 const PalaceGate = lazy(() => import('../../chapters/chapter3/PalaceGate'));
+const AudienceHall = lazy(() => import('../../chapters/chapter3/AudienceHall'));
 
 /**
  * Renders the active scene, or the battle arena during a battle.
@@ -120,6 +121,12 @@ export function SceneView() {
       return (
         <Suspense fallback={null}>
           <PalaceGate key="palace_gate" spawn={spawn} />
+        </Suspense>
+      );
+    case 'audience_hall':
+      return (
+        <Suspense fallback={null}>
+          <AudienceHall key="audience_hall" spawn={spawn} />
         </Suspense>
       );
   }

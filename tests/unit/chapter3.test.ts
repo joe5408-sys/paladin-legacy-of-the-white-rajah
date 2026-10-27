@@ -84,7 +84,7 @@ describe('Chapter 3 loading', () => {
     await loadChapter(3);
     expect(DIALOGUES.c3_boat_arrival).toBeDefined();
     expect(getLayout('boat_night')).toBeDefined();
-    expect(OBJECTIVES_BY_CHAPTER[3]?.length).toBe(8);
+    expect(OBJECTIVES_BY_CHAPTER[3]?.length).toBe(11);
   });
 
   it('follows Chapter 2, is the latest chapter, and a Chapter 3 save needs it', () => {

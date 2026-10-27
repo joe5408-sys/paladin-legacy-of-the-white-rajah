@@ -12,7 +12,7 @@
  * orders to detain Adrian; Daniel faces her → the Crowned Sentinel walks out of
  * the gate → battle → it withdraws at the sight of the medallion → the gates
  * begin to close, the petitioners stand in the gateway, the Clerk invokes custom,
- * Osman lets them through → "To Be Continued".
+ * Osman lets them through → walk through the open gate to the audience hall (3.4).
  */
 import { boxFromCenter, type Box } from '../../game/core/collision';
 import type { StoryFlags } from '../../game/core/flags';
@@ -102,6 +102,17 @@ export const GATE_INTERACTABLES: Interactable[] = [
     dialogue: [{ dialogue: 'c3_gate_closed' }],
   },
   {
+    // Once the petitioners hold the gates open: through to the audience hall.
+    id: 'palace-enter',
+    kind: 'enter',
+    label: 'Audience Hall',
+    x: GATE.x,
+    z: GATE_BOUNDS.minZ + 0.5,
+    radius: 1.1,
+    when: { requires: ['c3_gate_open'] },
+    enter: { scene: 'audience_hall', spawn: 'entrance' },
+  },
+  {
     // Only needed if the game was closed mid-battle.
     id: 'crowned-sentinel',
     kind: 'inspect',
@@ -181,7 +192,6 @@ export const GATE_DIALOGUE: DialogueDef[] = [
     startBattle: 'crowned_sentinel_gate',
   },
   {
-    // The end of Milestone 3.3.
     id: 'c3_sentinel_withdraws',
     lines: [
       { speaker: null, text: 'The halberd stops a hand\'s width from Adrian\'s shoulder. The Sentinel\'s visor turns to the medallion, glowing at his collar.' },
@@ -192,8 +202,8 @@ export const GATE_DIALOGUE: DialogueDef[] = [
       { speaker: 'clerk', text: 'The Petition Hour is open! By custom, no gate may be closed on a petitioner! It is in the register!' },
       { speaker: 'sergeant', text: '...You heard the Clerk. The gates stay open.' },
       { speaker: 'sergeant', text: 'I didn\'t see you, Danny. Any of you. Go on.', setFlags: ['c3_gate_open'] },
+      { speaker: 'clerk', text: 'Nine o\'clock! The Petition Hour! Through the gate, Mr Vale, to the audience hall!' },
     ],
-    endChapter: true,
   },
   {
     id: 'c3_clerk_after',

@@ -281,6 +281,7 @@ body,
   text-align: left;
   padding: 0.25em 0.4em 0.25em 1.4em;
   cursor: pointer;
+  pointer-events: auto; /* the HUD layer ignores the mouse; replies must not */
 }
 
 .dialogue-choice.selected {

@@ -4,7 +4,7 @@
  */
 import type { CharacterFeatures, CharacterPalette } from '../game/player/pixelSprite';
 
-export type CharacterId = 'adrian' | 'lim' | 'mara' | 'guardian' | 'daniel' | 'jamilah' | 'archivist' | 'harrow' | 'officer' | 'ahhock' | 'passenger' | 'auntie' | 'siti' | 'pell' | 'spirit' | 'clerk' | 'sergeant' | 'fisher' | 'teacher';
+export type CharacterId = 'adrian' | 'lim' | 'mara' | 'guardian' | 'daniel' | 'jamilah' | 'archivist' | 'harrow' | 'officer' | 'ahhock' | 'passenger' | 'auntie' | 'siti' | 'pell' | 'spirit' | 'clerk' | 'sergeant' | 'fisher' | 'teacher' | 'rajah';
 
 export interface CharacterDef {
   id: CharacterId;
@@ -344,5 +344,24 @@ export const CHARACTERS: Record<CharacterId, CharacterDef> = {
       boots: '#3a2e24',
     },
     features: { glasses: true, longSkirt: true },
+  },
+  // The Rajah: fictional and unnamed, young, in a plain white uniform. Not modelled on any real person.
+  rajah: {
+    id: 'rajah',
+    name: 'His Majesty the Rajah',
+    palette: {
+      outline: OUTLINE,
+      hair: '#2a201c',
+      hairHi: '#44362e',
+      skin: '#d4a07a',
+      skinShade: '#b2805a',
+      eye: '#1b1420',
+      jacket: '#f2f0ea', // plain white uniform
+      jacketShade: '#d2cec4',
+      trim: '#d8b24a', // gold buttons
+      belt: '#2a3f7a', // blue sash
+      pants: '#e8e4da',
+      boots: '#2a2228',
+    },
   },
 };

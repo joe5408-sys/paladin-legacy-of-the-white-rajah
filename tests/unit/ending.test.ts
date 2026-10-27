@@ -14,6 +14,7 @@ import { JETTY_LAYOUT } from '../../src/chapters/chapter2/jettyData';
 import { BOAT_NIGHT_LAYOUT } from '../../src/chapters/chapter3/boatNightData';
 import { ROOM_LAYOUT, WATERFRONT_NIGHT_LAYOUT } from '../../src/chapters/chapter3/kuchingData';
 import { GATE_LAYOUT } from '../../src/chapters/chapter3/palaceData';
+import { HALL3_LAYOUT } from '../../src/chapters/chapter3/audienceData';
 import { RECORDS_LAYOUT } from '../../src/chapters/chapter1/recordsData';
 import { VAULT_LAYOUT } from '../../src/chapters/chapter1/vaultData';
 import { ARCHIVES_LAYOUT } from '../../src/chapters/chapter1/archivesData';
@@ -50,6 +51,7 @@ const LAYOUTS: Record<SceneId, SceneLayout> = {
   waterfront_night: WATERFRONT_NIGHT_LAYOUT,
   jamilah_room: ROOM_LAYOUT,
   palace_gate: GATE_LAYOUT,
+  audience_hall: HALL3_LAYOUT,
 };
 
 function finishDialogue() {

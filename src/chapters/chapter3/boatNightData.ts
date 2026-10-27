@@ -20,6 +20,7 @@ import type { Objective } from '../../data/quests';
 import { BENCH, CARGO, DECK, ENGINE } from '../chapter2/boatData';
 import { KUCHING_OBJECTIVES } from './kuchingData';
 import { GATE_OBJECTIVES } from './palaceData';
+import { HEARING_OBJECTIVES } from './audienceData';
 
 export const PELL_NIGHT = { x: 0.0, z: 1.0 };
 
@@ -119,6 +120,7 @@ export const CHAPTER3_OBJECTIVES: Objective[] = [
   { id: 'c3_rest', text: 'Rest in the cabin until Kuching.', completeWhen: 'c3_reached_kuching' },
   ...KUCHING_OBJECTIVES,
   ...GATE_OBJECTIVES,
+  ...HEARING_OBJECTIVES,
 ];
 
 export const BOAT_NIGHT_DIALOGUE: DialogueDef[] = [

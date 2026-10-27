@@ -1,7 +1,7 @@
 /**
  * Chapter 3, Milestone 3.3 — The Palace Gate: the yield rule in battle.ts, the
- * first Crowned Sentinel fight's balance, the forecourt story, saves and the
- * "to be continued" ending.
+ * first Crowned Sentinel fight's balance, the forecourt story, saves, and the
+ * open gate through to the audience hall (Milestone 3.4).
  */
 import { beforeEach, describe, expect, it } from 'vitest';
 import { createBattle, describeEvent, enemyAction, playerAction, type BattleState, type Command } from '../../src/game/combat/battle';
@@ -139,7 +139,7 @@ describe('Milestone 3.3 flow', () => {
     await loadChapter(3);
   });
 
-  it('the forecourt → the Clerk → Sergeant Osman → the Crowned Sentinel withdraws → To Be Continued', () => {
+  it('the forecourt → the Clerk → Sergeant Osman → the Crowned Sentinel withdraws → through the open gate', () => {
     placeIn('jamilah_room', 'arrival', BEFORE_GATE);
     use('room-stairs');
     finishDialogue();
@@ -175,9 +175,11 @@ describe('Milestone 3.3 flow', () => {
     expect(s().dialogue?.def.id).toBe('c3_sentinel_withdraws');
     finishDialogue();
     expect(s().flags.c3_gate_open).toBe(true);
-    expect(s().mode).toBe('ending');
-    expect(isAtChapterEnd(s().flags)).toBe(true);
-    expect(objective()).toBeUndefined();
+    expect(s().mode).toBe('explore');
+    expect(isAtChapterEnd(s().flags)).toBe(false);
+    expect(objective()).toBe('c3_hall');
+    use('palace-enter');
+    expect(s().transition?.to).toBe('audience_hall');
   });
 
   it('the Sentinel blocks the gateway after a reload mid-battle, and can be faced again', () => {
@@ -195,11 +197,13 @@ describe('Milestone 3.3 flow', () => {
     expect(s().battle?.state).toMatchObject({ playerHp: 36, enemyHp: G.enemyMaxHp, wardCharges: 1 });
   });
 
-  it('a save at the end reopens the card; a forecourt save before the plan is sent back to the village', () => {
+  it('a save from the old 3.3 cliffhanger walks through the gate; a forecourt save before the plan is sent back', () => {
     placeIn('palace_gate', 'after_battle', [
       ...BEFORE_GATE, 'c3_gate_arrived', 'c3_petition_registered', 'c3_sentinel_woken', 'c3_sentinel_withdrew', 'c3_gate_open',
     ]);
-    expect(s().mode).toBe('ending');
+    expect(s().mode).toBe('explore');
+    use('palace-enter');
+    expect(s().transition?.to).toBe('audience_hall');
 
     const r = validateSave({
       schemaVersion: 1,

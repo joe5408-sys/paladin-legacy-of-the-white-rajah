@@ -5,7 +5,7 @@
 import type { Direction } from '../game/core/input';
 import type { DialogueRule } from '../game/dialogue/types';
 
-export type SceneId = 'village' | 'home' | 'chamber' | 'waterfront' | 'archives' | 'vault' | 'records' | 'boat' | 'village_c2' | 'home_c2' | 'waystation_landing' | 'waystation_hall' | 'jetty_dusk' | 'boat_night' | 'waterfront_night' | 'jamilah_room' | 'palace_gate';
+export type SceneId = 'village' | 'home' | 'chamber' | 'waterfront' | 'archives' | 'vault' | 'records' | 'boat' | 'village_c2' | 'home_c2' | 'waystation_landing' | 'waystation_hall' | 'jetty_dusk' | 'boat_night' | 'waterfront_night' | 'jamilah_room' | 'palace_gate' | 'audience_hall';
 
 export interface SpawnPoint {
   x: number;
@@ -182,6 +182,15 @@ export const SCENES: Record<SceneId, SceneDef> = {
     },
     arrival: [{ dialogue: 'c3_gate_arrival', unless: ['c3_gate_arrived'] }],
   },
+  // The audience hall (src/chapters/chapter3/audienceData.ts).
+  audience_hall: {
+    id: 'audience_hall',
+    name: 'The Palace — Audience Hall',
+    spawns: {
+      entrance: { x: 0, z: 3.0, facing: 'north' },
+    },
+    arrival: [{ dialogue: 'c3_hall_arrival', unless: ['c3_hall_entered'] }],
+  },
 };
 
 /** Chapter a scene belongs to (0 = prologue). */
@@ -203,6 +212,7 @@ export const SCENE_CHAPTER: Record<SceneId, number> = {
   waterfront_night: 3,
   jamilah_room: 3,
   palace_gate: 3,
+  audience_hall: 3,
 };
 
 export const NEW_GAME_SCENE: SceneId = 'village';
