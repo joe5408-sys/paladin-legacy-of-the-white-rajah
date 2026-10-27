@@ -1,10 +1,18 @@
 # Progress
 
-**Current phase:** Phase 9 — Chapter 3: The Crown's Word (design agreed, `docs/CHAPTER_3.md`). Milestone 3.1 (The Long Way Down) ✅ done; 3.2 (A Wanted Man) next. Chapter 2 is complete (`docs/CHAPTER_2.md`).
+**Current phase:** Phase 9 — Chapter 3: The Crown's Word (design agreed, `docs/CHAPTER_3.md`). Milestones 3.1 (The Long Way Down) and 3.2 (A Wanted Man) ✅ done; 3.3 (The Palace Gate) next. Chapter 2 is complete (`docs/CHAPTER_2.md`).
 **MVP:** ✅ complete (phases 0–6); Chapter 0 is live.
 **Live site:** https://legacyofwhiterajah.netlify.app
 **Repository:** https://github.com/joe5408-sys/paladin-legacy-of-the-white-rajah (public, `master`; Netlify auto-deploys on push)
 **Last updated:** 2026-10-27
+
+### Phase 9 — Chapter 3, Milestone 3.2: A Wanted Man (2026-10-27) ✅
+- **New system: dialogue choices.** A conversation can end in a list of replies, chosen with ↑/↓ + E/Enter or the mouse; it waits until one is picked. First used for Pell's decision. No fail states: every reply leads on.
+- The night boat's cabin now leads ashore at Kuching instead of ending the chapter (old 3.1 saves step ashore from the cabin).
+- **The waterfront before dawn:** the Chapter 1 waterfront (now a reusable `WaterfrontScene`) darker, with shutters down, wanted posters on the lamp posts and Royal Security on the pier. Cross the plaza to Kak Jamilah's stall.
+- **Kak Jamilah's room** (new interior above her stall): the Archivist's note about the Petition Hour, then **Pell's choice** (three replies, each with its own answer, all ending with Pell sealing the petition and losing his job), then **Daniel** arrives with a plan for the palace → **To Be Continued**.
+- **Test results:** `npm test` 249/249 (`chapter3.test.ts` now 14 tests: the choice rules, keyboard choosing with wrap-around, ignoring bad picks, the full 3.2 flow, all three replies, old-cliffhanger and mid-milestone saves, too-early saves). `npm run e2e` 4/4: the Chapter 3 browser test now also crosses the waterfront, reads the note and picks Pell's second reply with the keyboard (39 s); the full-story test is unchanged (4.8 min). Visual checks by screenshots of the waterfront and of Pell's choice.
+- **Live:** not yet checked on the live site.
 
 ### Phase 9 — Chapter 3, Milestone 3.1: The Long Way Down (2026-10-27) ✅
 - **Design:** `docs/CHAPTER_3.md` agreed with all its draft defaults (the first story ends with Chapter 3; the Rajah on screen, fictional and unnamed; dialogue choices and a battle yield as the two new systems; max HP 36; Pell a story ally; Harrow never fights; no new Paladin art; five milestones).

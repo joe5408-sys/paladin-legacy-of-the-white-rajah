@@ -1,9 +1,10 @@
 /**
  * Chapter 3 so far, with real keyboard input in a real browser. Starts from a
  * saved game on the Chapter 2 Complete card (the full-story test plays every
- * chapter before that), continues into Chapter 3, and plays Milestone 3.1 (the
- * night boat to Kuching) to the "to be continued" card. Also checks that
- * Chapter 3's files are only downloaded when the player reaches it.
+ * chapter before that), continues into Chapter 3, and plays Milestones 3.1 (the
+ * night boat to Kuching) and 3.2 (the waterfront before dawn, Kak Jamilah's
+ * room, and Pell's choice, picked with the keyboard) to the "to be continued"
+ * card. Also checks that Chapter 3's files are only downloaded when needed.
  */
 import { expect, test } from '@playwright/test';
 import { arriveIn, finishDialogue, press, testId, trackErrors, walk } from './helpers';
@@ -22,8 +23,8 @@ const CHAPTER2_DONE = [
   'c2_daniel_returned', 'c2_warden_seen', 'c2_warden_defeated', 'c2_dusk_arrived', 'c2_iron_seen', 'c2_iron_defeated',
 ];
 
-test('Chapter 3: the night boat to Kuching', async ({ page }) => {
-  test.setTimeout(120_000);
+test('Chapter 3 so far: the night boat, the waterfront, Pell\'s choice', async ({ page }) => {
+  test.setTimeout(180_000);
   const errors = trackErrors(page);
   const requested: string[] = [];
   page.on('request', (r) => requested.push(r.url()));
@@ -83,6 +84,43 @@ test('Chapter 3: the night boat to Kuching', async ({ page }) => {
   await expect(testId(page, 'interaction-prompt')).toContainText('Inspect Cabin');
   await press(page, 'KeyE');
   await finishDialogue(page);
+
+  // ── Milestone 3.2: the waterfront before dawn ────────
+  await arriveIn(page, 'Kuching — Waterfront, Before Dawn');
+  await expect(testId(page, 'objective')).toContainText("Get to Kak Jamilah's stall.");
+  await page.screenshot({ path: 'test-results/waterfront-night.png' });
+  // South off the boardwalk, then west across the plaza, well away from the pier.
+  await walk(page, 'KeyS', 4.6);
+  await walk(page, 'KeyA', 18.1);
+  await expect(testId(page, 'interaction-prompt')).toContainText('Talk to Kak Jamilah');
+  await press(page, 'KeyE');
+  await finishDialogue(page);
+
+  // Up the back stairs
+  await arriveIn(page, "Above Kak Jamilah's Stall");
+  await expect(testId(page, 'objective')).toContainText("Read the Archivist's note.");
+  await walk(page, 'KeyW', 0.4);
+  await expect(testId(page, 'interaction-prompt')).toContainText("Archivist's Note");
+  await press(page, 'KeyE');
+  await finishDialogue(page);
+  await expect(testId(page, 'objective')).toContainText('Ask Pell to sponsor the petition.');
+
+  // Pell's choice: the replies appear after his last line.
+  await walk(page, 'KeyD', 1.5);
+  await walk(page, 'KeyW', 1.0);
+  await expect(testId(page, 'interaction-prompt')).toContainText('Talk to Julian Pell');
+  await press(page, 'KeyE');
+  const choices = testId(page, 'dialogue-choices');
+  for (let i = 0; i < 60 && (await choices.count()) === 0; i++) await press(page, 'Enter', 120);
+  await expect(choices).toBeVisible();
+  await expect(choices).toContainText('For Sungai Awan.');
+  await expect(testId(page, 'choice-village')).toHaveClass(/selected/);
+  await press(page, 'ArrowDown');
+  await expect(testId(page, 'choice-family')).toHaveClass(/selected/);
+  await page.screenshot({ path: 'test-results/pell-choice.png' });
+  await press(page, 'Enter');
+  await expect(testId(page, 'dialogue-text')).toContainText('Half of that name', { timeout: 5_000 });
+  await finishDialogue(page); // Pell signs, then Daniel arrives
   await expect(testId(page, 'c3-to-be-continued')).toBeVisible({ timeout: 10_000 });
 
   // Saved; after a refresh, Continue says so.

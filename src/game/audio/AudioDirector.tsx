@@ -18,6 +18,8 @@ const SCENE_AMBIENCE: Partial<Record<GameState['scene'], AmbienceName>> = {
   waystation_landing: 'village', // river and birds
   waystation_hall: 'chamber', // the same Paladin stillness as the first chamber
   jetty_dusk: 'village',
+  waterfront_night: 'waterfront',
+  jamilah_room: 'home',
 };
 
 /**

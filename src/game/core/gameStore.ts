@@ -23,7 +23,7 @@ import {
   type BattleState,
   type Command,
 } from '../combat/battle';
-import { selectDialogue } from '../dialogue/rules';
+import { availableChoices, selectDialogue } from '../dialogue/rules';
 import type { DialogueDef } from '../dialogue/types';
 import type { StoryFlag, StoryFlags } from './flags';
 import type { Interactable } from '../interaction/interaction';
@@ -66,6 +66,14 @@ export interface ActiveDialogue {
   /** Interactable that started it (e.g. the NPC to turn toward the player). */
   source: Interactable | null;
   onComplete?: () => void;
+  /** Highlighted reply, when the last line offers choices. */
+  choice: number;
+}
+
+/** The replies on screen now: the last line is fully shown and the conversation has choices. */
+export function choicesOnScreen(d: ActiveDialogue | null, flags: StoryFlags) {
+  if (!d || !d.revealed || d.index !== d.def.lines.length - 1) return [];
+  return availableChoices(d.def, flags);
 }
 
 export interface SceneTransition {
@@ -105,6 +113,10 @@ export interface GameState {
   startDialogue(id: string, opts?: { source?: Interactable; onComplete?: () => void }): boolean;
   revealLine(): void;
   advanceDialogue(): void;
+  /** Moves the highlighted reply up (-1) or down (+1), wrapping around. */
+  moveChoice(delta: number): void;
+  /** Picks a reply by its index among the replies on screen. Returns false if there is none. */
+  chooseOption(index: number): boolean;
   /** Routes an action key press (E / Enter / Space). Returns true if it was used. */
   pressAction(code: string): boolean;
   /** Starts a fade to another scene. */
@@ -147,6 +159,8 @@ export interface GameState {
 }
 
 const DIALOGUE_KEYS = new Set(['KeyE', 'Enter', 'Space', 'NumpadEnter']);
+const CHOICE_UP_KEYS = new Set(['ArrowUp', 'KeyW']);
+const CHOICE_DOWN_KEYS = new Set(['ArrowDown', 'KeyS']);
 
 function spawnPoint(scene: SceneId, spawn: string): SpawnPoint {
   const point = SCENES[scene].spawns[spawn];
@@ -227,7 +241,7 @@ export const gameStore = createStore<GameState>()((set, get) => ({
     set({
       mode: 'dialogue',
       nearby: null,
-      dialogue: { def, index: 0, revealed: false, source: opts.source ?? null, onComplete: opts.onComplete },
+      dialogue: { def, index: 0, revealed: false, source: opts.source ?? null, onComplete: opts.onComplete, choice: 0 },
     });
     get().setFlags(def.lines[0].setFlags ?? []);
     return true;
@@ -241,6 +255,8 @@ export const gameStore = createStore<GameState>()((set, get) => ({
   advanceDialogue() {
     const d = get().dialogue;
     if (!d) return;
+    // A conversation that ends in a choice waits for one.
+    if (choicesOnScreen(d, get().flags).length > 0) return;
     if (d.index + 1 < d.def.lines.length) {
       const index = d.index + 1;
       set({ dialogue: { ...d, index, revealed: false } });
@@ -258,10 +274,35 @@ export const gameStore = createStore<GameState>()((set, get) => ({
     d.onComplete?.();
   },
 
+  moveChoice(delta) {
+    const d = get().dialogue;
+    const n = choicesOnScreen(d, get().flags).length;
+    if (!d || n === 0) return;
+    set({ dialogue: { ...d, choice: (((d.choice + delta) % n) + n) % n } });
+  },
+
+  chooseOption(index) {
+    const d = get().dialogue;
+    const choice = choicesOnScreen(d, get().flags)[index];
+    if (!d || !choice) return false;
+    set({ mode: 'explore', dialogue: null });
+    get().setFlags([...(d.def.setFlags ?? []), ...(choice.setFlags ?? [])]);
+    get().startDialogue(choice.next);
+    d.onComplete?.();
+    return true;
+  },
+
   pressAction(code) {
     const s = get();
     if (s.paused || s.screen !== 'game') return false;
     if (s.mode === 'dialogue') {
+      if (choicesOnScreen(s.dialogue, s.flags).length > 0) {
+        if (CHOICE_UP_KEYS.has(code)) s.moveChoice(-1);
+        else if (CHOICE_DOWN_KEYS.has(code)) s.moveChoice(1);
+        else if (DIALOGUE_KEYS.has(code)) s.chooseOption(s.dialogue!.choice);
+        else return false;
+        return true;
+      }
       if (!DIALOGUE_KEYS.has(code)) return false;
       if (s.dialogue?.revealed) s.advanceDialogue();
       else s.revealLine(); // first press skips the typewriter

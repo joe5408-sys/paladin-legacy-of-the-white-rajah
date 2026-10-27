@@ -1,8 +1,11 @@
 /**
  * Chapter 1 — Kuching waterfront at dusk (lazy-loaded scene).
- * Reuses the low-poly building blocks from the prologue.
+ * Reuses the low-poly building blocks from the prologue. Chapter 3 reuses it
+ * before dawn (`WaterfrontScene` with its own layout, `time="night"` and extra props).
  */
+import type { ReactNode } from 'react';
 import type { SpawnPoint } from '../../data/scenes';
+import type { SceneLayout } from '../../game/scenes/layout';
 import type { PropDef } from '../../data/villageSquare';
 import { ExplorationRig } from '../../game/scenes/ExplorationRig';
 import { Boardwalk, Building, GroundPatch, Prop, River } from '../../game/scenes/environment';
@@ -33,16 +36,38 @@ const FAR_TREES: Array<[number, number, number]> = Array.from({ length: 16 }, (_
   return [x, -15.5 - ((i * 3) % 3) * 0.8, 0.8 + ((i * 7) % 4) * 0.12];
 });
 
+/** Sky and moonlight: dusk (Chapter 1) or the dark hour before dawn (Chapter 3). */
+const LIGHTING = {
+  dusk: { sky: '#1b2140', fog: '#262b48', hemi: 0.6, moon: 0.8 },
+  night: { sky: '#090d1c', fog: '#10152a', hemi: 0.42, moon: 0.55 },
+} as const;
+
 export default function Waterfront({ spawn }: { spawn: SpawnPoint }) {
+  return <WaterfrontScene spawn={spawn} layout={WATERFRONT_LAYOUT} />;
+}
+
+/** The waterfront with any layout (people and interactions), lighting and extra props. */
+export function WaterfrontScene({
+  spawn,
+  layout,
+  time = 'dusk',
+  children,
+}: {
+  spawn: SpawnPoint;
+  layout: SceneLayout;
+  time?: keyof typeof LIGHTING;
+  children?: ReactNode;
+}) {
+  const L = LIGHTING[time];
   return (
     <>
-      {/* Dusk: deep blue sky, cool moonlight, warm lamps and windows */}
-      <color attach="background" args={['#1b2140']} />
-      <fog attach="fog" args={['#262b48', 32, 60]} />
-      <hemisphereLight args={['#8fa3d8', '#2b2a3a', 0.6]} />
+      {/* Deep blue sky, cool moonlight, warm lamps and windows */}
+      <color attach="background" args={[L.sky]} />
+      <fog attach="fog" args={[L.fog, 32, 60]} />
+      <hemisphereLight args={['#8fa3d8', '#2b2a3a', L.hemi]} />
       <directionalLight
         position={[6, 14, 6]}
-        intensity={0.8}
+        intensity={L.moon}
         color="#b8c8ff"
         castShadow
         shadow-mapSize={[2048, 2048]}
@@ -96,7 +121,8 @@ export default function Waterfront({ spawn }: { spawn: SpawnPoint }) {
         </mesh>
       ))}
 
-      <ExplorationRig layout={WATERFRONT_LAYOUT} spawn={spawn} />
+      {children}
+      <ExplorationRig layout={layout} spawn={spawn} />
     </>
   );
 }

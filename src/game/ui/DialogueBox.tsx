@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { CHARACTERS } from '../../data/characters';
-import { gameStore, useGame } from '../core/gameStore';
+import { choicesOnScreen, gameStore, useGame } from '../core/gameStore';
 import { TEXT_SPEED_CPS, useSettings } from '../settings/settings';
 import type { DialogueLine } from '../dialogue/types';
 
@@ -8,7 +8,9 @@ import type { DialogueLine } from '../dialogue/types';
 /** Classic bottom-of-screen RPG dialogue box with a typewriter effect. */
 export function DialogueBox() {
   const dialogue = useGame((s) => s.dialogue);
+  const flags = useGame((s) => s.flags);
   if (!dialogue) return null;
+  const choices = choicesOnScreen(dialogue, flags);
   const line = dialogue.def.lines[dialogue.index];
   const speaker = line.speaker ? CHARACTERS[line.speaker].name : null;
   const isLast = dialogue.index === dialogue.def.lines.length - 1;
@@ -22,10 +24,28 @@ export function DialogueBox() {
       )}
       {/* key resets the typewriter for each new line */}
       <TypedLine key={`${dialogue.def.id}:${dialogue.index}`} line={line} revealed={dialogue.revealed} />
-      {dialogue.revealed && (
-        <div className="dialogue-continue" aria-hidden="true">
-          {isLast ? '■' : '▼'}
+      {choices.length > 0 ? (
+        <div className="dialogue-choices pixel-panel" role="menu" aria-label="Choose a reply" data-testid="dialogue-choices">
+          {choices.map((c, i) => (
+            <button
+              key={c.id}
+              type="button"
+              role="menuitem"
+              className={`dialogue-choice${i === dialogue.choice ? ' selected' : ''}`}
+              data-testid={`choice-${c.id}`}
+              onMouseEnter={() => gameStore.getState().moveChoice(i - dialogue.choice)}
+              onClick={() => gameStore.getState().chooseOption(i)}
+            >
+              {c.label}
+            </button>
+          ))}
         </div>
+      ) : (
+        dialogue.revealed && (
+          <div className="dialogue-continue" aria-hidden="true">
+            {isLast ? '■' : '▼'}
+          </div>
+        )
       )}
     </div>
   );

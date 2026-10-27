@@ -10,7 +10,7 @@
  *   Cabin door (west)     rest until Kuching, once Daniel has called
  *
  * Story order: Pell → the Student's phone (Adrian is wanted) → Daniel's call →
- * the cabin → Kuching before dawn → "To Be Continued".
+ * the cabin → ashore at Kuching before dawn (Milestone 3.2 carries on from there).
  */
 import { boxFromCenter, type Box } from '../../game/core/collision';
 import type { DialogueDef } from '../../game/dialogue/types';
@@ -18,6 +18,7 @@ import type { Interactable } from '../../game/interaction/interaction';
 import { NPC_COLLIDER_SIZE, type NpcPlacement, type SceneLayout } from '../../game/scenes/layout';
 import type { Objective } from '../../data/quests';
 import { BENCH, CARGO, DECK, ENGINE } from '../chapter2/boatData';
+import { KUCHING_OBJECTIVES } from './kuchingData';
 
 export const PELL_NIGHT = { x: 0.0, z: 1.0 };
 
@@ -115,6 +116,7 @@ export const CHAPTER3_OBJECTIVES: Objective[] = [
   { id: 'c3_pell', text: 'Find Julian Pell on deck.', completeWhen: 'c3_talked_pell' },
   { id: 'c3_news', text: 'Find out why the student keeps staring.', completeWhen: 'c3_saw_news' },
   { id: 'c3_rest', text: 'Rest in the cabin until Kuching.', completeWhen: 'c3_reached_kuching' },
+  ...KUCHING_OBJECTIVES,
 ];
 
 export const BOAT_NIGHT_DIALOGUE: DialogueDef[] = [
@@ -208,7 +210,7 @@ export const BOAT_NIGHT_DIALOGUE: DialogueDef[] = [
     lines: [{ speaker: null, text: 'Rows of sleeping passengers, and a television playing a cooking show with the sound off. Adrian is far too awake to sleep.' }],
   },
   {
-    // The end of Milestone 3.1: arrival in Kuching before dawn.
+    // Arrival in Kuching before dawn; the walk ashore is Milestone 3.2.
     id: 'c3_to_kuching',
     lines: [
       { speaker: null, text: 'Adrian sleeps for two hours, badly.' },
@@ -217,6 +219,6 @@ export const BOAT_NIGHT_DIALOGUE: DialogueDef[] = [
       { speaker: 'pell', text: 'And of the Petition Hour. If it still exists.' },
       { speaker: 'adrian', text: 'Then that\'s where we\'re going.', setFlags: ['c3_reached_kuching'] },
     ],
-    endChapter: true,
+    enterScene: { scene: 'waterfront_night', spawn: 'arrival' },
   },
 ];

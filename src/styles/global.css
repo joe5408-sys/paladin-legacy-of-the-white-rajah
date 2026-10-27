@@ -260,6 +260,40 @@ body,
   visibility: hidden;
 }
 
+/* Replies to choose from (Chapter 3), stacked above the dialogue box's right edge */
+.dialogue-choices {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 0.6em);
+  display: flex;
+  flex-direction: column;
+  gap: 0.15em;
+  padding: 0.6em 0.9em;
+  max-width: min(32em, 90%);
+}
+
+.dialogue-choice {
+  position: relative;
+  font: inherit;
+  color: var(--ui-text);
+  background: transparent;
+  border: none;
+  text-align: left;
+  padding: 0.25em 0.4em 0.25em 1.4em;
+  cursor: pointer;
+}
+
+.dialogue-choice.selected {
+  color: #ffe08a;
+}
+
+.dialogue-choice.selected::before {
+  content: '▶';
+  position: absolute;
+  left: 0.1em;
+  color: #ffe08a;
+}
+
 .dialogue-continue {
   position: absolute;
   right: 1em;

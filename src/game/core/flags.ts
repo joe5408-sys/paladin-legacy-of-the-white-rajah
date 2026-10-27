@@ -73,7 +73,17 @@ export type StoryFlag =
   | 'c3_talked_pell'
   | 'c3_saw_news' // Adrian is wanted
   | 'c3_daniel_called' // Daniel is suspended; go to Kak Jamilah's
-  | 'c3_reached_kuching'; // (milestone 3.1 cliffhanger)
+  | 'c3_reached_kuching' // ashore at the fuel jetty below the shophouses
+  | 'c3_kuching_arrived' // the waterfront before dawn
+  | 'c3_met_jamilah' // hidden in the room above her stall
+  | 'c3_room_entered'
+  | 'c3_read_note' // the Archivist: the Petition Hour needs a Crown charter-holder's seal
+  | 'c3_reason_village' // why Pell should sign (one of three replies; for later callbacks)
+  | 'c3_reason_family'
+  | 'c3_reason_right'
+  | 'c3_pell_signed' // Pell sponsors the petition
+  | 'c3_daniel_arrived'
+  | 'c3_plan_made'; // (milestone 3.2 cliffhanger)
 
 export type StoryFlags = Partial<Record<StoryFlag, true>>;
 

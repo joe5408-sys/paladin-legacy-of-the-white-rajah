@@ -5,7 +5,7 @@
 import type { Direction } from '../game/core/input';
 import type { DialogueRule } from '../game/dialogue/types';
 
-export type SceneId = 'village' | 'home' | 'chamber' | 'waterfront' | 'archives' | 'vault' | 'records' | 'boat' | 'village_c2' | 'home_c2' | 'waystation_landing' | 'waystation_hall' | 'jetty_dusk' | 'boat_night';
+export type SceneId = 'village' | 'home' | 'chamber' | 'waterfront' | 'archives' | 'vault' | 'records' | 'boat' | 'village_c2' | 'home_c2' | 'waystation_landing' | 'waystation_hall' | 'jetty_dusk' | 'boat_night' | 'waterfront_night' | 'jamilah_room';
 
 export interface SpawnPoint {
   x: number;
@@ -155,6 +155,23 @@ export const SCENES: Record<SceneId, SceneDef> = {
     },
     arrival: [{ dialogue: 'c3_boat_arrival', unless: ['c3_arrived'] }],
   },
+  // The Chapter 1 waterfront an hour before dawn (src/chapters/chapter3/kuchingData.ts).
+  waterfront_night: {
+    id: 'waterfront_night',
+    name: 'Kuching — Waterfront, Before Dawn',
+    spawns: {
+      arrival: { x: 13.6, z: -4.6, facing: 'west' },
+    },
+    arrival: [{ dialogue: 'c3_waterfront_arrival', unless: ['c3_kuching_arrived'] }],
+  },
+  jamilah_room: {
+    id: 'jamilah_room',
+    name: "Above Kak Jamilah's Stall",
+    spawns: {
+      arrival: { x: 0, z: 1.3, facing: 'north' },
+    },
+    arrival: [{ dialogue: 'c3_room_arrival', unless: ['c3_room_entered'] }],
+  },
 };
 
 /** Chapter a scene belongs to (0 = prologue). */
@@ -173,6 +190,8 @@ export const SCENE_CHAPTER: Record<SceneId, number> = {
   waystation_hall: 2,
   jetty_dusk: 2,
   boat_night: 3,
+  waterfront_night: 3,
+  jamilah_room: 3,
 };
 
 export const NEW_GAME_SCENE: SceneId = 'village';
