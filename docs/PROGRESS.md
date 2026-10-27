@@ -1,12 +1,12 @@
 # Progress
 
-**Current phase:** Phase 8 — Chapter 2: The River Remembers (design agreed, `docs/CHAPTER_2.md`). Milestones 2.1 (Upriver), 2.2 (Home, Changed) and 2.3 (The Waystation) ✅ done and live; 2.4 (The River Charter) ✅ done, not yet deployed; 2.5 (The Iron Warden) next. See `docs/CHAPTER_1.md`.
+**Current phase:** Phase 8 — Chapter 2: The River Remembers (design agreed, `docs/CHAPTER_2.md`). Milestones 2.1 (Upriver), 2.2 (Home, Changed) and 2.3 (The Waystation) ✅ done and live; 2.4 (The River Charter) ✅ done and live; 2.5 (The Iron Warden) next. See `docs/CHAPTER_1.md`.
 **MVP:** ✅ complete (phases 0–6); Chapter 0 is live.
 **Live site:** https://legacyofwhiterajah.netlify.app
 **Repository:** https://github.com/joe5408-sys/paladin-legacy-of-the-white-rajah (public, `master`; Netlify auto-deploys on push)
 **Last updated:** 2026-10-27
 
-### Phase 8 — Chapter 2, Milestone 2.4: The River Charter (2026-10-27) ✅ (not yet deployed)
+### Phase 8 — Chapter 2, Milestone 2.4: The River Charter (2026-10-27) ✅
 - After the spirit's test the door stays open (no ending): **Enter Waystation** leads into **the waystation hall** (`src/chapters/chapter2/Hall.tsx` + `hallData.ts`, lazy-loaded), a round hall cut into the cliff with roots through the ceiling and river-light from a stone basin. Saves from the old 2.3 cliffhanger can walk straight in.
 - **Elias's journal** (his own voice for the first time): the Rajah signed the Charter in March 1921 and gave it to Elias to register in Kuching; Harrow's men watched the roads, so Elias hid it here and sealed the case "to the sign". Reading it is what lets the medallion open the case.
 - **The River Charter** of 1921: the river lands granted to the people who live on them, forever, with the Rajah's (unnamed) signature and seal. All invented. The **Paladin oath** is carved in full on the north wall (optional); its last line is the chapter card's new quote.
@@ -14,6 +14,7 @@
 - **The Hollow Warden** (the Sentinel's sprite recoloured in verdigris and moss-green, with an orange flame) climbs out of the river onto the steps, stencilled "AR · SITE CLEARANCE", and the battle starts. Same rules as the Sentinel, retuned: HP 48, hits for 7, an 18-damage heavy blow every 3rd round that Defend blocks. **River Ward is now on the menu in every battle.** All-out loses; defending every heavy blow scrapes through with about 2 HP; defending and using River Ward when hurt wins with 12. Victory → a plate in its chest ties Awan Riverlands to the palace → Mara: "we go home and get there first" → **To Be Continued**.
 - Daniel stands on the landing after his return. If the game is closed mid-battle, the Warden can be faced again from the landing.
 - **Test results:** `npm test` 204/204 (new `warden.test.ts`, 9 tests: the Warden's tuning and three strategies, the hall's order (the case stays shut until the journal is read), Daniel's return, the battle and ending, a reload mid-battle, a too-early hall save, and the end save; the shared layout checks cover the hall). `npm run e2e` 3/3: the full-story test now also plays the hall and wins the Warden battle with River Ward (4.2 min for the whole game). Visual checks by screenshots of the hall and the Warden's arrival.
+- **Live:** deployed as `f1a4b37`; `E2E_BASE_URL=https://legacyofwhiterajah.netlify.app npx playwright test` 3/3 against the live site (4.5 min).
 
 ### Phase 8 — Chapter 2, Milestone 2.3: The Waystation (2026-10-27) ✅
 - Finding the map behind Elias's portrait now leads straight into **the longboat trip** with Ah Hock (no ending). Saves from the old 2.2 cliffhanger set off from the portrait, from Mara, or from Ah Hock at the jetty.
