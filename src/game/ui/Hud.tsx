@@ -7,11 +7,13 @@ import { DialogueBox } from './DialogueBox';
 import { InteractionPrompt } from './InteractionPrompt';
 import { ObjectiveTracker } from './ObjectiveTracker';
 import { SceneFade } from './SceneFade';
+import { useTouchDevice } from '../input/touch';
 
 /** Exploration HUD (location, objective, prompt, dialogue) or the battle HUD. */
 export function Hud() {
   const mode = useGame((s) => s.mode);
   const scene = useGame((s) => s.scene);
+  const touch = useTouchDevice();
 
   if (mode === 'ending') {
     return (
@@ -37,7 +39,7 @@ export function Hud() {
       <ObjectiveTracker />
       <InteractionPrompt />
       <DialogueBox />
-      {mode === 'explore' && (
+      {mode === 'explore' && !touch && (
         <div className="hud-controls pixel-panel">
           <kbd>WASD</kbd> / <kbd>Arrows</kbd> Move · <kbd>E</kbd> Interact · <kbd>Esc</kbd> Menu
         </div>

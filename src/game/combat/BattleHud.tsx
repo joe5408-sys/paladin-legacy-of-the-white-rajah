@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { PlayerBattleStats } from '../../data/encounters';
 import { gameStore, useGame, type BattleStage } from '../core/gameStore';
 import { canUse, COMMAND_INFO, type Command } from './battle';
+import { useTouchDevice } from '../input/touch';
 
 /** Commands on the menu: River Ward appears once Adrian knows it. */
 function commandsFor(player: PlayerBattleStats): Command[] {
@@ -23,6 +24,7 @@ const DOWN_KEYS = new Set(['ArrowDown', 'KeyS']);
 export function BattleHud() {
   const battle = useGame((s) => s.battle);
   const paused = useGame((s) => s.paused);
+  const touch = useTouchDevice();
   const [selected, setSelected] = useState<Command>('attack');
   const selectedRef = useRef(selected);
   selectedRef.current = selected;
@@ -166,8 +168,16 @@ export function BattleHud() {
 
       {showTutorial && (
         <div className="battle-tutorial pixel-panel" data-testid="battle-tutorial">
-          <strong>Battle basics</strong> · Choose one action per turn with <kbd>↑</kbd>
-          <kbd>↓</kbd> and <kbd>E</kbd>. <b>Attack</b> deals {player.attack}.{' '}
+          <strong>Battle basics</strong> ·{' '}
+          {touch ? (
+            <>Tap one action per turn. </>
+          ) : (
+            <>
+              Choose one action per turn with <kbd>↑</kbd>
+              <kbd>↓</kbd> and <kbd>E</kbd>.{' '}
+            </>
+          )}
+          <b>Attack</b> deals {player.attack}.{' '}
           <b>{player.skillName}</b> deals {player.skillDamage} but has only{' '}
           {player.skillCharges} uses. <b>Defend</b> halves the next hit.
         </div>

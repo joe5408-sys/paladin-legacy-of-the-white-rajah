@@ -8,6 +8,8 @@ import { SceneView } from '../game/scenes/SceneView';
 import { Hud } from '../game/ui/Hud';
 import { PauseMenu, usePauseKey } from '../game/ui/PauseMenu';
 import { TitleScreen } from '../game/ui/TitleScreen';
+import { RotateNotice } from '../game/ui/RotateNotice';
+import { TouchControls } from '../game/ui/TouchControls';
 import { ErrorBoundary } from './ErrorBoundary';
 
 if (import.meta.env.DEV) {
@@ -39,12 +41,14 @@ export function App() {
                 <SceneView />
               </Canvas>
               <Hud />
+              <TouchControls />
               <AutoSave />
               <PauseMenu />
             </>
           )}
         </ErrorBoundary>
       </div>
+      <RotateNotice />
     </div>
   );
 }

@@ -16,6 +16,8 @@ npm run e2e        # build + Playwright browser tests (uses your installed Micro
 
 **Controls:** Esc opens the pause menu (Resume, Save, Settings, Main Menu) · WASD or arrow keys to move · E to interact · E / Enter / Space to advance dialogue · in battle, ↑/↓ (or W/S) to pick a command and E / Enter / Space to confirm (mouse also works).
 
+**Phones and tablets:** play with the phone held sideways (a phone held upright shows a "turn sideways" notice, with "Play anyway"). Drag the on-screen pad to walk, tap the round button (or the prompt) to interact, tap the dialogue box to go on, tap replies, menu items and battle commands, and use **☰ Menu** to pause. On Android, **Full Screen** on the title menu hides the browser bars; adding the game to the home screen also opens it full screen in landscape.
+
 ## Docs
 - `docs/MASTER_PROMPT.md`: full project spec (authoritative)
 - `docs/PROGRESS.md`: current phase, features, test status

@@ -4,7 +4,16 @@
 **MVP:** ✅ complete (phases 0–6); Chapter 0 is live.
 **Live site:** https://legacyofwhiterajah.netlify.app
 **Repository:** https://github.com/joe5408-sys/paladin-legacy-of-the-white-rajah (public, `master`; Netlify auto-deploys on push)
-**Last updated:** 2026-10-27
+**Last updated:** 2026-10-28
+
+### Phones and tablets (2026-10-28) ✅
+- **Touch controls** (`src/game/ui/TouchControls.tsx`, `src/game/input/touch.ts`), shown on touch screens only while exploring: a drag **joystick** (bottom left, four directions), a round **action button** (bottom right; it glows when something is in reach) and a **☰ Menu** button (top centre). They work by sending the same key events as the keyboard (arrow keys, E, Esc), so every existing system (movement, interaction, menus, pause) works unchanged.
+- **Tap anywhere** on the dialogue box to go on; the interaction prompt is tappable and reads "Tap" instead of "[E]"; menus, replies and battle commands were already tappable. Touch wording on the title screen and in the first battle's tutorial; the keyboard hint is hidden on touch screens.
+- **Screen fit:** the 16:9 frame now sizes to the height actually visible on phones (`dvh`, with a `vh` fallback); no page scrolling, pinch-zoom, text selection or tap flashes during play; dialogue panels are tighter on short landscape screens. A phone held upright shows a "turn your phone sideways" notice (with "Play anyway"); tablets in portrait are left alone.
+- **Full screen:** a "Full Screen" title-menu option on touch devices that support it (Android; also tries to lock landscape). A web-app manifest (`public/manifest.webmanifest`) makes "Add to Home Screen" open the game full screen in landscape.
+- **Fixed on the way:** the pause menu (and other overlays) slid in from half a screen to the left as they opened, because they borrowed the interaction prompt's animation; they now fade in.
+- **Test results:** `npm test` 276/276 (new `touch.test.ts`: the joystick's direction logic). New browser test `mobile.spec.ts` on a phone-sized touch screen held sideways (844×390): taps New Game, taps through dialogue, walks to the family home with the joystick, enters with the action button, opens and closes the pause menu with ☰ Menu, and checks the portrait notice. `npm run e2e` 5/5 (the mobile test takes 9 s; the desktop tests are unchanged). Visual checks by screenshots of exploring, dialogue, the pause menu, the title screen, a battle and portrait.
+- **Live:** not yet checked on the live site. Not yet tried on a physical phone (only Edge's phone emulation).
 
 ### Phase 9 — Chapter 3, Milestone 3.4: The Petition Hour (2026-10-27) ✅
 - The 3.3 ending now leaves the gates held open: walk through them into **the audience hall** (a new invented palace interior: white columns, tall windows, a red carpet to a gilded throne, banners, benches, and the Crowned Sentinel standing beside the throne again).

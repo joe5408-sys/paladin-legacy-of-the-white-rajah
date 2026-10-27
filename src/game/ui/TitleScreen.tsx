@@ -8,6 +8,20 @@ import { formatPlaytime } from './ChapterComplete';
 import { ConfirmDialog } from './ConfirmDialog';
 import { MenuList } from './MenuList';
 import { SettingsPanel } from './SettingsPanel';
+import { useTouchDevice } from '../input/touch';
+
+/** Fullscreen is offered on touch devices that support it (most Android browsers; not iPhone Safari). */
+const canFullscreen = () => typeof document !== 'undefined' && !!document.documentElement.requestFullscreen && !document.fullscreenElement;
+
+async function goFullscreen() {
+  try {
+    await document.documentElement.requestFullscreen();
+    // Landscape, where the browser allows locking it (Android). Ignored elsewhere.
+    await (screen.orientation as ScreenOrientation & { lock?: (o: string) => Promise<void> }).lock?.('landscape');
+  } catch {
+    // Not allowed here: the game still works in the browser window.
+  }
+}
 
 const LOAD_PROBLEM: Record<string, string> = {
   corrupt: 'A saved game was found but could not be read.',
@@ -19,6 +33,8 @@ const LOAD_PROBLEM: Record<string, string> = {
 export function TitleScreen() {
   const [view, setView] = useState<'menu' | 'settings' | 'confirm-new'>('menu');
   const [chaptersReady, setChaptersReady] = useState(false);
+  const touch = useTouchDevice();
+  const [fullscreenOffered, setFullscreenOffered] = useState(canFullscreen);
 
   // A save from a later chapter needs that chapter's content before it can be checked.
   useEffect(() => {
@@ -71,6 +87,19 @@ export function TitleScreen() {
                   : []),
                 { id: 'new-game', label: 'New Game', onSelect: newGame },
                 { id: 'settings', label: 'Settings', onSelect: () => setView('settings') },
+                ...(touch && fullscreenOffered
+                  ? [
+                      {
+                        id: 'fullscreen',
+                        label: 'Full Screen',
+                        hint: 'Play without the browser bars',
+                        onSelect: () => {
+                          setFullscreenOffered(false);
+                          void goFullscreen();
+                        },
+                      },
+                    ]
+                  : []),
               ]}
             />
             {!save.ok && LOAD_PROBLEM[save.reason] && (
@@ -98,7 +127,9 @@ export function TitleScreen() {
       <footer className="title-footer">
         A work of fiction set in an imagined, alternate-history Sarawak. Its monarchy, Paladin order and
         events are invented and do not depict real history.
-        <span className="title-controls">↑/↓ choose · E / Enter select · Esc back</span>
+        <span className="title-controls">
+          {touch ? 'Tap to choose · drag the pad to walk' : '↑/↓ choose · E / Enter select · Esc back'}
+        </span>
       </footer>
     </div>
   );

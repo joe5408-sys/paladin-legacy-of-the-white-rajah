@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { CHARACTERS } from '../../data/characters';
 import { choicesOnScreen, gameStore, useGame } from '../core/gameStore';
+import { advanceDialogueByTap } from './TouchControls';
 import { TEXT_SPEED_CPS, useSettings } from '../settings/settings';
 import type { DialogueLine } from '../dialogue/types';
 
@@ -16,7 +17,14 @@ export function DialogueBox() {
   const isLast = dialogue.index === dialogue.def.lines.length - 1;
 
   return (
-    <div className="dialogue-box pixel-panel" role="dialog" aria-label="Dialogue" data-testid="dialogue-box">
+    // A tap or click anywhere on the box works like Enter: finish the line, then go on.
+    <div
+      className="dialogue-box pixel-panel"
+      role="dialog"
+      aria-label="Dialogue"
+      data-testid="dialogue-box"
+      onClick={advanceDialogueByTap}
+    >
       {speaker && (
         <div className="dialogue-speaker pixel-panel" data-testid="dialogue-speaker">
           {speaker}
@@ -34,7 +42,10 @@ export function DialogueBox() {
               className={`dialogue-choice${i === dialogue.choice ? ' selected' : ''}`}
               data-testid={`choice-${c.id}`}
               onMouseEnter={() => gameStore.getState().moveChoice(i - dialogue.choice)}
-              onClick={() => gameStore.getState().chooseOption(i)}
+              onClick={(e) => {
+                e.stopPropagation(); // the box behind must not also take this tap as "next"
+                gameStore.getState().chooseOption(i);
+              }}
             >
               {c.label}
             </button>
