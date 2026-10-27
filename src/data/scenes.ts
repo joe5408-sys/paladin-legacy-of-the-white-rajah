@@ -5,7 +5,7 @@
 import type { Direction } from '../game/core/input';
 import type { DialogueRule } from '../game/dialogue/types';
 
-export type SceneId = 'village' | 'home' | 'chamber' | 'waterfront' | 'archives' | 'vault' | 'records' | 'boat' | 'village_c2' | 'home_c2' | 'waystation_landing' | 'waystation_hall' | 'jetty_dusk' | 'boat_night' | 'waterfront_night' | 'jamilah_room';
+export type SceneId = 'village' | 'home' | 'chamber' | 'waterfront' | 'archives' | 'vault' | 'records' | 'boat' | 'village_c2' | 'home_c2' | 'waystation_landing' | 'waystation_hall' | 'jetty_dusk' | 'boat_night' | 'waterfront_night' | 'jamilah_room' | 'palace_gate';
 
 export interface SpawnPoint {
   x: number;
@@ -172,6 +172,16 @@ export const SCENES: Record<SceneId, SceneDef> = {
     },
     arrival: [{ dialogue: 'c3_room_arrival', unless: ['c3_room_entered'] }],
   },
+  // The Palace forecourt in the morning (src/chapters/chapter3/palaceData.ts).
+  palace_gate: {
+    id: 'palace_gate',
+    name: 'The Palace — Forecourt',
+    spawns: {
+      arrival: { x: 0, z: 2.2, facing: 'north' },
+      after_battle: { x: 0, z: -1.6, facing: 'north' },
+    },
+    arrival: [{ dialogue: 'c3_gate_arrival', unless: ['c3_gate_arrived'] }],
+  },
 };
 
 /** Chapter a scene belongs to (0 = prologue). */
@@ -192,6 +202,7 @@ export const SCENE_CHAPTER: Record<SceneId, number> = {
   boat_night: 3,
   waterfront_night: 3,
   jamilah_room: 3,
+  palace_gate: 3,
 };
 
 export const NEW_GAME_SCENE: SceneId = 'village';

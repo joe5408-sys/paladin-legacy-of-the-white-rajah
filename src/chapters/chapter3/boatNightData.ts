@@ -19,6 +19,7 @@ import { NPC_COLLIDER_SIZE, type NpcPlacement, type SceneLayout } from '../../ga
 import type { Objective } from '../../data/quests';
 import { BENCH, CARGO, DECK, ENGINE } from '../chapter2/boatData';
 import { KUCHING_OBJECTIVES } from './kuchingData';
+import { GATE_OBJECTIVES } from './palaceData';
 
 export const PELL_NIGHT = { x: 0.0, z: 1.0 };
 
@@ -117,6 +118,7 @@ export const CHAPTER3_OBJECTIVES: Objective[] = [
   { id: 'c3_news', text: 'Find out why the student keeps staring.', completeWhen: 'c3_saw_news' },
   { id: 'c3_rest', text: 'Rest in the cabin until Kuching.', completeWhen: 'c3_reached_kuching' },
   ...KUCHING_OBJECTIVES,
+  ...GATE_OBJECTIVES,
 ];
 
 export const BOAT_NIGHT_DIALOGUE: DialogueDef[] = [

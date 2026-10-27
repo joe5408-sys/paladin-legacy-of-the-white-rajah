@@ -11,7 +11,7 @@
  * Story order: arrival → Kak Jamilah → up the back stairs → the Archivist's note
  * (the Petition Hour needs a Crown charter-holder's seal) → Pell's choice (the
  * first dialogue choice: every reply leads to him signing) → Daniel arrives with
- * a plan → "To Be Continued".
+ * a plan → the morning ferry to the Palace (Milestone 3.3).
  */
 import { boxFromCenter, type Box } from '../../game/core/collision';
 import type { DialogueDef } from '../../game/dialogue/types';
@@ -152,6 +152,17 @@ export const ROOM_INTERACTABLES: Interactable[] = [
       { dialogue: 'c3_mara_room_after', requires: ['c3_read_note'] },
       { dialogue: 'c3_mara_room' },
     ],
+  },
+  {
+    // Saves from the old 3.2 cliffhanger: the plan is made, so set off for the Palace.
+    id: 'room-stairs',
+    kind: 'inspect',
+    label: 'Stairs',
+    x: ROOM_BOUNDS.minX + 0.6,
+    z: ROOM_BOUNDS.maxZ - 0.4,
+    radius: 0.8,
+    when: { requires: ['c3_plan_made'] },
+    dialogue: [{ dialogue: 'c3_to_palace' }],
   },
   {
     id: 'room-window',
@@ -301,7 +312,6 @@ export const KUCHING_DIALOGUE: DialogueDef[] = [
     next: 'c3_daniel_arrives',
   },
   {
-    // The end of Milestone 3.2.
     id: 'c3_daniel_arrives',
     lines: [
       { speaker: 'daniel', text: 'It\'s me. Don\'t shout.' },
@@ -312,7 +322,16 @@ export const KUCHING_DIALOGUE: DialogueDef[] = [
       { speaker: 'daniel', text: '...Probably.' },
       { speaker: 'mara', text: 'Sleep. All of you. Even you, Mr Unemployed.', setFlags: ['c3_plan_made'] },
     ],
-    endChapter: true,
+    next: 'c3_to_palace',
+  },
+  {
+    // A time skip to the Palace forecourt.
+    id: 'c3_to_palace',
+    lines: [
+      { speaker: null, text: 'Nobody sleeps much.' },
+      { speaker: null, text: 'At eight they slip down the back stairs and join the petitioners on the river steps: a fisherman, a schoolteacher, an auntie with a pension form. The first ferry takes them all across.' },
+    ],
+    enterScene: { scene: 'palace_gate', spawn: 'arrival' },
   },
   {
     id: 'c3_pell_after',

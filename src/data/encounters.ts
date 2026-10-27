@@ -63,11 +63,16 @@ export interface EncounterDef {
   heavy?: HeavyAttackDef;
   /** Optional armour: a two-phase boss. */
   armor?: ArmorDef;
+  /**
+   * The enemy stops fighting at this HP or below: the battle ends in victory with
+   * it still standing (it withdraws or yields). Its victoryText describes that.
+   */
+  yieldAt?: number;
   /** Message when the enemy's HP reaches zero. */
   victoryText?: string;
   /** Which enemy sprite and battle backdrop to show. */
-  sprite: 'guardian' | 'sentinel' | 'spirit' | 'warden' | 'iron';
-  arena: 'chamber' | 'vault' | 'waystation' | 'jetty';
+  sprite: 'guardian' | 'sentinel' | 'spirit' | 'warden' | 'iron' | 'crowned';
+  arena: 'chamber' | 'vault' | 'waystation' | 'jetty' | 'palace';
   /** Adrian may use River Ward here before he has learned it: this battle is the lesson. */
   teachesWard?: boolean;
   /** Flags set on victory. */
@@ -229,5 +234,34 @@ export const ENCOUNTERS: Record<string, EncounterDef> = {
     victoryFlags: ['c2_iron_defeated'],
     victoryDialogue: 'c2_iron_defeated',
     returnTo: { scene: 'jetty_dusk', spawn: 'after_battle' },
+  },
+  // Chapter 3, Milestone 3.3: the first fight with the Crowned Sentinel, at the
+  // Palace gate. About Hollow Warden difficulty for a 36-HP Adrian: heavy blows
+  // that Defend blocks, River Ward for when hurt. It never falls: at 16 HP it
+  // withdraws (yieldAt), which counts as a win. Going all-out loses; defending
+  // the heavy blows wins with about 15 HP. See palaceGate.test.ts.
+  crowned_sentinel_gate: {
+    id: 'crowned_sentinel_gate',
+    enemyName: 'Crowned Sentinel',
+    enemyMaxHp: 56,
+    enemyAttack: 7,
+    enemyAttackText: 'sweeps its halberd',
+    intro: "The Crowned Sentinel lowers its halberd across the gateway. Light gathers in Adrian's hand!",
+    tutorial: false,
+    tip: 'The palace\'s oldest guard. Defend when it raises its halberd: Adrian\'s guard blocks the heavy blow. It may not fight to the end.',
+    heavy: {
+      every: 3,
+      damage: 20,
+      guardedMultiplier: 0,
+      chargeText: 'The Crowned Sentinel raises its halberd high. The gold on its crown flares. A heavy blow is coming!',
+      attackText: 'brings its halberd down',
+    },
+    yieldAt: 16,
+    victoryText: 'The Crowned Sentinel stops in mid-swing. It looks at the medallion for a long moment, then steps back.',
+    sprite: 'crowned',
+    arena: 'palace',
+    victoryFlags: ['c3_sentinel_withdrew'],
+    victoryDialogue: 'c3_sentinel_withdraws',
+    returnTo: { scene: 'palace_gate', spawn: 'after_battle' },
   },
 };

@@ -95,7 +95,7 @@ export function ChapterComplete() {
         <>
           <div className="chapter-kicker">Chapter 3 · The Crown's Word</div>
           <h1 className="chapter-title" data-testid="c3-to-be-continued">To Be Continued</h1>
-          <p className="chapter-quote">“He cannot strike a sponsor.”</p>
+          <p className="chapter-quote">“By custom, no gate may be closed on a petitioner.”</p>
           {playtime}
           <div className="chapter-next">The rest of Chapter 3 arrives in a future update. Your progress is saved.</div>
         </>

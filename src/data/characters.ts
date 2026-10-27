@@ -4,7 +4,7 @@
  */
 import type { CharacterFeatures, CharacterPalette } from '../game/player/pixelSprite';
 
-export type CharacterId = 'adrian' | 'lim' | 'mara' | 'guardian' | 'daniel' | 'jamilah' | 'archivist' | 'harrow' | 'officer' | 'ahhock' | 'passenger' | 'auntie' | 'siti' | 'pell' | 'spirit';
+export type CharacterId = 'adrian' | 'lim' | 'mara' | 'guardian' | 'daniel' | 'jamilah' | 'archivist' | 'harrow' | 'officer' | 'ahhock' | 'passenger' | 'auntie' | 'siti' | 'pell' | 'spirit' | 'clerk' | 'sergeant' | 'fisher' | 'teacher';
 
 export interface CharacterDef {
   id: CharacterId;
@@ -268,5 +268,81 @@ export const CHARACTERS: Record<CharacterId, CharacterDef> = {
       pants: '#b8a47a', // chinos
       boots: '#6a4a30',
     },
+  },
+  // Chapter 3
+  clerk: {
+    id: 'clerk',
+    name: 'Clerk of Petitions',
+    palette: {
+      outline: OUTLINE,
+      hair: '#e4e0d8', // white hair
+      hairHi: '#f6f4ee',
+      skin: '#c8966c',
+      skinShade: '#a8764e',
+      eye: '#1b1420',
+      jacket: '#2a2a3a', // dark court coat
+      jacketShade: '#1c1c28',
+      trim: '#d8b24a', // gold braid
+      belt: '#1c1c28',
+      pants: '#2a2a3a',
+      boots: '#141218',
+    },
+    features: { glasses: true },
+  },
+  sergeant: {
+    id: 'sergeant',
+    name: 'Sergeant Osman',
+    palette: {
+      outline: OUTLINE,
+      hair: '#1a1416',
+      hairHi: '#30282c',
+      skin: '#b4825a',
+      skinShade: '#94643e',
+      eye: '#1b1420',
+      jacket: '#3b4a5e', // Royal Security uniform, like Daniel's old one
+      jacketShade: '#2b3747',
+      trim: '#e0b860', // sergeant's stripes
+      belt: '#141414',
+      pants: '#2b3747',
+      boots: '#0e0c0c',
+    },
+    features: { hairBun: true },
+  },
+  fisher: {
+    id: 'fisher',
+    name: 'Fisherman',
+    palette: {
+      outline: OUTLINE,
+      hair: '#2a2220',
+      hairHi: '#423632',
+      skin: '#a8724a',
+      skinShade: '#88582e',
+      eye: '#1b1420',
+      jacket: '#5a86a8', // faded blue shirt
+      jacketShade: '#466c8a',
+      trim: '#e8e2d2',
+      belt: '#4a3a2a',
+      pants: '#4a4a3e',
+      boots: '#3a2e24', // rubber boots
+    },
+  },
+  teacher: {
+    id: 'teacher',
+    name: 'Schoolteacher',
+    palette: {
+      outline: OUTLINE,
+      hair: '#3a2a22',
+      hairHi: '#5a4234',
+      skin: '#d8a882',
+      skinShade: '#b88862',
+      eye: '#1b1420',
+      jacket: '#e8d8a8', // pale yellow blouse
+      jacketShade: '#c8b888',
+      trim: '#7a4a8a',
+      belt: '#5a4632',
+      pants: '#5a4a6a',
+      boots: '#3a2e24',
+    },
+    features: { glasses: true, longSkirt: true },
   },
 };

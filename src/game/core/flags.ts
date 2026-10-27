@@ -83,7 +83,12 @@ export type StoryFlag =
   | 'c3_reason_right'
   | 'c3_pell_signed' // Pell sponsors the petition
   | 'c3_daniel_arrived'
-  | 'c3_plan_made'; // (milestone 3.2 cliffhanger)
+  | 'c3_plan_made' // Daniel's plan: cross with the petitioners on the first ferry
+  | 'c3_gate_arrived' // the Palace forecourt in the morning
+  | 'c3_petition_registered' // the Clerk of Petitions writes it in the register
+  | 'c3_sentinel_woken' // the Crowned Sentinel walks out of the gate
+  | 'c3_sentinel_withdrew' // it withdraws at the sight of the medallion
+  | 'c3_gate_open'; // (milestone 3.3 cliffhanger)
 
 export type StoryFlags = Partial<Record<StoryFlag, true>>;
 

@@ -84,7 +84,7 @@ describe('Chapter 3 loading', () => {
     await loadChapter(3);
     expect(DIALOGUES.c3_boat_arrival).toBeDefined();
     expect(getLayout('boat_night')).toBeDefined();
-    expect(OBJECTIVES_BY_CHAPTER[3]?.length).toBe(6);
+    expect(OBJECTIVES_BY_CHAPTER[3]?.length).toBe(8);
   });
 
   it('follows Chapter 2, is the latest chapter, and a Chapter 3 save needs it', () => {
@@ -230,7 +230,7 @@ describe('Milestone 3.2 flow', () => {
     await loadChapter(3);
   });
 
-  it('the waterfront → Kak Jamilah → her room → the note → Pell signs → Daniel → To Be Continued', () => {
+  it('the waterfront → Kak Jamilah → her room → the note → Pell signs → Daniel → the morning ferry', () => {
     placeOnBoat([...BOAT_DONE.filter((f) => f !== 'c3_reached_kuching')]);
     use('boat-night-cabin');
     finishDialogue();
@@ -276,9 +276,9 @@ describe('Milestone 3.2 flow', () => {
     expect(s().flags.c3_pell_signed).toBe(true);
     expect(s().flags.c3_daniel_arrived).toBe(true);
     expect(s().flags.c3_plan_made).toBe(true);
-    expect(s().mode).toBe('ending');
-    expect(isAtChapterEnd(s().flags)).toBe(true);
-    expect(objective()).toBeUndefined();
+    expect(isAtChapterEnd(s().flags)).toBe(false);
+    expect(s().transition?.to).toBe('palace_gate'); // the time skip to the morning
+    expect(objective()).toBe('c3_clerk');
   });
 
   it('every reply to Pell leads to him signing', () => {
@@ -290,7 +290,7 @@ describe('Milestone 3.2 flow', () => {
       expect(s().dialogue?.def.id).toBe(reply);
       finishDialogue();
       expect(s().flags.c3_pell_signed, reply).toBe(true);
-      expect(s().mode).toBe('ending');
+      expect(s().transition?.to).toBe('palace_gate');
     }
   });
 });
@@ -317,8 +317,11 @@ describe('Chapter 3 saves', () => {
     expect(s().mode).toBe('explore');
     expect(objective()).toBe('c3_jamilah');
 
+    // A save from the old 3.2 cliffhanger: the stairs lead down to the morning ferry.
     placeIn('jamilah_room', [...IN_ROOM, 'c3_read_note', 'c3_reason_right', 'c3_pell_signed', 'c3_daniel_arrived', 'c3_plan_made']);
-    expect(s().mode).toBe('ending');
+    expect(s().mode).toBe('explore');
+    expect(look('room-stairs')).toBe('c3_to_palace');
+    expect(s().transition?.to).toBe('palace_gate');
   });
 
   it('a room save before meeting Jamilah, or a waterfront save before landing, is sent back to the village', () => {

@@ -26,6 +26,7 @@ import type { BattleEvent } from './battle';
 import { getGuardianTexture, getSpiritTexture, GUARDIAN_H, GUARDIAN_W } from './guardianSprite';
 import { getSentinelTexture, getWardenTexture, SENTINEL_H, SENTINEL_W } from './sentinelSprite';
 import { getIronWardenTexture, IRON_H, IRON_W } from './ironWardenSprite';
+import { CROWNED_H, CROWNED_W, getCrownedSentinelTexture } from './crownedSentinelSprite';
 import type { EncounterDef } from '../../data/encounters';
 
 const PLAYER_POS = new THREE.Vector3(-2.3, 0, 0.7);
@@ -42,6 +43,8 @@ const ENEMY_SPRITES: Record<EncounterDef['sprite'], { width: number; height: num
   spirit: { width: 2.3, height: 2.3 * (GUARDIAN_H / GUARDIAN_W) * HEIGHT_COMP, texture: getSpiritTexture },
   warden: { width: 2.2, height: 2.2 * (SENTINEL_H / SENTINEL_W) * HEIGHT_COMP, texture: getWardenTexture },
   iron: { width: 2.45, height: 2.45 * (IRON_H / IRON_W) * HEIGHT_COMP, texture: getIronWardenTexture },
+  // The royal seal is on its chest until its armour comes off (Milestone 3.5).
+  crowned: { width: 2.3, height: 2.3 * (CROWNED_H / CROWNED_W) * HEIGHT_COMP, texture: () => getCrownedSentinelTexture(true) },
 };
 
 /** Colours of each battle backdrop. */
@@ -86,6 +89,16 @@ const ARENAS: Record<
     under: '#1e1610',
     wall: '#2c2a30',
     sign: '#ff9a4a',
+  },
+  // The Palace forecourt in the morning: white stone, and gold-barred gates behind.
+  palace: {
+    sky: '#9ec4e0',
+    ambient: '#fff4e0',
+    key: '#fff2d8',
+    floor: ['#e4ddcc', '#d6cfbc'],
+    under: '#8a8270',
+    wall: '#efe8d8',
+    sign: '#c8a040',
   },
 };
 
@@ -219,7 +232,7 @@ export function BattleArena() {
       <Brazier x={-4.2} z={-2.6} />
       <Brazier x={4.2} z={-2.6} />
 
-      {arenaId === 'jetty' ? null : arenaId !== 'vault' ? (
+      {arenaId === 'jetty' ? null : arenaId !== 'vault' && arenaId !== 'palace' ? (
         // Glowing sign the Guardian (or the river spirit) rose from
         <mesh rotation-x={-Math.PI / 2} position={[ENEMY_POS.x, 0.02, ENEMY_POS.z]}>
           <planeGeometry args={[2.8, 2.8]} />
@@ -232,18 +245,18 @@ export function BattleArena() {
           />
         </mesh>
       ) : (
-        // The vault's inner gate behind the Sentinel
+        // The vault's inner gate behind the Sentinel (gilded at the Palace)
         <group position={[ENEMY_POS.x, 0, -3.05]}>
           {[-0.9, -0.45, 0, 0.45, 0.9].map((x) => (
             <mesh key={x} position={[x, 1.25, 0]}>
               <boxGeometry args={[0.08, 2.5, 0.08]} />
-              <meshStandardMaterial color="#25272b" metalness={0.6} roughness={0.5} />
+              <meshStandardMaterial color={arenaId === 'palace' ? '#c8a040' : '#25272b'} metalness={0.6} roughness={0.5} />
             </mesh>
           ))}
           {[0.4, 2.4].map((y) => (
             <mesh key={y} position={[0, y, 0]}>
               <boxGeometry args={[2.0, 0.1, 0.1]} />
-              <meshStandardMaterial color="#25272b" metalness={0.6} roughness={0.5} />
+              <meshStandardMaterial color={arenaId === 'palace' ? '#c8a040' : '#25272b'} metalness={0.6} roughness={0.5} />
             </mesh>
           ))}
         </group>

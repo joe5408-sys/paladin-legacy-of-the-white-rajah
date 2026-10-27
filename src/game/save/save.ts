@@ -53,6 +53,7 @@ const ALL_FLAGS: readonly StoryFlag[] = [
   'chapter3_started', 'c3_arrived', 'c3_talked_pell', 'c3_saw_news', 'c3_daniel_called', 'c3_reached_kuching',
   'c3_kuching_arrived', 'c3_met_jamilah', 'c3_room_entered', 'c3_read_note', 'c3_reason_village', 'c3_reason_family',
   'c3_reason_right', 'c3_pell_signed', 'c3_daniel_arrived', 'c3_plan_made',
+  'c3_gate_arrived', 'c3_petition_registered', 'c3_sentinel_woken', 'c3_sentinel_withdrew', 'c3_gate_open',
 ];
 const DIRECTIONS: readonly Direction[] = ['north', 'south', 'east', 'west'];
 
@@ -74,6 +75,7 @@ const SCENE_REQUIRES: Record<SceneId, StoryFlag[]> = {
   boat_night: ['chapter3_started'],
   waterfront_night: ['c3_reached_kuching'],
   jamilah_room: ['c3_met_jamilah'],
+  palace_gate: ['c3_plan_made'],
 };
 
 /** Browser localStorage, or null where it's unavailable (private mode, blocked, tests). */

@@ -3,8 +3,10 @@
  * saved game on the Chapter 2 Complete card (the full-story test plays every
  * chapter before that), continues into Chapter 3, and plays Milestones 3.1 (the
  * night boat to Kuching) and 3.2 (the waterfront before dawn, Kak Jamilah's
- * room, and Pell's choice, picked with the keyboard) to the "to be continued"
- * card. Also checks that Chapter 3's files are only downloaded when needed.
+ * room, and Pell's choice, picked with the keyboard) and 3.3 (the Palace
+ * forecourt and the first Crowned Sentinel fight, which ends when it withdraws)
+ * to the "to be continued" card. Also checks that Chapter 3's files are only
+ * downloaded when needed.
  */
 import { expect, test } from '@playwright/test';
 import { arriveIn, finishDialogue, press, testId, trackErrors, walk } from './helpers';
@@ -23,8 +25,8 @@ const CHAPTER2_DONE = [
   'c2_daniel_returned', 'c2_warden_seen', 'c2_warden_defeated', 'c2_dusk_arrived', 'c2_iron_seen', 'c2_iron_defeated',
 ];
 
-test('Chapter 3 so far: the night boat, the waterfront, Pell\'s choice', async ({ page }) => {
-  test.setTimeout(180_000);
+test('Chapter 3 so far: the night boat, the waterfront, Pell\'s choice, the Palace gate', async ({ page }) => {
+  test.setTimeout(240_000);
   const errors = trackErrors(page);
   const requested: string[] = [];
   page.on('request', (r) => requested.push(r.url()));
@@ -120,7 +122,35 @@ test('Chapter 3 so far: the night boat, the waterfront, Pell\'s choice', async (
   await page.screenshot({ path: 'test-results/pell-choice.png' });
   await press(page, 'Enter');
   await expect(testId(page, 'dialogue-text')).toContainText('Half of that name', { timeout: 5_000 });
-  await finishDialogue(page); // Pell signs, then Daniel arrives
+  await finishDialogue(page); // Pell signs, Daniel arrives, then the morning ferry
+
+  // ── Milestone 3.3: the Palace forecourt ──────────────
+  await arriveIn(page, 'The Palace — Forecourt');
+  await expect(testId(page, 'objective')).toContainText('Give the petition to the Clerk of Petitions.');
+  await page.screenshot({ path: 'test-results/palace-gate.png' });
+  // North up the middle of the forecourt, then west to the Clerk's desk.
+  await walk(page, 'KeyW', 4.7);
+  await walk(page, 'KeyA', 2.6);
+  await expect(testId(page, 'interaction-prompt')).toContainText('Talk to Clerk of Petitions');
+  await press(page, 'KeyE');
+  await finishDialogue(page); // registered, Sergeant Osman, then the Crowned Sentinel
+
+  // The Crowned Sentinel: defend its heavy blows until it withdraws.
+  await expect(testId(page, 'battle-ui')).toBeVisible();
+  await expect(testId(page, 'enemy-status')).toContainText('Crowned Sentinel');
+  await expect(testId(page, 'player-hp')).toHaveText('36/36');
+  for (const cmd of ['skill', 'skill', 'attack', 'defend', 'attack', 'attack', 'defend', 'attack']) {
+    await expect(testId(page, `cmd-${cmd}`)).toBeEnabled({ timeout: 15_000 });
+    if (cmd === 'defend') await expect(testId(page, 'enemy-charging')).toBeVisible();
+    if (cmd === 'attack' && (await testId(page, 'battle-victory').count()) > 0) break;
+    await testId(page, `cmd-${cmd}`).click();
+    if (cmd === 'skill') await page.screenshot({ path: 'test-results/crowned-sentinel.png' });
+  }
+  await expect(testId(page, 'battle-victory')).toBeVisible({ timeout: 15_000 });
+  await expect(testId(page, 'enemy-hp')).toHaveText('12/56'); // it withdrew, still standing
+  await expect(testId(page, 'player-hp')).toHaveText('15/36');
+  await press(page, 'KeyE', 600);
+  await finishDialogue(page);
   await expect(testId(page, 'c3-to-be-continued')).toBeVisible({ timeout: 10_000 });
 
   // Saved; after a refresh, Continue says so.

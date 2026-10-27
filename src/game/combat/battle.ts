@@ -7,6 +7,9 @@
  *
  * Boss phases (Chapter 2): an armoured enemy shrugs off ordinary attacks until
  * Radiant Strike breaks its armour; only then does it start winding up heavy blows.
+ *
+ * Yield (Chapter 3): an enemy with `yieldAt` stops fighting once its HP drops to
+ * that value or below, and the battle ends in victory with the enemy still standing.
  */
 import type { EncounterDef, PlayerBattleStats } from '../../data/encounters';
 
@@ -43,6 +46,8 @@ export type BattleEvent =
       armored?: true;
       /** Set only when this Radiant Strike broke the enemy's armour. */
       brokeArmor?: true;
+      /** Set only when this blow brought the enemy down to its yield point. */
+      yielded?: true;
     }
   | { kind: 'defend'; actor: 'player'; damage: 0 }
   | { kind: 'ward'; actor: 'player'; damage: 0; heal: number }
@@ -111,13 +116,14 @@ export function playerAction(
   const breaks = !!armor && cmd === 'skill';
   const damage = cmd === 'skill' ? player.skillDamage : glances ? armor!.attackDamage : player.attack;
   const enemyHp = Math.max(0, state.enemyHp - damage);
+  const yields = enc?.yieldAt !== undefined && enemyHp > 0 && enemyHp <= enc.yieldAt;
   return {
     state: {
       ...state,
       enemyHp,
       armored: breaks ? false : state.armored,
       skillCharges: cmd === 'skill' ? state.skillCharges - 1 : state.skillCharges,
-      phase: enemyHp <= 0 ? 'victory' : 'enemy',
+      phase: enemyHp <= 0 || yields ? 'victory' : 'enemy',
     },
     event: {
       kind: cmd,
@@ -125,6 +131,7 @@ export function playerAction(
       damage,
       ...(glances ? { armored: true as const } : {}),
       ...(breaks ? { brokeArmor: true as const } : {}),
+      ...(yields ? { yielded: true as const } : {}),
     },
   };
 }

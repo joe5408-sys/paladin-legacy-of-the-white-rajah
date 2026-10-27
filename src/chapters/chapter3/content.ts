@@ -7,12 +7,15 @@ import { registerLayout } from '../../data/layouts';
 import { registerObjectives } from '../../data/quests';
 import { BOAT_NIGHT_DIALOGUE, BOAT_NIGHT_LAYOUT, CHAPTER3_OBJECTIVES } from './boatNightData';
 import { KUCHING_DIALOGUE, ROOM_LAYOUT, WATERFRONT_NIGHT_LAYOUT } from './kuchingData';
+import { GATE_DIALOGUE, GATE_LAYOUT } from './palaceData';
 
 registerDialogues(BOAT_NIGHT_DIALOGUE);
 registerLayout('boat_night', BOAT_NIGHT_LAYOUT);
 registerDialogues(KUCHING_DIALOGUE);
 registerLayout('waterfront_night', WATERFRONT_NIGHT_LAYOUT);
 registerLayout('jamilah_room', ROOM_LAYOUT);
+registerDialogues(GATE_DIALOGUE);
+registerLayout('palace_gate', GATE_LAYOUT);
 registerObjectives(3, CHAPTER3_OBJECTIVES);
 
 export const CHAPTER3_LOADED = true;

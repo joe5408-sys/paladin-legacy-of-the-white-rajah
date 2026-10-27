@@ -1,10 +1,20 @@
 # Progress
 
-**Current phase:** Phase 9 — Chapter 3: The Crown's Word (design agreed, `docs/CHAPTER_3.md`). Milestones 3.1 (The Long Way Down) and 3.2 (A Wanted Man) ✅ done; 3.3 (The Palace Gate) next. Chapter 2 is complete (`docs/CHAPTER_2.md`).
+**Current phase:** Phase 9 — Chapter 3: The Crown's Word (design agreed, `docs/CHAPTER_3.md`). Milestones 3.1 (The Long Way Down), 3.2 (A Wanted Man) and 3.3 (The Palace Gate) ✅ done; 3.4 (The Petition Hour) next. Chapter 2 is complete (`docs/CHAPTER_2.md`).
 **MVP:** ✅ complete (phases 0–6); Chapter 0 is live.
 **Live site:** https://legacyofwhiterajah.netlify.app
 **Repository:** https://github.com/joe5408-sys/paladin-legacy-of-the-white-rajah (public, `master`; Netlify auto-deploys on push)
 **Last updated:** 2026-10-27
+
+### Phase 9 — Chapter 3, Milestone 3.3: The Palace Gate (2026-10-27) ✅
+- **New system: yield.** An enemy can stop fighting at a set HP; the battle ends in victory with it still standing. First used here, gently.
+- Daniel's plan now leads straight to the morning ferry (old 3.2 saves take the stairs in Kak Jamilah's room).
+- **The Palace forecourt** (new scene, an invented palace): white walls, gold-tipped gates, the Palace and its dome beyond, hedges, the Clerk of Petitions' desk and register, and the river steps.
+- **New people:** the Clerk of Petitions, Sergeant Nadia Osman (Daniel's former partner), and petitioners with small requests: the auntie from the Chapter 2 boat, a fisherman and a schoolteacher.
+- **Story:** the Clerk registers the petition → Osman has orders to detain Adrian; Daniel faces her → the **Crowned Sentinel** walks out of the gate → battle → it withdraws at the sight of the medallion → the petitioners hold the gates open, the Clerk invokes custom, Osman lets them through → **To Be Continued**.
+- **The Crowned Sentinel:** a new ivory-and-gold sprite with a crowned helm and halberd, on a new palace battle backdrop. HP 56, withdraws at 16; going all-out loses, defending its heavy blows wins with 15/36 HP.
+- **Test results:** `npm test` 262/262 (new `palaceGate.test.ts`, 9 tests: the yield rule, the fight's balance by strategy, the full 3.3 flow, a reload mid-battle with a retry, the end save, a too-early forecourt save; 3.2's tests now end on the ferry). `npm run e2e` 4/4: the Chapter 3 browser test now also crosses the forecourt, registers the petition and fights the Sentinel until it withdraws (1.2 min); full story unchanged (4.7 min). Visual checks by screenshots of the forecourt and the Sentinel; the first forecourt screenshot showed the lawn covering the river steps and the Palace off-screen, so the lawn now stops at the steps and the arrival point moved north.
+- **Live:** not yet checked on the live site.
 
 ### Phase 9 — Chapter 3, Milestone 3.2: A Wanted Man (2026-10-27) ✅
 - **New system: dialogue choices.** A conversation can end in a list of replies, chosen with ↑/↓ + E/Enter or the mouse; it waits until one is picked. First used for Pell's decision. No fail states: every reply leads on.
