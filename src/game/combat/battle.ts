@@ -7,7 +7,7 @@
  */
 import type { EncounterDef, PlayerBattleStats } from '../../data/encounters';
 
-export type Command = 'attack' | 'skill' | 'defend';
+export type Command = 'attack' | 'skill' | 'defend' | 'ward';
 export type BattlePhase = 'player' | 'enemy' | 'victory' | 'defeat';
 
 export interface BattleState {
@@ -16,6 +16,10 @@ export interface BattleState {
   enemyHp: number;
   enemyMaxHp: number;
   skillCharges: number;
+  /** River Ward uses left (0 if Adrian hasn't learned it). */
+  wardCharges: number;
+  /** Set by River Ward; blocks the next enemy hit completely, then wears off. */
+  warded: boolean;
   /** Set by Defend; lasts until the end of the enemy's next turn. */
   defending: boolean;
   /** The enemy is winding up a heavy blow for its next turn. */
@@ -28,7 +32,8 @@ export interface BattleState {
 export type BattleEvent =
   | { kind: 'attack' | 'skill'; actor: 'player'; damage: number }
   | { kind: 'defend'; actor: 'player'; damage: 0 }
-  | { kind: 'enemy_attack'; actor: 'enemy'; damage: number; defended: boolean; heavy: boolean }
+  | { kind: 'ward'; actor: 'player'; damage: 0; heal: number }
+  | { kind: 'enemy_attack'; actor: 'enemy'; damage: number; defended: boolean; heavy: boolean; warded: boolean }
   | { kind: 'enemy_charge'; actor: 'enemy'; damage: 0 };
 
 export interface StepResult {
@@ -43,6 +48,8 @@ export function createBattle(player: PlayerBattleStats, enc: EncounterDef): Batt
     enemyHp: enc.enemyMaxHp,
     enemyMaxHp: enc.enemyMaxHp,
     skillCharges: player.skillCharges,
+    wardCharges: player.ward?.charges ?? 0,
+    warded: false,
     defending: false,
     charging: false,
     phase: 'player', // the player always opens
@@ -52,7 +59,9 @@ export function createBattle(player: PlayerBattleStats, enc: EncounterDef): Batt
 
 export function canUse(state: BattleState, cmd: Command): boolean {
   if (state.phase !== 'player') return false;
-  return cmd !== 'skill' || state.skillCharges > 0;
+  if (cmd === 'skill') return state.skillCharges > 0;
+  if (cmd === 'ward') return state.wardCharges > 0;
+  return true;
 }
 
 /** Player's action. Returns null if the command isn't allowed right now. */
@@ -67,6 +76,14 @@ export function playerAction(
     return {
       state: { ...state, defending: true, phase: 'enemy' },
       event: { kind: 'defend', actor: 'player', damage: 0 },
+    };
+  }
+
+  if (cmd === 'ward') {
+    const heal = Math.min(player.ward?.heal ?? 0, state.playerMaxHp - state.playerHp);
+    return {
+      state: { ...state, playerHp: state.playerHp + heal, wardCharges: state.wardCharges - 1, warded: true, phase: 'enemy' },
+      event: { kind: 'ward', actor: 'player', damage: 0, heal },
     };
   }
 
@@ -104,19 +121,22 @@ export function enemyAction(
   const heavy = state.charging && !!enc.heavy;
   const base = heavy ? enc.heavy!.damage : enc.enemyAttack;
   const defended = state.defending;
+  const warded = state.warded;
   const guard = heavy ? enc.heavy!.guardedMultiplier : player.defendMultiplier;
-  const damage = defended ? Math.round(base * guard) : base;
+  // River Ward blocks any hit, even a heavy blow; Defend only softens it.
+  const damage = warded ? 0 : defended ? Math.round(base * guard) : base;
   const playerHp = Math.max(0, state.playerHp - damage);
   return {
     state: {
       ...state,
       playerHp,
       defending: false,
+      warded: false,
       charging: false,
       phase: playerHp <= 0 ? 'defeat' : 'player',
       turn: state.turn + 1,
     },
-    event: { kind: 'enemy_attack', actor: 'enemy', damage, defended, heavy },
+    event: { kind: 'enemy_attack', actor: 'enemy', damage, defended, heavy, warded },
   };
 }
 
@@ -129,10 +149,17 @@ export function describeEvent(event: BattleEvent, player: PlayerBattleStats, enc
       return `${player.skillName}! Light bursts from the blade for ${event.damage} damage.`;
     case 'defend':
       return 'Adrian raises his guard and braces for the next blow.';
+    case 'ward': {
+      const name = player.ward?.name ?? 'River Ward';
+      return event.heal > 0
+        ? `${name}! Cool river-light wraps around Adrian. He recovers ${event.heal} HP.`
+        : `${name}! Cool river-light wraps around Adrian.`;
+    }
     case 'enemy_charge':
       return enc.heavy?.chargeText ?? `The ${enc.enemyName} gathers its strength.`;
     case 'enemy_attack': {
       const verb = event.heavy && enc.heavy ? enc.heavy.attackText : enc.enemyAttackText;
+      if (event.warded) return `The ${enc.enemyName} ${verb}, but the river-light swallows the blow!`;
       if (event.defended && event.damage === 0) {
         return `The ${enc.enemyName} ${verb}, but Adrian's guard turns the blow aside!`;
       }
@@ -152,5 +179,9 @@ export const COMMAND_INFO: Record<Command, { label: string; help: (p: PlayerBatt
   defend: {
     label: 'Defend',
     help: (p) => `Brace yourself. The next hit deals ${Math.round((1 - p.defendMultiplier) * 100)}% less damage.`,
+  },
+  ward: {
+    label: 'River Ward',
+    help: (p) => `Recover ${p.ward?.heal ?? 0} HP and block the next hit completely, even a heavy blow. Once per battle.`,
   },
 };

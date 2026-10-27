@@ -13,7 +13,7 @@ import {
   type SceneId,
   type SpawnPoint,
 } from '../../data/scenes';
-import { ENCOUNTERS, PLAYER_BATTLE_STATS, type EncounterDef } from '../../data/encounters';
+import { ENCOUNTERS, playerStatsFor, type EncounterDef, type PlayerBattleStats } from '../../data/encounters';
 import {
   createBattle,
   describeEvent,
@@ -46,6 +46,8 @@ export type BattleStage =
 
 export interface ActiveBattle {
   encounter: EncounterDef;
+  /** Adrian's stats for this battle (River Ward once learned). */
+  player: PlayerBattleStats;
   state: BattleState;
   stage: BattleStage;
   message: string;
@@ -96,6 +98,8 @@ export interface GameState {
 
   setNearby(target: Interactable | null): void;
   setFlags(flags: readonly StoryFlag[]): void;
+  /** Unsets puzzle flags (e.g. stones going dark). Story progress flags are never cleared. */
+  clearFlags(flags: readonly StoryFlag[]): void;
   /** Runs the interaction for a target. Returns true if something happened. */
   interact(target: Interactable): boolean;
   startDialogue(id: string, opts?: { source?: Interactable; onComplete?: () => void }): boolean;
@@ -174,10 +178,12 @@ const CHAPTER_STARTS: Record<1 | 2, { flag: StoryFlag; scene: SceneId; spawn: st
   2: { flag: 'chapter2_started', scene: 'boat', spawn: 'arrival', card: 'Chapter 2 · The River Remembers' },
 };
 
-function freshBattle(encounter: EncounterDef, stage: BattleStage, message: string): ActiveBattle {
+function freshBattle(encounter: EncounterDef, flags: StoryFlags, stage: BattleStage, message: string): ActiveBattle {
+  const player = playerStatsFor(flags, encounter);
   return {
     encounter,
-    state: createBattle(PLAYER_BATTLE_STATS, encounter),
+    player,
+    state: createBattle(player, encounter),
     stage,
     message,
     seq: 0,
@@ -197,6 +203,13 @@ export const gameStore = createStore<GameState>()((set, get) => ({
     if (list.length === 0 || list.every((f) => get().flags[f])) return;
     const flags = { ...get().flags };
     for (const f of list) flags[f] = true;
+    set({ flags });
+  },
+
+  clearFlags(list) {
+    if (!list.some((f) => get().flags[f])) return;
+    const flags = { ...get().flags };
+    for (const f of list) delete flags[f];
     set({ flags });
   },
 
@@ -236,6 +249,7 @@ export const gameStore = createStore<GameState>()((set, get) => ({
     // Finished: apply story effects, return to exploration, then notify.
     set({ mode: 'explore', dialogue: null });
     get().setFlags(d.def.setFlags ?? []);
+    get().clearFlags(d.def.clearFlags ?? []);
     if (d.def.startBattle) get().startBattle(d.def.startBattle);
     else if (d.def.enterScene) get().requestScene(d.def.enterScene.scene, d.def.enterScene.spawn);
     else if (d.def.next) get().startDialogue(d.def.next);
@@ -287,7 +301,7 @@ export const gameStore = createStore<GameState>()((set, get) => ({
     set({
       mode: 'battle',
       nearby: null,
-      battle: freshBattle(encounter, 'intro', encounter.intro),
+      battle: freshBattle(encounter, get().flags, 'intro', encounter.intro),
       // Where the exploration scene resumes once the battle ends.
       spawn: spawnPoint(encounter.returnTo.scene, encounter.returnTo.spawn),
     });
@@ -297,14 +311,14 @@ export const gameStore = createStore<GameState>()((set, get) => ({
   chooseCommand(cmd) {
     const b = get().battle;
     if (!b || b.stage !== 'command') return false;
-    const result = playerAction(b.state, PLAYER_BATTLE_STATS, cmd);
+    const result = playerAction(b.state, b.player, cmd);
     if (!result) return false; // e.g. no Radiant Strike charges left
     set({
       battle: {
         ...b,
         state: result.state,
         stage: 'player_action',
-        message: describeEvent(result.event, PLAYER_BATTLE_STATS, b.encounter),
+        message: describeEvent(result.event, b.player, b.encounter),
         seq: b.seq + 1,
         lastEvent: result.event,
       },
@@ -326,14 +340,14 @@ export const gameStore = createStore<GameState>()((set, get) => ({
           });
           return;
         }
-        const result = enemyAction(b.state, PLAYER_BATTLE_STATS, b.encounter);
+        const result = enemyAction(b.state, b.player, b.encounter);
         if (!result) return;
         set({
           battle: {
             ...b,
             state: result.state,
             stage: 'enemy_action',
-            message: describeEvent(result.event, PLAYER_BATTLE_STATS, b.encounter),
+            message: describeEvent(result.event, b.player, b.encounter),
             seq: b.seq + 1,
             lastEvent: result.event,
           },
@@ -364,7 +378,7 @@ export const gameStore = createStore<GameState>()((set, get) => ({
     const b = get().battle;
     if (!b || b.stage !== 'defeat') return false;
     set({
-      battle: freshBattle(b.encounter, 'command', `The ${b.encounter.enemyName} waits. Steady yourself and try again.`),
+      battle: freshBattle(b.encounter, get().flags, 'command', `The ${b.encounter.enemyName} waits. Steady yourself and try again.`),
     });
     return true;
   },

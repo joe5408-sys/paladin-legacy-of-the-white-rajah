@@ -59,7 +59,7 @@ describe('Chapter 2 loading', () => {
     await loadChapter(2);
     expect(DIALOGUES.c2_boat_arrival).toBeDefined();
     expect(getLayout('boat')).toBeDefined();
-    expect(OBJECTIVES_BY_CHAPTER[2]?.length).toBe(9);
+    expect(OBJECTIVES_BY_CHAPTER[2]?.length).toBe(12);
   });
 
   it('knows that Chapter 1 now leads on, and which chapter a save needs', () => {
@@ -212,8 +212,10 @@ describe('Chapter 2 flow', () => {
     expect(s().dialogue?.def.id).toBe('c2_portrait_map');
     finishDialogue();
     expect(s().flags.c2_found_map).toBe(true);
-    expect(s().mode).toBe('ending');
-    expect(isAtChapterEnd(s().flags)).toBe(true);
+    // Straight on upriver with Ah Hock (Milestone 2.3, waystation.test.ts).
+    expect(s().flags.c2_went_upriver).toBe(true);
+    expect(s().transition?.to).toBe('waystation_landing');
+    expect(isAtChapterEnd(s().flags)).toBe(false);
   });
 
   it('Mara at home waits until Adrian has met Pell', () => {
@@ -243,8 +245,13 @@ describe('Chapter 2 flow', () => {
     expect(s().mode).toBe('explore');
     expect(objective()).toBe('c2_news');
 
-    s().setFlags([...BOAT_DONE, 'c2_village_arrived', 'c2_read_notice', 'c2_talked_lim', 'c2_met_pell', 'c2_home_talked', 'c2_found_map']);
-    const end = validateSave(JSON.parse(JSON.stringify(buildSave({ ...s(), scene: 'home_c2' }, SCENES.home_c2.spawns.door))));
+    s().setFlags([
+      ...BOAT_DONE, 'c2_village_arrived', 'c2_read_notice', 'c2_talked_lim', 'c2_met_pell', 'c2_home_talked', 'c2_found_map',
+      'c2_went_upriver', 'c2_landing_arrived', 'c2_stones_woken', 'c2_spirit_defeated', 'c2_learned_ward',
+    ]);
+    const end = validateSave(
+      JSON.parse(JSON.stringify(buildSave({ ...s(), scene: 'waystation_landing' }, SCENES.waystation_landing.spawns.after_battle))),
+    );
     if (end.ok) s().loadGame(end.data);
     expect(s().mode).toBe('ending');
   });

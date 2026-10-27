@@ -19,6 +19,8 @@ export interface DialogueDef {
   lines: DialogueLine[];
   /** Flags set when the conversation finishes. */
   setFlags?: StoryFlag[];
+  /** Puzzle flags unset when the conversation finishes (e.g. stones going dark again). */
+  clearFlags?: StoryFlag[];
   /** Encounter id to start when the conversation finishes. */
   startBattle?: string;
   /** Conversation that follows immediately when this one finishes. */

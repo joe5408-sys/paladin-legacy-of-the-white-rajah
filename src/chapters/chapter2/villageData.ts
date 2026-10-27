@@ -95,7 +95,10 @@ export const VILLAGE_C2_INTERACTABLES: Interactable[] = [
     z: -4.45,
     radius: 1.3,
     npc: 'ahhock',
-    dialogue: [{ dialogue: 'c2_ahhock_village' }],
+    dialogue: [
+      { dialogue: 'c2_ahhock_go', requires: ['c2_found_map'] },
+      { dialogue: 'c2_ahhock_village' },
+    ],
   },
   {
     id: 'survey-peg',
@@ -150,6 +153,7 @@ export const HOME_C2_INTERACTABLES: Interactable[] = [
     dialogue: [
       { dialogue: 'c2_mara_home_early', unless: ['c2_met_pell'] },
       { dialogue: 'c2_mara_home', unless: ['c2_home_talked'] },
+      { dialogue: 'c2_mara_home_go', requires: ['c2_found_map'] },
       { dialogue: 'c2_mara_home_repeat' },
     ],
   },
@@ -161,6 +165,8 @@ export const HOME_C2_INTERACTABLES: Interactable[] = [
     z: -2.9,
     radius: 1.1,
     dialogue: [
+      // Saves from the old 2.2 cliffhanger: the map is found, so set off upriver.
+      { dialogue: 'c2_portrait_go', requires: ['c2_found_map'] },
       { dialogue: 'c2_portrait_map', requires: ['c2_home_talked'] },
       { dialogue: 'c2_portrait_elias' },
     ],
@@ -320,7 +326,35 @@ export const VILLAGE_C2_DIALOGUE: DialogueDef[] = [
       { speaker: 'adrian', text: 'What happened in 1987?' },
       { speaker: 'mara', text: 'Ask him. He tells it differently.', setFlags: ['c2_found_map'] },
     ],
-    endChapter: true,
+    next: 'c2_upriver',
+  },
+  {
+    id: 'c2_mara_home_go',
+    lines: [{ speaker: 'mara', text: 'The map, the verse, and Ah Hock at first light. I\'ve packed the leech balm. Siti packed more.' }],
+  },
+  {
+    id: 'c2_portrait_go',
+    lines: [
+      { speaker: null, text: 'The portrait lies face-down on the table, Elias\'s map drawn on its back.' },
+      { speaker: 'mara', text: 'Enough staring. Ah Hock is waiting, and he charges by the hour.' },
+    ],
+    next: 'c2_upriver',
+  },
+  {
+    id: 'c2_ahhock_go',
+    lines: [{ speaker: 'ahhock', text: 'Your aunt says we go upriver. When your aunt says, we go. Get in.' }],
+    next: 'c2_upriver',
+  },
+  {
+    // The longboat trip: a time skip to the waystation landing.
+    id: 'c2_upriver',
+    lines: [
+      { speaker: null, text: 'First light. Ah Hock\'s longboat noses out from the jetty, Mara in the bow with the map on her knees.', setFlags: ['c2_went_upriver'] },
+      { speaker: null, text: 'Above Sungai Awan the river narrows and turns white over the rapids. Ah Hock stands at the outboard, reading the water like a page.' },
+      { speaker: 'ahhock', text: 'My grandmother said the river forgets its name up here. Too many turns. Even the maps give up.' },
+      { speaker: 'adrian', text: '"Where the river forgets its name." Ah Hock, keep going.' },
+    ],
+    enterScene: { scene: 'waystation_landing', spawn: 'arrival' },
   },
 ];
 
@@ -330,4 +364,5 @@ export const VILLAGE_C2_OBJECTIVES = [
   { id: 'c2_pell', text: 'Find the man in charge of the survey.', completeWhen: 'c2_met_pell' },
   { id: 'c2_home', text: 'Go home to Aunt Mara.', completeWhen: 'c2_home_talked' },
   { id: 'c2_map', text: "Look behind Elias's portrait.", completeWhen: 'c2_found_map' },
+  { id: 'c2_upriver', text: 'Travel upriver with Ah Hock.', completeWhen: 'c2_went_upriver' },
 ] as const;

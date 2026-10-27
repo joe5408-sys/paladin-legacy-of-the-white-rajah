@@ -9,7 +9,9 @@ import { addOutline } from '../player/pixelSprite';
 export const GUARDIAN_W = 32;
 export const GUARDIAN_H = 40;
 
-const C = {
+type Palette = Record<'outline' | 'stone' | 'stoneLight' | 'stoneDark' | 'crack' | 'moss' | 'gold' | 'goldDeep', string>;
+
+const STONE: Palette = {
   outline: '#0e1014',
   stone: '#6f7b86',
   stoneLight: '#93a0ab',
@@ -20,12 +22,24 @@ const C = {
   goldDeep: '#c9963a',
 };
 
+/** The Spirit of the Waystation (Chapter 2): the Guardian's shape in river-water and light. */
+const RIVER: Palette = {
+  outline: '#0a2a3a',
+  stone: '#4fa8c8',
+  stoneLight: '#a8e4f4',
+  stoneDark: '#2f7898',
+  crack: '#d8f6ff',
+  moss: '#7fd8c0',
+  gold: '#ffffff',
+  goldDeep: '#bff0ff',
+};
+
 function rect(g: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, color: string) {
   g.fillStyle = color;
   g.fillRect(x, y, w, h);
 }
 
-function draw(g: CanvasRenderingContext2D) {
+function draw(g: CanvasRenderingContext2D, C: Palette) {
   // Legs: thick pillars
   rect(g, 8, 30, 6, 10, C.stoneDark);
   rect(g, 18, 30, 6, 10, C.stoneDark);
@@ -80,21 +94,32 @@ function draw(g: CanvasRenderingContext2D) {
   rect(g, 14, 11, 4, 1, C.stoneDark);
 }
 
-let cached: THREE.CanvasTexture | null = null;
+const cache = new Map<Palette, THREE.CanvasTexture>();
 
-/** Shared Guardian texture. Browser-only. */
-export function getGuardianTexture(): THREE.CanvasTexture {
-  if (cached) return cached;
+function texture(palette: Palette): THREE.CanvasTexture {
+  const hit = cache.get(palette);
+  if (hit) return hit;
   const canvas = document.createElement('canvas');
   canvas.width = GUARDIAN_W;
   canvas.height = GUARDIAN_H;
   const g = canvas.getContext('2d', { willReadFrequently: true })!;
-  draw(g);
-  addOutline(g, GUARDIAN_W, GUARDIAN_H, C.outline);
-  cached = new THREE.CanvasTexture(canvas);
-  cached.magFilter = THREE.NearestFilter;
-  cached.minFilter = THREE.NearestFilter;
-  cached.generateMipmaps = false;
-  cached.colorSpace = THREE.SRGBColorSpace;
-  return cached;
+  draw(g, palette);
+  addOutline(g, GUARDIAN_W, GUARDIAN_H, palette.outline);
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.magFilter = THREE.NearestFilter;
+  tex.minFilter = THREE.NearestFilter;
+  tex.generateMipmaps = false;
+  tex.colorSpace = THREE.SRGBColorSpace;
+  cache.set(palette, tex);
+  return tex;
+}
+
+/** Shared Guardian texture. Browser-only. */
+export function getGuardianTexture(): THREE.CanvasTexture {
+  return texture(STONE);
+}
+
+/** Shared Spirit of the Waystation texture. Browser-only. */
+export function getSpiritTexture(): THREE.CanvasTexture {
+  return texture(RIVER);
 }

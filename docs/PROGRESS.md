@@ -1,10 +1,20 @@
 # Progress
 
-**Current phase:** Phase 8 — Chapter 2: The River Remembers (design agreed, `docs/CHAPTER_2.md`). Milestones 2.1 (Upriver) and 2.2 (Home, Changed) ✅ done; 2.3 (The Waystation) next. See `docs/CHAPTER_1.md`.
+**Current phase:** Phase 8 — Chapter 2: The River Remembers (design agreed, `docs/CHAPTER_2.md`). Milestones 2.1 (Upriver), 2.2 (Home, Changed) and 2.3 (The Waystation) ✅ done (2.3 not yet deployed); 2.4 (The River Charter) next. See `docs/CHAPTER_1.md`.
 **MVP:** ✅ complete (phases 0–6); Chapter 0 is live.
 **Live site:** https://legacyofwhiterajah.netlify.app
 **Repository:** https://github.com/joe5408-sys/paladin-legacy-of-the-white-rajah (public, `master`; Netlify auto-deploys on push)
-**Last updated:** 2026-10-26
+**Last updated:** 2026-10-27
+
+### Phase 8 — Chapter 2, Milestone 2.3: The Waystation (2026-10-27) ✅ (not yet deployed)
+- Finding the map behind Elias's portrait now leads straight into **the longboat trip** with Ah Hock (no ending). Saves from the old 2.2 cliffhanger set off from the portrait, from Mara, or from Ah Hock at the jetty.
+- **The waystation landing** (`src/chapters/chapter2/Waystation.tsx` + `waystationData.ts`, lazy-loaded): an invented Paladin site with mossy steps up from the river, a paved terrace, jungle on both sides, Ah Hock's longboat, and a sealed door in a vine-hung cliff. Mara and Ah Hock wait by the water.
+- **Light puzzle:** three standing stones: one standing in a river pool (the deep), one in a shaft of sunlight (the bright), and one beside the door, turned to face it (the one that waits). Touching them in the verse's order lights each stone and joins them with threads of light; the third opens the door. A wrong start does nothing, and a wrong order puts out the lit stones (no other penalty). Mara gives a gentle hint if asked.
+- **Small engine addition:** conversations can now *clear* flags (`clearFlags`), used only for the stones going dark. The design doc had said "no new engine code" for the puzzle, but a true reset isn't possible with set-only flags. Story progress flags are still never cleared.
+- **River Ward** (the chapter's one new battle feature): once per battle, heal 10 HP and block the next hit completely, even a heavy blow, and the ward lasts through the enemy's charging turn. It appears on the battle menu (with a pip and a "Warded" status) only once learned, or during the battle that teaches it. Each battle now carries its own player stats.
+- **The training spirit** (the Covenant Guardian's sprite recoloured as river-water, on a mossy terrace backdrop): HP 42, hits for 5, and winds up a 14-damage wave every other round that Defend only halves. Warding a wave and attacking wins with about 16 HP left; going all-out, or defending every wave, loses. Victory → the spirit teaches River Ward ("The river does not fight the rock. It keeps the valley.") → **To Be Continued**.
+- Max HP stays at 30 (the design doc's optional raise to 36 was left out, to keep the change small).
+- **Test results:** `npm test` 191/191 (new `waystation.test.ts`, 15 tests: River Ward's rules, the spirit's balance by strategy, the puzzle including both wrong-order cases and the reset, retrying a defeat, a save closed mid-battle, a half-finished puzzle in a save, old-cliffhanger saves, and a too-early landing save). `npm run e2e` 3/3: the full-story test now also does the puzzle and wins the spirit battle with River Ward (3.5 min for the whole game; its time limit was raised to 6 min). Visual checks by screenshots of the landing and the River Ward turn.
 
 ### Phase 8 — Chapter 2, Milestone 2.2: Home, Changed (2026-10-27) ✅
 - The boat's cabin now leads on to **Sungai Awan, changed**: the prologue village and family home reused with Chapter 2 layouts and props (a Crown notice board, survey pegs with orange tape, the Awan Riverlands survey boat, Ah Hock's blue longboat). The prologue scene components now take a layout and extra props, so no geometry was copied.

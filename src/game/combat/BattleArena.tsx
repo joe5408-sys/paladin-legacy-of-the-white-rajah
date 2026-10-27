@@ -23,7 +23,7 @@ import {
 import { Brazier } from '../scenes/AncientChamber';
 import { getInsigniaTexture } from '../scenes/insignia';
 import type { BattleEvent } from './battle';
-import { getGuardianTexture, GUARDIAN_H, GUARDIAN_W } from './guardianSprite';
+import { getGuardianTexture, getSpiritTexture, GUARDIAN_H, GUARDIAN_W } from './guardianSprite';
 import { getSentinelTexture, SENTINEL_H, SENTINEL_W } from './sentinelSprite';
 import type { EncounterDef } from '../../data/encounters';
 
@@ -38,6 +38,7 @@ const HEIGHT_COMP = 1 / Math.cos(THREE.MathUtils.degToRad(CAMERA_PITCH_DEG));
 const ENEMY_SPRITES: Record<EncounterDef['sprite'], { width: number; height: number; texture: () => THREE.Texture }> = {
   guardian: { width: 2.3, height: 2.3 * (GUARDIAN_H / GUARDIAN_W) * HEIGHT_COMP, texture: getGuardianTexture },
   sentinel: { width: 2.2, height: 2.2 * (SENTINEL_H / SENTINEL_W) * HEIGHT_COMP, texture: getSentinelTexture },
+  spirit: { width: 2.3, height: 2.3 * (GUARDIAN_H / GUARDIAN_W) * HEIGHT_COMP, texture: getSpiritTexture },
 };
 
 /** Colours of each battle backdrop. */
@@ -62,6 +63,16 @@ const ARENAS: Record<
     under: '#1d1915',
     wall: '#332c26',
     sign: '#7a6a58',
+  },
+  // The waystation terrace: mossy paving and a green-shadowed cliff.
+  waystation: {
+    sky: '#0c1a16',
+    ambient: '#9ac8b8',
+    key: '#f0f4dc',
+    floor: ['#56604c', '#4e5846'],
+    under: '#1d2a22',
+    wall: '#3c4a3e',
+    sign: '#8fd0e0',
   },
 };
 
@@ -179,12 +190,12 @@ export function BattleArena() {
       <Brazier x={-4.2} z={-2.6} />
       <Brazier x={4.2} z={-2.6} />
 
-      {arenaId === 'chamber' ? (
-        // Glowing sign the Guardian rose from
+      {arenaId !== 'vault' ? (
+        // Glowing sign the Guardian (or the river spirit) rose from
         <mesh rotation-x={-Math.PI / 2} position={[ENEMY_POS.x, 0.02, ENEMY_POS.z]}>
           <planeGeometry args={[2.8, 2.8]} />
           <meshBasicMaterial
-            map={getInsigniaTexture('#ffe08a')}
+            map={getInsigniaTexture(arenaId === 'waystation' ? '#a8e8ff' : '#ffe08a')}
             transparent
             opacity={0.7}
             depthWrite={false}
@@ -273,7 +284,8 @@ function BattlePlayer() {
 
     // Defend shield shimmers while the guard is up.
     if (shield.current && shieldMat.current) {
-      shield.current.visible = b.state.defending;
+      shield.current.visible = b.state.defending || b.state.warded;
+      shieldMat.current.color.set(b.state.warded ? '#9ff0e0' : '#7fc8ff');
       shieldMat.current.opacity = 0.35 + Math.sin(idle.current * 6) * 0.12;
     }
   });
@@ -476,6 +488,13 @@ function DamagePopups() {
     return (
       <Html key={seq} position={[PLAYER_POS.x, SPRITE_WORLD_HEIGHT + 0.3, PLAYER_POS.z]} center zIndexRange={POPUP_Z}>
         <div className="battle-popup guard">Guard!</div>
+      </Html>
+    );
+  }
+  if (event.kind === 'ward') {
+    return (
+      <Html key={seq} position={[PLAYER_POS.x, SPRITE_WORLD_HEIGHT + 0.3, PLAYER_POS.z]} center zIndexRange={POPUP_Z}>
+        <div className="battle-popup ward">{event.heal > 0 ? `+${event.heal}` : 'Ward!'}</div>
       </Html>
     );
   }

@@ -524,6 +524,16 @@ body,
   animation-delay: 0s;
 }
 
+.battle-popup.ward {
+  color: #9ff0e0;
+  font-size: 22px;
+  animation-delay: 0s;
+}
+
+.battle-ward {
+  color: #9ff0e0;
+}
+
 @keyframes popup {
   0% {
     opacity: 0;

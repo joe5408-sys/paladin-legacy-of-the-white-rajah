@@ -1,18 +1,22 @@
 /**
  * Plays the whole game as it stands, with real keyboard input in a real browser:
- * Chapter 0 from New Game to CHAPTER 0 COMPLETE, then Chapter 1 (Milestones 1.1–1.2:
- * the Kuching waterfront, the Royal Archives, the vault battle, the sealed records, the Chapter 2 express boat and Sungai Awan) to the "to be continued" card. Also checks that Chapter 1 is only downloaded
- * when the player reaches it.
+ * Chapter 0 from New Game to CHAPTER 0 COMPLETE, all of Chapter 1 (the Kuching
+ * waterfront, the Royal Archives, the vault battle, the sealed records), then
+ * Chapter 2 so far (the express boat, Sungai Awan, and the waystation's stone
+ * puzzle and River Ward battle) to the "to be continued" card. Also checks that
+ * each chapter's files are only downloaded when the player reaches them.
  */
 import { expect, test } from '@playwright/test';
 import { arriveIn, expectLocation, finishDialogue, press, testId, trackErrors, walk } from './helpers';
 
 test('full story: Chapters 0 and 1, and Chapter 2 so far', async ({ page }) => {
+  test.setTimeout(360_000); // the whole game, played in real time
   const errors = trackErrors(page);
   const requested: string[] = [];
   page.on('request', (r) => requested.push(r.url()));
   const chapter1Requested = () => requested.some((u) => /\/assets\/(Waterfront|content)-/.test(u));
   const chapter2Requested = () => requested.some((u) => /\/assets\/(Boat|boatData)-/.test(u));
+  const waystationRequested = () => requested.some((u) => /\/assets\/Waystation-/.test(u));
 
   await page.goto('/');
   await page.evaluate(() => localStorage.clear());
@@ -288,6 +292,56 @@ test('full story: Chapters 0 and 1, and Chapter 2 so far', async ({ page }) => {
   await walk(page, 'KeyW', 1.6);
   await expect(testId(page, 'interaction-prompt')).toContainText("Inspect Elias's Portrait");
   await press(page, 'KeyE');
+  await finishDialogue(page); // the map, then straight on upriver with Ah Hock
+
+  // ── Chapter 2.3: the waystation ───────────────────────
+  expect(waystationRequested()).toBe(false);
+  await arriveIn(page, 'The Waystation Landing');
+  expect(waystationRequested()).toBe(true);
+  await expect(testId(page, 'objective')).toContainText('Wake the three stones in the right order.');
+
+  // The deep stone, in its pool by the water (round Aunt Mara).
+  await walk(page, 'KeyW', 0.5);
+  await walk(page, 'KeyD', 3.6);
+  await walk(page, 'KeyS', 0.6);
+  await walk(page, 'KeyD', 1.0);
+  await expect(testId(page, 'interaction-prompt')).toContainText('Touch Stone by the Water');
+  await press(page, 'KeyE');
+  await finishDialogue(page);
+
+  // The bright stone, in the sunbeam on the far side of the terrace.
+  await walk(page, 'KeyA', 1.0);
+  await walk(page, 'KeyW', 3.65);
+  await walk(page, 'KeyA', 8.0);
+  await expect(testId(page, 'interaction-prompt')).toContainText('Touch Sunlit Stone');
+  await press(page, 'KeyE');
+  await finishDialogue(page);
+
+  // The one that waits, beside the door: the door opens and the spirit steps out.
+  await walk(page, 'KeyD', 1.0);
+  await walk(page, 'KeyW', 2.5);
+  await walk(page, 'KeyD', 5.5);
+  await expect(testId(page, 'interaction-prompt')).toContainText('Touch Stone by the Door');
+  await press(page, 'KeyE');
+  await finishDialogue(page);
+  await expect(testId(page, 'battle-ui')).toBeVisible();
+  await expect(testId(page, 'battle-tip')).toBeVisible({ timeout: 15_000 });
+  await expect(testId(page, 'enemy-status')).toContainText('Spirit of the Waystation');
+  await expect(testId(page, 'cmd-ward')).toBeVisible();
+
+  // River Ward against the first wave, then keep attacking.
+  for (const cmd of ['skill', 'skill', 'ward', 'attack', 'attack', 'attack', 'attack']) {
+    await expect(testId(page, `cmd-${cmd}`)).toBeEnabled({ timeout: 15_000 });
+    if (cmd === 'ward') await expect(testId(page, 'enemy-charging')).toBeVisible();
+    await testId(page, `cmd-${cmd}`).click();
+    if (cmd === 'ward') {
+      await expect(testId(page, 'warded')).toBeVisible();
+      await page.screenshot({ path: 'test-results/waystation-river-ward.png' });
+    }
+  }
+  await expect(testId(page, 'battle-victory')).toBeVisible({ timeout: 15_000 });
+  await expect(testId(page, 'enemy-hp')).toHaveText('0/42');
+  await press(page, 'KeyE', 600);
   await finishDialogue(page);
   await expect(testId(page, 'c2-to-be-continued')).toBeVisible({ timeout: 10_000 });
 

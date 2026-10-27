@@ -118,7 +118,7 @@ describe('Hollow Sentinel', () => {
 
   it('describes the wind-up and the heavy blow', () => {
     expect(describeEvent({ kind: 'enemy_charge', actor: 'enemy', damage: 0 }, P, S)).toMatch(/heavy blow is coming/);
-    expect(describeEvent({ kind: 'enemy_attack', actor: 'enemy', damage: 14, defended: false, heavy: true }, P, S)).toMatch(
+    expect(describeEvent({ kind: 'enemy_attack', actor: 'enemy', damage: 14, defended: false, heavy: true, warded: false }, P, S)).toMatch(
       /crashing down.*14 damage/,
     );
   });

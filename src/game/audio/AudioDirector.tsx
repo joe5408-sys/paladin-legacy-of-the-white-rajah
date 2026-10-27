@@ -15,6 +15,7 @@ function ambienceFor(s: GameState): AmbienceName {
 const SCENE_AMBIENCE: Partial<Record<GameState['scene'], AmbienceName>> = {
   village_c2: 'village',
   home_c2: 'home',
+  waystation_landing: 'village', // river and birds
 };
 
 /**
@@ -60,7 +61,7 @@ export function AudioDirector() {
       const b = s.battle;
       const pb = prev.battle;
       if (b && b.seq !== pb?.seq && b.lastEvent) {
-        const sfx = { attack: 'hit', skill: 'radiant', defend: 'guard', enemy_attack: 'enemy_hit', enemy_charge: 'awaken' } as const;
+        const sfx = { attack: 'hit', skill: 'radiant', defend: 'guard', ward: 'awaken', enemy_attack: 'enemy_hit', enemy_charge: 'awaken' } as const;
         audio.play(sfx[b.lastEvent.kind]);
       }
       if (b?.stage === 'victory' && pb?.stage !== 'victory') audio.play('victory');

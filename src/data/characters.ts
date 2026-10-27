@@ -4,7 +4,7 @@
  */
 import type { CharacterFeatures, CharacterPalette } from '../game/player/pixelSprite';
 
-export type CharacterId = 'adrian' | 'lim' | 'mara' | 'guardian' | 'daniel' | 'jamilah' | 'archivist' | 'harrow' | 'officer' | 'ahhock' | 'passenger' | 'auntie' | 'siti' | 'pell';
+export type CharacterId = 'adrian' | 'lim' | 'mara' | 'guardian' | 'daniel' | 'jamilah' | 'archivist' | 'harrow' | 'officer' | 'ahhock' | 'passenger' | 'auntie' | 'siti' | 'pell' | 'spirit';
 
 export interface CharacterDef {
   id: CharacterId;
@@ -78,6 +78,11 @@ export const CHARACTERS: Record<CharacterId, CharacterDef> = {
     id: 'guardian',
     name: 'Covenant Guardian',
     // Custom battle sprite: see src/game/combat/guardianSprite.ts
+  },
+  spirit: {
+    id: 'spirit',
+    name: 'Spirit of the Waystation',
+    // The Guardian's shape in river-light: see src/game/combat/guardianSprite.ts
   },
   daniel: {
     id: 'daniel',

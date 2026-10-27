@@ -2,7 +2,7 @@
  * Battle encounters and player battle stats. Starting balance from the
  * master prompt; tweak numbers here, not in code.
  */
-import type { StoryFlag } from '../game/core/flags';
+import type { StoryFlag, StoryFlags } from '../game/core/flags';
 import type { SceneId } from './scenes';
 
 export interface PlayerBattleStats {
@@ -13,6 +13,14 @@ export interface PlayerBattleStats {
   skillCharges: number;
   /** Multiplier applied to the next enemy hit after Defend (0.5 = half). */
   defendMultiplier: number;
+  /** River Ward (learned in Chapter 2): heals and blocks the next hit. */
+  ward?: WardDef;
+}
+
+export interface WardDef {
+  name: string;
+  heal: number;
+  charges: number;
 }
 
 /** A telegraphed heavy blow: the enemy spends a turn charging, then strikes hard. */
@@ -46,8 +54,10 @@ export interface EncounterDef {
   /** Message when the enemy's HP reaches zero. */
   victoryText?: string;
   /** Which enemy sprite and battle backdrop to show. */
-  sprite: 'guardian' | 'sentinel';
-  arena: 'chamber' | 'vault';
+  sprite: 'guardian' | 'sentinel' | 'spirit';
+  arena: 'chamber' | 'vault' | 'waystation';
+  /** Adrian may use River Ward here before he has learned it: this battle is the lesson. */
+  teachesWard?: boolean;
   /** Flags set on victory. */
   victoryFlags: StoryFlag[];
   /** Conversation played after returning from a victory. */
@@ -64,6 +74,14 @@ export const PLAYER_BATTLE_STATS: PlayerBattleStats = {
   skillCharges: 2,
   defendMultiplier: 0.5,
 };
+
+/** Chapter 2, Milestone 2.3: the second Paladin art. Tuned in waystation.test.ts. */
+export const RIVER_WARD: WardDef = { name: 'River Ward', heal: 10, charges: 1 };
+
+/** Adrian's stats for an encounter: with River Ward once learned (or while it is being taught). */
+export function playerStatsFor(flags: StoryFlags, enc: EncounterDef): PlayerBattleStats {
+  return flags.c2_learned_ward || enc.teachesWard ? { ...PLAYER_BATTLE_STATS, ward: RIVER_WARD } : PLAYER_BATTLE_STATS;
+}
 
 export const ENCOUNTERS: Record<string, EncounterDef> = {
   covenant_guardian: {
@@ -105,5 +123,33 @@ export const ENCOUNTERS: Record<string, EncounterDef> = {
     victoryFlags: ['c1_sentinel_defeated'],
     victoryDialogue: 'c1_sentinel_defeated',
     returnTo: { scene: 'vault', spawn: 'after_battle' },
+  },
+  // Chapter 2, Milestone 2.3. A friendly test that teaches River Ward: its
+  // heavy blow comes early and often, and Defend only halves it. Warding one
+  // and attacking wins with about 16 HP left; ignoring River Ward loses
+  // (all-out or defending every wave). See waystation.test.ts.
+  training_spirit: {
+    id: 'training_spirit',
+    enemyName: 'Spirit of the Waystation',
+    enemyMaxHp: 42,
+    enemyAttack: 5,
+    enemyAttackText: 'sweeps a fist of river-water',
+    intro: 'The spirit lifts its hands, and the river answers. Light gathers in Adrian\'s hand once more!',
+    tutorial: false,
+    tip: 'New art: River Ward. Use it when the spirit gathers the river: it heals you and blocks the heavy blow completely. Defend only halves it. Once per battle.',
+    heavy: {
+      every: 2,
+      damage: 14,
+      guardedMultiplier: 0.5,
+      chargeText: 'The spirit draws the river up into a towering wave. A heavy blow is coming!',
+      attackText: 'brings the wave crashing down',
+    },
+    victoryText: 'The spirit lowers its hands. The wave sinks back into the river.',
+    sprite: 'spirit',
+    arena: 'waystation',
+    teachesWard: true,
+    victoryFlags: ['c2_spirit_defeated'],
+    victoryDialogue: 'c2_spirit_defeated',
+    returnTo: { scene: 'waystation_landing', spawn: 'after_battle' },
   },
 };

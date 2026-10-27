@@ -1,6 +1,7 @@
 /**
  * Story flags record one-off events. Add new flags here so typos fail to compile.
- * Flags only ever go from unset to set; nothing in the prologue unsets them.
+ * Story flags only ever go from unset to set. The one exception is puzzle state
+ * (the waystation stones, Chapter 2), which a wrong move clears again.
  */
 export type StoryFlag =
   | 'arrived' // opening narration in the village has played
@@ -48,7 +49,14 @@ export type StoryFlag =
   | 'c2_met_siti'
   | 'c2_met_pell'
   | 'c2_home_talked' // Mara points to the portrait
-  | 'c2_found_map'; // Elias's map behind the portrait (milestone 2.2 cliffhanger)
+  | 'c2_found_map' // Elias's map behind the portrait
+  | 'c2_went_upriver' // by longboat to the waystation landing
+  | 'c2_landing_arrived'
+  | 'c2_stone_deep' // puzzle: first stone lit (cleared by a wrong order)
+  | 'c2_stone_bright' // puzzle: second stone lit (cleared by a wrong order)
+  | 'c2_stones_woken' // all three stones lit; the waystation door opens
+  | 'c2_spirit_defeated' // passed the training spirit's test
+  | 'c2_learned_ward'; // River Ward learned (milestone 2.3 cliffhanger)
 
 export type StoryFlags = Partial<Record<StoryFlag, true>>;
 

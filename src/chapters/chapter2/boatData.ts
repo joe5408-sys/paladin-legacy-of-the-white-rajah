@@ -13,6 +13,7 @@ import type { Interactable } from '../../game/interaction/interaction';
 import { NPC_COLLIDER_SIZE, type NpcPlacement, type SceneLayout } from '../../game/scenes/layout';
 import type { Objective } from '../../data/quests';
 import { VILLAGE_C2_OBJECTIVES } from './villageData';
+import { LANDING_OBJECTIVES } from './waystationData';
 
 export const DECK: Box = { minX: -4.6, maxX: 4.6, minZ: -1.4, maxZ: 1.4 };
 export const BENCH = { x: -2.0, z: -1.15, width: 2.0, depth: 0.4 };
@@ -116,6 +117,7 @@ export const CHAPTER2_OBJECTIVES: Objective[] = [
   { id: 'c2_captain', text: 'Ask the captain about Sungai Awan.', completeWhen: 'c2_talked_captain' },
   { id: 'c2_jetty', text: 'Collect your things from the cabin.', completeWhen: 'c2_reached_jetty' },
   ...VILLAGE_C2_OBJECTIVES,
+  ...LANDING_OBJECTIVES,
 ];
 
 export const BOAT_DIALOGUE: DialogueDef[] = [

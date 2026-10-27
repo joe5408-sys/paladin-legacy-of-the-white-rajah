@@ -5,7 +5,7 @@
 import type { Direction } from '../game/core/input';
 import type { DialogueRule } from '../game/dialogue/types';
 
-export type SceneId = 'village' | 'home' | 'chamber' | 'waterfront' | 'archives' | 'vault' | 'records' | 'boat' | 'village_c2' | 'home_c2';
+export type SceneId = 'village' | 'home' | 'chamber' | 'waterfront' | 'archives' | 'vault' | 'records' | 'boat' | 'village_c2' | 'home_c2' | 'waystation_landing';
 
 export interface SpawnPoint {
   x: number;
@@ -113,6 +113,16 @@ export const SCENES: Record<SceneId, SceneDef> = {
       door: { x: 0, z: 2.0, facing: 'north' },
     },
   },
+  // The Paladin landing above the rapids (src/chapters/chapter2/waystationData.ts).
+  waystation_landing: {
+    id: 'waystation_landing',
+    name: 'The Waystation Landing',
+    spawns: {
+      arrival: { x: 0, z: 2.9, facing: 'north' },
+      after_battle: { x: 0, z: -2.4, facing: 'north' },
+    },
+    arrival: [{ dialogue: 'c2_landing_arrival', unless: ['c2_landing_arrived'] }],
+  },
 };
 
 /** Chapter a scene belongs to (0 = prologue). */
@@ -127,6 +137,7 @@ export const SCENE_CHAPTER: Record<SceneId, number> = {
   boat: 2,
   village_c2: 2,
   home_c2: 2,
+  waystation_landing: 2,
 };
 
 export const NEW_GAME_SCENE: SceneId = 'village';

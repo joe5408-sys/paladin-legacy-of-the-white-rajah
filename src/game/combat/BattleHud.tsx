@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import { PLAYER_BATTLE_STATS } from '../../data/encounters';
+import type { PlayerBattleStats } from '../../data/encounters';
 import { gameStore, useGame, type BattleStage } from '../core/gameStore';
 import { canUse, COMMAND_INFO, type Command } from './battle';
 
-const COMMANDS: Command[] = ['attack', 'skill', 'defend'];
+/** Commands on the menu: River Ward appears once Adrian knows it. */
+function commandsFor(player: PlayerBattleStats): Command[] {
+  return player.ward ? ['attack', 'skill', 'ward', 'defend'] : ['attack', 'skill', 'defend'];
+}
 
 /** How long each automatic stage stays on screen before moving on (ms). */
 const STAGE_DELAY: Partial<Record<BattleStage, number>> = {
@@ -47,7 +50,7 @@ export function BattleHud() {
       const s = gameStore.getState();
       const b = s.battle;
       if (!b || s.paused) return;
-      const usable = COMMANDS.filter((c) => canUse(b.state, c));
+      const usable = commandsFor(b.player).filter((c) => canUse(b.state, c));
 
       if (b.stage === 'command') {
         if (UP_KEYS.has(e.code) || DOWN_KEYS.has(e.code)) {
@@ -73,7 +76,7 @@ export function BattleHud() {
   }, []);
 
   if (!battle || !state) return null;
-  const { encounter } = battle;
+  const { encounter, player } = battle;
   const showTutorial = encounter.tutorial && state.turn === 1 && stage === 'command';
   const showTip = !encounter.tutorial && !!encounter.tip && state.turn === 1 && stage === 'command';
 
@@ -96,26 +99,39 @@ export function BattleHud() {
           <div className="battle-name">Adrian</div>
           <HpBar hp={state.playerHp} max={state.playerMaxHp} />
           <div className="battle-charges" title="Radiant Strike uses left">
-            {PLAYER_BATTLE_STATS.skillName}{' '}
-            {Array.from({ length: PLAYER_BATTLE_STATS.skillCharges }, (_, i) => (
+            {player.skillName}{' '}
+            {Array.from({ length: player.skillCharges }, (_, i) => (
               <span key={i} className={i < state.skillCharges ? 'pip on' : 'pip'}>◆</span>
             ))}
           </div>
+          {player.ward && (
+            <div className="battle-charges" title="River Ward uses left">
+              {player.ward.name}{' '}
+              {Array.from({ length: player.ward.charges }, (_, i) => (
+                <span key={i} className={i < state.wardCharges ? 'pip on' : 'pip'}>◆</span>
+              ))}
+            </div>
+          )}
+          {state.warded && <div className="battle-guard battle-ward" data-testid="warded">Warded</div>}
           {state.defending && <div className="battle-guard">Guarding</div>}
         </div>
 
         <div className="battle-message pixel-panel" data-testid="battle-message" aria-live="polite">
           {battle.message}
           {stage === 'command' && (
-            <div className="battle-help">{COMMAND_INFO[selected].help(PLAYER_BATTLE_STATS)}</div>
+            <div className="battle-help">{COMMAND_INFO[selected].help(player)}</div>
           )}
         </div>
 
         <div className="battle-menu pixel-panel" role="menu" aria-label="Battle commands">
-          {COMMANDS.map((cmd) => {
+          {commandsFor(player).map((cmd) => {
             const usable = stage === 'command' && canUse(state, cmd);
             const label =
-              cmd === 'skill' ? `${COMMAND_INFO.skill.label} ×${state.skillCharges}` : COMMAND_INFO[cmd].label;
+              cmd === 'skill'
+                ? `${COMMAND_INFO.skill.label} ×${state.skillCharges}`
+                : cmd === 'ward'
+                  ? `${COMMAND_INFO.ward.label} ×${state.wardCharges}`
+                  : COMMAND_INFO[cmd].label;
             return (
               <button
                 key={cmd}
@@ -146,9 +162,9 @@ export function BattleHud() {
       {showTutorial && (
         <div className="battle-tutorial pixel-panel" data-testid="battle-tutorial">
           <strong>Battle basics</strong> · Choose one action per turn with <kbd>↑</kbd>
-          <kbd>↓</kbd> and <kbd>E</kbd>. <b>Attack</b> deals {PLAYER_BATTLE_STATS.attack}.{' '}
-          <b>{PLAYER_BATTLE_STATS.skillName}</b> deals {PLAYER_BATTLE_STATS.skillDamage} but has only{' '}
-          {PLAYER_BATTLE_STATS.skillCharges} uses. <b>Defend</b> halves the next hit.
+          <kbd>↓</kbd> and <kbd>E</kbd>. <b>Attack</b> deals {player.attack}.{' '}
+          <b>{player.skillName}</b> deals {player.skillDamage} but has only{' '}
+          {player.skillCharges} uses. <b>Defend</b> halves the next hit.
         </div>
       )}
 
