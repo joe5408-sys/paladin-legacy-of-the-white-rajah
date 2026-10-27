@@ -1,7 +1,7 @@
 # Session Handoff
 
 ## Last session — 2026-10-27 (Claude Code): Chapter 2, Milestones 2.3–2.5 (Chapter 2 complete)
-**Result:** 2.3 (The Waystation) is live as `dbcffc7` and 2.4 (The River Charter) as `f1a4b37`. 2.5 (The Iron Warden) finishes Chapter 2: after the Hollow Warden, the race downriver to Sungai Awan at dusk, Julian Pell at Harrow's barge, the two-phase Iron Warden boss, Pell reading the Charter, and Adrian deciding to take it to the Rajah → **Chapter 2 Complete**. Not yet checked on the live site.
+**Result:** 2.3 (The Waystation) is live as `dbcffc7` and 2.4 (The River Charter) as `f1a4b37`. 2.5 (The Iron Warden) finishes Chapter 2: after the Hollow Warden, the race downriver to Sungai Awan at dusk, Julian Pell at Harrow's barge, the two-phase Iron Warden boss, Pell reading the Charter, and Adrian deciding to take it to the Rajah → **Chapter 2 Complete**. 2.5 is **live** as `91e592a`; the browser tests pass 3/3 against the live site, playing the whole game to the Chapter 2 Complete card.
 
 ### Key files
 - 2.3: `src/chapters/chapter2/{Waystation.tsx,waystationData.ts}`; River Ward in `game/combat/battle.ts`, `data/encounters.ts` (`RIVER_WARD`, `playerStatsFor`), `gameStore.ts` (each battle stores its `player` stats), `BattleHud.tsx`; `clearFlags` on dialogue for the stone reset
