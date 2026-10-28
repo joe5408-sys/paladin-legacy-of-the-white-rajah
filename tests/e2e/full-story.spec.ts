@@ -137,17 +137,21 @@ test('full story: Chapters 0, 1 and 2', async ({ page }) => {
   await finishDialogue(page);
   await expect(testId(page, 'objective')).toContainText('Ask the Archivist about the missing folder.');
 
-  // Back to the Archivist for the hint
-  await walk(page, 'KeyS', 1.75);
-  await walk(page, 'KeyA', 3.4);
+  // Back to the Archivist for the hint: south into the aisle, then west until the desk
+  // stops Adrian (the gap between the desk and the Maps shelf is too narrow to walk through).
+  await walk(page, 'KeyS', 0.9);
+  await walk(page, 'KeyA', 2.5);
   await expect(testId(page, 'interaction-prompt')).toContainText('Talk to the Archivist');
   await press(page, 'KeyE');
   await finishDialogue(page);
   await expect(testId(page, 'objective')).toContainText('Search the household ledgers.');
 
-  // Household Ledgers (west stacks, front): the hidden Vale file
-  await walk(page, 'KeyS', 1.6);
-  await walk(page, 'KeyA', 3.4);
+  // Household Ledgers (west stacks, front): the hidden Vale file. Round the desk's east
+  // end, south of it, then west along the front of the hall.
+  await walk(page, 'KeyS', 1.5);
+  await walk(page, 'KeyA', 0.6);
+  await walk(page, 'KeyS', 1.0);
+  await walk(page, 'KeyA', 4.1);
   await expect(testId(page, 'interaction-prompt')).toContainText('Inspect Household Ledgers');
   await press(page, 'KeyE');
   await finishDialogue(page);
