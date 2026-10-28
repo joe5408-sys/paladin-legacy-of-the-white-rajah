@@ -229,13 +229,14 @@ test('full story: Chapters 0, 1 and 2', async ({ page }) => {
   await arriveIn(page, 'Express Boat — Rajang River');
   await expect(testId(page, 'objective')).toContainText('Talk to Aunt Mara.');
 
-  await walk(page, 'KeyS', 0.25);
-  await walk(page, 'KeyD', 0.8);
+  // East until Mara herself stops Adrian (always within talking range).
+  await walk(page, 'KeyD', 1.2);
   await expect(testId(page, 'interaction-prompt')).toContainText('Talk to Aunt Mara');
   await press(page, 'KeyE');
   await finishDialogue(page);
   await expect(testId(page, 'objective')).toContainText('Find out what the other passengers are talking about.');
 
+  await walk(page, 'KeyS', 0.3); // step clear of Mara
   await walk(page, 'KeyD', 3.3);
   await walk(page, 'KeyW', 0.3);
   await expect(testId(page, 'interaction-prompt')).toContainText('Talk to Student');
