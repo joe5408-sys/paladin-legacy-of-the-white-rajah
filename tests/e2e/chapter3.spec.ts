@@ -6,8 +6,10 @@
  * room, and Pell's choice, picked with the keyboard) and 3.3 (the Palace
  * forecourt and the first Crowned Sentinel fight, which ends when it withdraws)
  * and 3.4 (the hearing: one wrong piece of evidence, then the right one for each
- * of Harrow's claims, chosen with the mouse) to the "to be continued" card. Also
- * checks that Chapter 3's files are only downloaded when needed.
+ * of Harrow's claims, chosen with the mouse) and 3.5 (the ruling, the final
+ * Crowned Sentinel battle in three phases, the Charter registered, the epilogue
+ * at Sungai Awan) to the Chapter 3 Complete card. Also checks that Chapter 3's
+ * files are only downloaded when needed.
  */
 import { expect, test } from '@playwright/test';
 import { arriveIn, finishDialogue, press, testId, trackErrors, walk } from './helpers';
@@ -26,8 +28,8 @@ const CHAPTER2_DONE = [
   'c2_daniel_returned', 'c2_warden_seen', 'c2_warden_defeated', 'c2_dusk_arrived', 'c2_iron_seen', 'c2_iron_defeated',
 ];
 
-test('Chapter 3 so far: the night boat, the waterfront, Pell\'s choice, the Palace gate, the hearing', async ({ page }) => {
-  test.setTimeout(300_000);
+test('Chapter 3: the night boat, the waterfront, Pell\'s choice, the Palace gate, the hearing, the finale', async ({ page }) => {
+  test.setTimeout(420_000);
   const errors = trackErrors(page);
   const requested: string[] = [];
   page.on('request', (r) => requested.push(r.url()));
@@ -185,8 +187,56 @@ test('Chapter 3 so far: the night boat, the waterfront, Pell\'s choice, the Pala
   await untilChoices();
   await testId(page, 'choice-pell-family').click();
   await expect(testId(page, 'dialogue-text')).toContainText('Julian Pell, Your Majesty', { timeout: 5_000 });
-  await finishDialogue(page); // "So is the Crown." The Rajah rises.
-  await expect(testId(page, 'c3-to-be-continued')).toBeVisible({ timeout: 10_000 });
+  await finishDialogue(page); // "So is the Crown." The Rajah rises and rules; Harrow orders the Sentinel.
+
+  // ── Milestone 3.5: the final battle ──────────────────
+  // Armour (Radiant Strike breaks it) → heavy blows (River Ward the first, Defend the rest) → it kneels.
+  await expect(testId(page, 'battle-ui')).toBeVisible({ timeout: 10_000 });
+  await expect(testId(page, 'enemy-status')).toContainText('Crowned Sentinel');
+  await expect(testId(page, 'enemy-armored')).toBeVisible();
+  await expect(testId(page, 'player-hp')).toHaveText('36/36');
+  await expect(testId(page, 'enemy-hp')).toHaveText('72/72');
+  await page.screenshot({ path: 'test-results/final-armoured.png' });
+  const plan = ['skill', 'skill', 'attack', 'ward', 'attack', 'attack', 'defend', 'attack', 'attack', 'defend', 'attack'];
+  for (const [i, cmd] of plan.entries()) {
+    await expect(testId(page, `cmd-${cmd}`)).toBeEnabled({ timeout: 15_000 });
+    if (cmd === 'ward' || cmd === 'defend') await expect(testId(page, 'enemy-charging')).toBeVisible();
+    await testId(page, `cmd-${cmd}`).click();
+    if (i === 0) {
+      await expect(testId(page, 'enemy-armored')).toHaveCount(0, { timeout: 10_000 });
+      await page.waitForTimeout(1200);
+      await page.screenshot({ path: 'test-results/final-unsealed.png' });
+    }
+  }
+  await expect(testId(page, 'battle-victory')).toBeVisible({ timeout: 15_000 });
+  await expect(testId(page, 'enemy-hp')).toHaveText('16/72'); // it kneels, still standing
+  await expect(testId(page, 'player-hp')).toHaveText('12/36');
+  await page.waitForTimeout(1200);
+  await page.screenshot({ path: 'test-results/final-kneels.png' });
+  await press(page, 'KeyE', 600);
+
+  // The Charter registered, Harrow dismissed, Elias's name restored.
+  await expect(testId(page, 'dialogue-box')).toBeVisible({ timeout: 10_000 });
+  await page.waitForTimeout(800);
+  await page.screenshot({ path: 'test-results/hall-kneeling.png' });
+  await finishDialogue(page);
+
+  // The epilogue: Sungai Awan by day; pull up the last survey peg.
+  await arriveIn(page, 'Sungai Awan — Village Square');
+  await expect(testId(page, 'objective')).toContainText('Pull up the last survey peg');
+  await page.screenshot({ path: 'test-results/epilogue.png' });
+  // South to the edge of the village, east, then north until the Vale house stops Adrian.
+  await walk(page, 'KeyS', 13);
+  await walk(page, 'KeyD', 2.9);
+  await walk(page, 'KeyW', 8);
+  await expect(testId(page, 'interaction-prompt')).toContainText('Pull up the Last Survey Peg');
+  await page.screenshot({ path: 'test-results/epilogue-peg.png' });
+  await press(page, 'KeyE');
+  await finishDialogue(page);
+  await expect(testId(page, 'chapter3-complete')).toBeVisible({ timeout: 10_000 });
+  await expect(testId(page, 'menu-next-chapter')).toHaveCount(0); // the first story ends here
+  await expect(testId(page, 'menu-main-menu')).toBeEnabled({ timeout: 5_000 });
+  await page.screenshot({ path: 'test-results/chapter3-complete.png' });
 
   // Saved; after a refresh, Continue says so.
   await page.waitForTimeout(500);

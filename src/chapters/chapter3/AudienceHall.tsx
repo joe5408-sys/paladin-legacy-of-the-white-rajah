@@ -3,14 +3,16 @@
  * interior: white walls and columns, tall windows with morning light, a red
  * carpet to a gilded throne on a dais, blue-and-gold banners, benches for the
  * petitioners, the Clerk's desk and the gold petitioner's circle. The Crowned
- * Sentinel stands beside the throne, still as a statue.
+ * Sentinel stands beside the throne, still as a statue, until Harrow orders it
+ * down onto the floor (3.5); once it has knelt, the old Paladin sign shows on its chest.
  */
 import * as THREE from 'three';
 import type { SpawnPoint } from '../../data/scenes';
 import { CROWNED_H, CROWNED_W, getCrownedSentinelTexture } from '../../game/combat/crownedSentinelSprite';
 import { CAMERA_PITCH_DEG } from '../../game/core/constants';
+import { useGame } from '../../game/core/gameStore';
 import { ExplorationRig } from '../../game/scenes/ExplorationRig';
-import { BENCHES, CLERK_DESK3, DAIS, HALL3_BOUNDS, HALL3_LAYOUT, HALL_SENTINEL, MARK, THRONE } from './audienceData';
+import { BENCHES, CLERK_DESK3, DAIS, HALL3_BOUNDS, HALL3_LAYOUT, hallSentinelAt, MARK, THRONE } from './audienceData';
 
 const HEIGHT_COMP = 1 / Math.cos(THREE.MathUtils.degToRad(CAMERA_PITCH_DEG));
 const SENTINEL_W = 2.0;
@@ -70,13 +72,7 @@ export default function AudienceHall({ spawn }: { spawn: SpawnPoint }) {
           <meshStandardMaterial color="#f4eedc" />
         </mesh>
       </group>
-      {/* The Crowned Sentinel beside the throne */}
-      <group position={[HALL_SENTINEL.x, 0.12, HALL_SENTINEL.z]}>
-        <mesh position-y={SENTINEL_H / 2}>
-          <planeGeometry args={[SENTINEL_W, SENTINEL_H]} />
-          <meshBasicMaterial map={getCrownedSentinelTexture(true)} alphaTest={0.5} toneMapped={false} />
-        </mesh>
-      </group>
+      <HallSentinel />
 
       <ExplorationRig layout={HALL3_LAYOUT} spawn={spawn} />
     </>
@@ -185,6 +181,23 @@ function Dais() {
           <meshStandardMaterial color={GOLD} metalness={0.5} roughness={0.4} />
         </mesh>
       </group>
+    </group>
+  );
+}
+
+/** The Crowned Sentinel: beside the throne, then on the floor after Harrow's order, then kneeling. */
+function HallSentinel() {
+  const at = useGame((s) => hallSentinelAt(s.flags));
+  const onFloor = useGame((s) => !!s.flags.c3_sentinel_ordered);
+  const knelt = useGame((s) => !!s.flags.c3_sentinel_knelt);
+  return (
+    // Beside the throne it stands on the dais; down on the floor, at floor level.
+    <group position={[at.x, onFloor ? 0 : 0.12, at.z]}>
+      <mesh position-y={SENTINEL_H / 2}>
+        <planeGeometry args={[SENTINEL_W, SENTINEL_H]} />
+        <meshBasicMaterial map={getCrownedSentinelTexture(!knelt, knelt)} alphaTest={0.5} toneMapped={false} />
+      </mesh>
+      {knelt && <pointLight position={[0, SENTINEL_H * 0.45, 0.6]} color="#9fe0ff" intensity={3} distance={3} />}
     </group>
   );
 }

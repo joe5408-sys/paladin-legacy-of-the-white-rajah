@@ -39,8 +39,8 @@ describe('yield (new system 2)', () => {
     expect(ko.event).not.toHaveProperty('yielded');
   });
 
-  it('other enemies have no yield point', () => {
-    for (const enc of Object.values(ENCOUNTERS)) if (enc.id !== G.id) expect(enc.yieldAt, enc.id).toBeUndefined();
+  it('only the Crowned Sentinel has a yield point (at the gate and in the final battle)', () => {
+    for (const enc of Object.values(ENCOUNTERS)) if (enc.sprite !== 'crowned') expect(enc.yieldAt, enc.id).toBeUndefined();
   });
 });
 

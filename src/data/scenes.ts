@@ -5,7 +5,7 @@
 import type { Direction } from '../game/core/input';
 import type { DialogueRule } from '../game/dialogue/types';
 
-export type SceneId = 'village' | 'home' | 'chamber' | 'waterfront' | 'archives' | 'vault' | 'records' | 'boat' | 'village_c2' | 'home_c2' | 'waystation_landing' | 'waystation_hall' | 'jetty_dusk' | 'boat_night' | 'waterfront_night' | 'jamilah_room' | 'palace_gate' | 'audience_hall';
+export type SceneId = 'village' | 'home' | 'chamber' | 'waterfront' | 'archives' | 'vault' | 'records' | 'boat' | 'village_c2' | 'home_c2' | 'waystation_landing' | 'waystation_hall' | 'jetty_dusk' | 'boat_night' | 'waterfront_night' | 'jamilah_room' | 'palace_gate' | 'audience_hall' | 'village_epilogue';
 
 export interface SpawnPoint {
   x: number;
@@ -188,8 +188,18 @@ export const SCENES: Record<SceneId, SceneDef> = {
     name: 'The Palace — Audience Hall',
     spawns: {
       entrance: { x: 0, z: 3.0, facing: 'north' },
+      after_battle: { x: 0, z: -0.9, facing: 'north' },
     },
     arrival: [{ dialogue: 'c3_hall_arrival', unless: ['c3_hall_entered'] }],
+  },
+  // The epilogue: Sungai Awan by day (src/chapters/chapter3/epilogueData.ts).
+  village_epilogue: {
+    id: 'village_epilogue',
+    name: 'Sungai Awan — Village Square',
+    spawns: {
+      jetty: { x: 2.4, z: -4.6, facing: 'south' },
+    },
+    arrival: [{ dialogue: 'c3_epilogue_arrival', unless: ['c3_epilogue_arrived'] }],
   },
 };
 
@@ -213,6 +223,7 @@ export const SCENE_CHAPTER: Record<SceneId, number> = {
   jamilah_room: 3,
   palace_gate: 3,
   audience_hall: 3,
+  village_epilogue: 3,
 };
 
 export const NEW_GAME_SCENE: SceneId = 'village';

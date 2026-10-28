@@ -56,6 +56,8 @@ const ALL_FLAGS: readonly StoryFlag[] = [
   'c3_gate_arrived', 'c3_petition_registered', 'c3_sentinel_woken', 'c3_sentinel_withdrew', 'c3_gate_open',
   'c3_hall_entered', 'c3_hearing_started', 'c3_claim1_answered', 'c3_claim2_answered', 'c3_claim3_answered',
   'c3_mara_spoke', 'c3_claim4_answered', 'c3_pell_testified', 'c3_hearing_won',
+  'c3_ruling_given', 'c3_sentinel_ordered', 'c3_sentinel_knelt', 'c3_charter_registered', 'c3_harrow_dismissed',
+  'c3_name_restored', 'c3_epilogue_arrived', 'c3_pegs_pulled',
 ];
 const DIRECTIONS: readonly Direction[] = ['north', 'south', 'east', 'west'];
 
@@ -79,6 +81,7 @@ const SCENE_REQUIRES: Record<SceneId, StoryFlag[]> = {
   jamilah_room: ['c3_met_jamilah'],
   palace_gate: ['c3_plan_made'],
   audience_hall: ['c3_gate_open'],
+  village_epilogue: ['c3_name_restored'],
 };
 
 /** Browser localStorage, or null where it's unavailable (private mode, blocked, tests). */

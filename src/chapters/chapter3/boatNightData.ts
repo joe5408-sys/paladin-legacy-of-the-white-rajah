@@ -21,6 +21,7 @@ import { BENCH, CARGO, DECK, ENGINE } from '../chapter2/boatData';
 import { KUCHING_OBJECTIVES } from './kuchingData';
 import { GATE_OBJECTIVES } from './palaceData';
 import { HEARING_OBJECTIVES } from './audienceData';
+import { EPILOGUE_OBJECTIVES } from './epilogueData';
 
 export const PELL_NIGHT = { x: 0.0, z: 1.0 };
 
@@ -121,6 +122,7 @@ export const CHAPTER3_OBJECTIVES: Objective[] = [
   ...KUCHING_OBJECTIVES,
   ...GATE_OBJECTIVES,
   ...HEARING_OBJECTIVES,
+  ...EPILOGUE_OBJECTIVES,
 ];
 
 export const BOAT_NIGHT_DIALOGUE: DialogueDef[] = [

@@ -144,12 +144,14 @@ describe('Milestone 3.4 flow', () => {
     expect(onScreen()).toEqual(['pell-village']);
     present('pell-village');
     expect(s().dialogue?.def.id).toBe('c3_pell_testifies_village');
-    finishDialogue(); // → the Rajah turns to Harrow and rises
+    finishDialogue(); // → the Rajah turns to Harrow and rises, rules, and Harrow orders the Sentinel (3.5)
     expect(s().flags.c3_pell_testified).toBe(true);
     expect(s().flags.c3_hearing_won).toBe(true);
-    expect(s().mode).toBe('ending');
-    expect(isAtChapterEnd(s().flags)).toBe(true);
-    expect(objective()).toBeUndefined();
+    expect(s().flags.c3_ruling_given).toBe(true);
+    expect(s().mode).toBe('battle');
+    expect(s().battle?.encounter.id).toBe('crowned_sentinel_final');
+    expect(isAtChapterEnd(s().flags)).toBe(false);
+    expect(objective()).toBe('c3_protect');
   });
 
   it("Pell's testimony to claim 4 is also accepted", () => {
@@ -199,12 +201,15 @@ describe('Milestone 3.4 flow', () => {
     }
   });
 
-  it('a save at the end reopens the card; a hall save before the gate opened is sent back to the village', () => {
+  it('a save from the old 3.4 card carries on to the ruling; a hall save before the gate opened is sent back to the village', () => {
     placeIn('audience_hall', 'entrance', [
       ...IN_HALL, 'c3_hearing_started', 'c3_claim1_answered', 'c3_claim2_answered', 'c3_mara_spoke', 'c3_claim3_answered',
       'c3_claim4_answered', 'c3_pell_testified', 'c3_hearing_won',
     ]);
-    expect(s().mode).toBe('ending');
+    expect(s().mode).toBe('explore');
+    expect(objective()).toBe('c3_ruling');
+    use('petitioner-mark');
+    expect(s().dialogue?.def.id).toBe('c3_ruling');
 
     const r = validateSave({
       schemaVersion: 1,

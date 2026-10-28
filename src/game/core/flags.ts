@@ -97,7 +97,15 @@ export type StoryFlag =
   | 'c3_mara_spoke'
   | 'c3_claim4_answered' // the palace and the company: the Warden's plate or Pell
   | 'c3_pell_testified'
-  | 'c3_hearing_won'; // (milestone 3.4 cliffhanger: the Rajah rises to rule)
+  | 'c3_hearing_won' // the Rajah rises to rule
+  | 'c3_ruling_given' // the Rajah rules for the Charter
+  | 'c3_sentinel_ordered' // Harrow orders the Crowned Sentinel to seize the Charter
+  | 'c3_sentinel_knelt' // the final battle: it yields and kneels
+  | 'c3_charter_registered' // the River Charter is entered in the Register of Royal Grants
+  | 'c3_harrow_dismissed'
+  | 'c3_name_restored' // Elias Vale's name is restored to the record
+  | 'c3_epilogue_arrived' // Sungai Awan, by day
+  | 'c3_pegs_pulled'; // the last survey peg comes out (Chapter 3 Complete)
 
 export type StoryFlags = Partial<Record<StoryFlag, true>>;
 

@@ -4,7 +4,8 @@ import { defineConfig } from '@playwright/test';
  * End-to-end tests against the production build (`vite preview`), i.e. the same
  * files Netlify serves. Uses the locally installed Microsoft Edge by default so
  * no browser download is needed; set PW_CHANNEL=chrome (or chromium after
- * `npx playwright install chromium`) to use another browser.
+ * `npx playwright install chromium`) to use another browser. PW_EXECUTABLE points at a
+ * specific browser binary instead (e.g. a pre-installed Chromium on a cloud machine).
  *
  * Run with: npm run e2e
  */
@@ -17,7 +18,8 @@ export default defineConfig({
   reporter: [['list']],
   use: {
     baseURL: process.env.E2E_BASE_URL ?? 'http://localhost:4173',
-    channel: process.env.PW_CHANNEL ?? 'msedge',
+    channel: process.env.PW_EXECUTABLE ? undefined : (process.env.PW_CHANNEL ?? 'msedge'),
+    launchOptions: process.env.PW_EXECUTABLE ? { executablePath: process.env.PW_EXECUTABLE } : undefined,
     headless: true,
     viewport: { width: 960, height: 540 },
     trace: 'retain-on-failure',

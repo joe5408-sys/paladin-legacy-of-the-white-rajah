@@ -68,6 +68,8 @@ export interface EncounterDef {
    * it still standing (it withdraws or yields). Its victoryText describes that.
    */
   yieldAt?: number;
+  /** On yielding it kneels where it stands (the battle sprite stays, kneeling), rather than withdrawing. */
+  kneels?: boolean;
   /** Message when the enemy's HP reaches zero. */
   victoryText?: string;
   /** Which enemy sprite and battle backdrop to show. */
@@ -263,5 +265,43 @@ export const ENCOUNTERS: Record<string, EncounterDef> = {
     victoryFlags: ['c3_sentinel_withdrew'],
     victoryDialogue: 'c3_sentinel_withdraws',
     returnTo: { scene: 'palace_gate', spawn: 'after_battle' },
+  },
+  // Chapter 3, Milestone 3.5: the final battle, in the audience hall. Three phases
+  // from existing pieces: armour (as the Iron Warden: Attack does 1, Radiant
+  // Strike breaks it), then heavy blows that Defend only softens (to a quarter)
+  // and only River Ward blocks completely, then it yields at 20 HP and kneels.
+  // Harder than the Iron Warden for a 36-HP Adrian. Breaking the armour at once,
+  // warding the first heavy blow and defending the rest wins with about 12 HP;
+  // breaking it late or warding late still wins. Going all-out, ignoring the
+  // armour, never warding or never defending loses. See crownedSentinel.test.ts.
+  crowned_sentinel_final: {
+    id: 'crowned_sentinel_final',
+    enemyName: 'Crowned Sentinel',
+    enemyMaxHp: 72,
+    enemyAttack: 5,
+    enemyAttackText: 'sweeps its halberd',
+    intro: 'The Crowned Sentinel steps down from the dais between Adrian and the Charter. Light gathers in Adrian\'s hand!',
+    tutorial: false,
+    tip: 'Its ceremonial plate turns ordinary blows: Radiant Strike can break it. Then watch the halberd. Defend only softens its heavy blows; River Ward blocks one completely.',
+    armor: {
+      attackDamage: 1,
+      glanceText: 'Adrian\'s blade rings off the ivory plate. Only 1 damage. Ordinary blows won\'t get through.',
+      breakText: 'The blade bites into the royal seal, and the gold disc tears loose and rings across the floor! Beneath it, an older sign begins to glow.',
+    },
+    heavy: {
+      every: 3,
+      damage: 26,
+      guardedMultiplier: 0.25,
+      chargeText: 'The Crowned Sentinel raises its halberd high over the hall. The sign on its chest blazes. A heavy blow is coming!',
+      attackText: 'brings its halberd down like a falling gate',
+    },
+    yieldAt: 20,
+    kneels: true,
+    victoryText: 'The Crowned Sentinel stops. The sign on its chest answers the medallion, light for light, and slowly it sinks to one knee.',
+    sprite: 'crowned',
+    arena: 'palace',
+    victoryFlags: ['c3_sentinel_knelt'],
+    victoryDialogue: 'c3_sentinel_kneels',
+    returnTo: { scene: 'audience_hall', spawn: 'after_battle' },
   },
 };

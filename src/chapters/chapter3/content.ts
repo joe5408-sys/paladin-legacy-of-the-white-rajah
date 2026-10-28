@@ -9,6 +9,7 @@ import { BOAT_NIGHT_DIALOGUE, BOAT_NIGHT_LAYOUT, CHAPTER3_OBJECTIVES } from './b
 import { KUCHING_DIALOGUE, ROOM_LAYOUT, WATERFRONT_NIGHT_LAYOUT } from './kuchingData';
 import { GATE_DIALOGUE, GATE_LAYOUT } from './palaceData';
 import { HALL3_LAYOUT, HEARING_DIALOGUE } from './audienceData';
+import { EPILOGUE_DIALOGUE, EPILOGUE_LAYOUT } from './epilogueData';
 
 registerDialogues(BOAT_NIGHT_DIALOGUE);
 registerLayout('boat_night', BOAT_NIGHT_LAYOUT);
@@ -19,6 +20,8 @@ registerDialogues(GATE_DIALOGUE);
 registerLayout('palace_gate', GATE_LAYOUT);
 registerDialogues(HEARING_DIALOGUE);
 registerLayout('audience_hall', HALL3_LAYOUT);
+registerDialogues(EPILOGUE_DIALOGUE);
+registerLayout('village_epilogue', EPILOGUE_LAYOUT);
 registerObjectives(3, CHAPTER3_OBJECTIVES);
 
 export const CHAPTER3_LOADED = true;

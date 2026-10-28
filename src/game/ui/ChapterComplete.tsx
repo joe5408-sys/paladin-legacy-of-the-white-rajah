@@ -14,7 +14,7 @@ export function formatPlaytime(ms: number): string {
 
 /**
  * Closing card for a chapter. Chapters 0–2 offer to continue into the next;
- * the in-progress Chapter 3 ends on a "to be continued" card.
+ * Chapter 3 closes the first story.
  */
 export function ChapterComplete() {
   const startedAt = useGame((s) => s.startedAt);
@@ -94,10 +94,10 @@ export function ChapterComplete() {
       ) : (
         <>
           <div className="chapter-kicker">Chapter 3 · The Crown's Word</div>
-          <h1 className="chapter-title" data-testid="c3-to-be-continued">To Be Continued</h1>
-          <p className="chapter-quote">“So is the Crown.”</p>
+          <h1 className="chapter-title" data-testid="chapter3-complete">Chapter 3 Complete</h1>
+          <p className="chapter-quote">“The Crown remembers its heroes.”</p>
           {playtime}
-          <div className="chapter-next">The rest of Chapter 3 arrives in a future update. Your progress is saved.</div>
+          <div className="chapter-next">The first story of Paladin is complete. Thank you for playing. Your progress is saved.</div>
         </>
       )}
       <div className={`chapter-menu${ready ? '' : ' waiting'}`}>

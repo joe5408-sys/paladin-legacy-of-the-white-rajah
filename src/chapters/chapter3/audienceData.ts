@@ -12,11 +12,15 @@
  * comes from flags the player already has. A wrong piece of evidence gets a cool
  * rebuttal and the same choice again; nothing is ever lost. Halfway, Mara speaks
  * for Sungai Awan unasked. At the end Pell testifies, in words that depend on
- * the reply Adrian gave him in 3.2. The Rajah rises to give his ruling →
- * "To Be Continued" (the ruling and Harrow's last move are Milestone 3.5).
+ * the reply Adrian gave him in 3.2. The Rajah rises to give his ruling.
+ *
+ * Milestone 3.5 — The Crown Remembers: the Rajah rules for the Charter; Harrow
+ * orders the Crowned Sentinel to "secure the Crown's documents" → the final
+ * battle → it kneels → the Charter is registered, Harrow is dismissed and Elias
+ * Vale's name is restored → a week later, the epilogue at Sungai Awan.
  */
 import { boxFromCenter, type Box } from '../../game/core/collision';
-import type { StoryFlag } from '../../game/core/flags';
+import type { StoryFlag, StoryFlags } from '../../game/core/flags';
 import type { DialogueChoice, DialogueDef } from '../../game/dialogue/types';
 import type { Interactable } from '../../game/interaction/interaction';
 import { NPC_COLLIDER_SIZE, type NpcPlacement, type SceneLayout } from '../../game/scenes/layout';
@@ -27,6 +31,12 @@ export const DAIS = { x: 0, z: -4.2, width: 4.4, depth: 1.6 };
 export const THRONE = { x: 0, z: -4.5 };
 /** The Crowned Sentinel, standing beside the throne again. */
 export const HALL_SENTINEL = { x: 2.9, z: -4.3, width: 1.0, depth: 0.6 };
+/** Where it stands once Harrow orders it down from the dais (3.5), between the Clerk and the hall. */
+export const SENTINEL_ON_FLOOR = { x: 1.5, z: -2.6 };
+/** Where the Crowned Sentinel is: beside the throne until Harrow's order, then on the floor. */
+export function hallSentinelAt(flags: StoryFlags): { x: number; z: number } {
+  return flags.c3_sentinel_ordered ? SENTINEL_ON_FLOOR : HALL_SENTINEL;
+}
 export const MARK = { x: 0, z: -1.8 };
 export const CLERK_DESK3 = { x: 3.4, z: -2.5, width: 1.2, depth: 0.5 };
 export const BENCHES = [
@@ -78,8 +88,12 @@ export const HALL3_INTERACTABLES: Interactable[] = [
     x: MARK.x,
     z: MARK.z,
     radius: 0.9,
-    when: { unless: ['c3_hearing_won'] },
+    when: { unless: ['c3_name_restored'] },
     dialogue: [
+      // 3.5, and saves from the old 3.4 "To Be Continued" card: carry on from the ruling.
+      { dialogue: 'c3_sentinel_kneels', requires: ['c3_sentinel_knelt'] },
+      { dialogue: 'c3_sentinel_final_again', requires: ['c3_sentinel_ordered'] },
+      { dialogue: 'c3_ruling', requires: ['c3_hearing_won'] },
       { dialogue: 'c3_hearing_open', unless: ['c3_hearing_started'] },
       // After a reload mid-hearing: carry on from the first unanswered claim.
       { dialogue: 'c3_call_pell', requires: ['c3_claim4_answered'] },
@@ -89,7 +103,21 @@ export const HALL3_INTERACTABLES: Interactable[] = [
       { dialogue: 'c3_claim1' },
     ],
   },
-  talk('npc-rajah', 'His Majesty', [{ dialogue: 'c3_rajah_wait' }], 1.6),
+  {
+    // Only needed if the game was closed mid-battle.
+    id: 'hall-sentinel',
+    kind: 'inspect',
+    label: 'Crowned Sentinel',
+    x: SENTINEL_ON_FLOOR.x,
+    z: SENTINEL_ON_FLOOR.z + 0.9,
+    radius: 0.8,
+    when: { requires: ['c3_sentinel_ordered'], unless: ['c3_sentinel_knelt'] },
+    dialogue: [{ dialogue: 'c3_sentinel_final_again' }],
+  },
+  talk('npc-rajah', 'His Majesty', [
+    { dialogue: 'c3_rajah_rising', requires: ['c3_hearing_won'] },
+    { dialogue: 'c3_rajah_wait' },
+  ], 1.6),
   talk('npc-harrow-hall', 'Lord Chamberlain Harrow', [{ dialogue: 'c3_harrow_wait' }]),
   talk('npc-clerk-hall', 'Clerk of Petitions', [{ dialogue: 'c3_clerk_hall' }], 1.5),
   talk('npc-archivist-hall', 'The Archivist', [{ dialogue: 'c3_archivist_hall' }]),
@@ -103,7 +131,6 @@ export const HALL3_INTERACTABLES: Interactable[] = [
 
 const HALL3_COLLIDERS: Box[] = [
   boxFromCenter(DAIS.x, DAIS.z, DAIS.width, DAIS.depth),
-  boxFromCenter(HALL_SENTINEL.x, HALL_SENTINEL.z, HALL_SENTINEL.width, HALL_SENTINEL.depth),
   boxFromCenter(CLERK_DESK3.x, CLERK_DESK3.z, CLERK_DESK3.width, CLERK_DESK3.depth),
   ...BENCHES.map((b) => boxFromCenter(b.x, b.z, b.width, b.depth)),
   ...HALL3_NPCS.map((n) => boxFromCenter(n.x, n.z, NPC_COLLIDER_SIZE, NPC_COLLIDER_SIZE)),
@@ -111,7 +138,10 @@ const HALL3_COLLIDERS: Box[] = [
 
 export const HALL3_LAYOUT: SceneLayout = {
   bounds: HALL3_BOUNDS,
-  colliders: () => HALL3_COLLIDERS,
+  colliders: (flags: StoryFlags) => {
+    const at = hallSentinelAt(flags);
+    return [...HALL3_COLLIDERS, boxFromCenter(at.x, at.z, HALL_SENTINEL.width, HALL_SENTINEL.depth)];
+  },
   interactables: HALL3_INTERACTABLES,
   npcs: HALL3_NPCS,
 };
@@ -120,6 +150,10 @@ export const HEARING_OBJECTIVES: Objective[] = [
   { id: 'c3_hall', text: 'Go through the gate to the audience hall.', completeWhen: 'c3_hall_entered' },
   { id: 'c3_mark', text: "Take the petitioner's place before the throne.", completeWhen: 'c3_hearing_started' },
   { id: 'c3_hearing', text: "Answer the Lord Chamberlain's claims.", completeWhen: 'c3_hearing_won' },
+  // Milestone 3.5. Only a save from the old 3.4 card ever shows the first one.
+  { id: 'c3_ruling', text: "Hear the Rajah's ruling from the petitioner's place.", completeWhen: 'c3_ruling_given' },
+  { id: 'c3_protect', text: 'Protect the hall from the Crowned Sentinel.', completeWhen: 'c3_sentinel_knelt' },
+  { id: 'c3_record', text: 'See the Charter registered.', completeWhen: 'c3_name_restored' },
 ];
 
 // ── Evidence ────────────────────────────────────────────
@@ -302,7 +336,6 @@ export const HEARING_DIALOGUE: DialogueDef[] = [
   testimony('c3_pell_testifies_family', 'My family put half its name on that concession. I would like to take it off. The survey was ordered by the Lord Chamberlain\'s office, Your Majesty, not by us.'),
   testimony('c3_pell_testifies_right', 'Mr Vale told me I already knew this was wrong. He was correct, which was very annoying. The survey was ordered by the Lord Chamberlain\'s office, Your Majesty.'),
   {
-    // The end of Milestone 3.4.
     id: 'c3_rajah_turns',
     lines: [
       { speaker: 'rajah', text: 'Lord Chamberlain. Is any of this untrue?' },
@@ -312,7 +345,57 @@ export const HEARING_DIALOGUE: DialogueDef[] = [
       { speaker: 'rajah', text: 'I have heard the petition. I will give my ruling.' },
       { speaker: null, text: 'The Rajah rises from the throne, and every person in the hall rises with him. Beside the throne, the Crowned Sentinel slowly turns its head.', setFlags: ['c3_hearing_won'] },
     ],
-    endChapter: true,
+    next: 'c3_ruling',
+  },
+
+  // ── Milestone 3.5: the ruling, Harrow's last order, and the final battle ──
+  {
+    id: 'c3_ruling',
+    lines: [
+      { speaker: 'rajah', text: 'The concession of 1921 was sealed, but never signed. It was never the Crown\'s word. It is void.' },
+      { speaker: 'rajah', text: 'The River Charter bears my great-grandfather\'s hand and his seal. The Crown will keep it. Clerk: bring it to be registered.', setFlags: ['c3_ruling_given'] },
+      { speaker: null, text: 'The Clerk lifts the Charter case from the steps of the dais as if it were made of glass. At the back of the hall, somebody starts to clap, and is hushed.' },
+      { speaker: 'harrow', text: 'Your Majesty is young, and has been badly advised. Until you are better advised, the Office of the Lord Chamberlain will keep the Crown\'s documents safe.' },
+      { speaker: 'harrow', text: 'Sentinel. Secure the Crown\'s documents.' },
+      { speaker: null, text: 'The Crowned Sentinel steps down from the dais. The gold on its crown flares, and its halberd swings toward the Charter in the Clerk\'s arms, and the crowded benches behind him.', setFlags: ['c3_sentinel_ordered'] },
+      { speaker: 'daniel', text: 'Everyone behind the benches! Now!' },
+      { speaker: 'adrian', text: 'Clerk. Behind me.' },
+    ],
+    startBattle: 'crowned_sentinel_final',
+  },
+  {
+    // After a reload mid-battle.
+    id: 'c3_sentinel_final_again',
+    lines: [{ speaker: null, text: 'The Crowned Sentinel stands between Adrian and the benches, its halberd raised over the hall.' }],
+    startBattle: 'crowned_sentinel_final',
+  },
+  {
+    // After the final battle: it kneels; the Charter is registered; Harrow is dismissed; Elias's name is restored.
+    id: 'c3_sentinel_kneels',
+    lines: [
+      { speaker: null, text: 'Where the royal seal was torn away, the old sword-and-river sign glows on the Sentinel\'s chest, and the medallion at Adrian\'s collar answers it, light for light.' },
+      { speaker: null, text: 'Slowly, with a sound like a great door closing, the Crowned Sentinel lowers its halberd to the floor and kneels.' },
+      { speaker: 'archivist', text: 'It was built by Paladins, Your Majesty. Sworn to guard the Crown\'s word. Not whoever happens to be holding its seal.' },
+      { speaker: 'harrow', text: 'Sentinel. Sentinel! I gave you an order!' },
+      { speaker: 'rajah', text: 'You did, Lord Chamberlain. In my hall, in front of my people.' },
+      { speaker: 'rajah', text: 'Clerk. Register the Charter.' },
+      { speaker: null, text: 'The Clerk opens the great register on his desk, and writes in slow, beautiful letters.' },
+      { speaker: null, style: 'inscription', text: 'THE RIVER CHARTER OF 1921. THE RIVER LANDS OF SUNGAI AWAN, TO THE PEOPLE WHO LIVE ON THEM. REGISTERED.', setFlags: ['c3_charter_registered'] },
+      { speaker: 'clerk', text: 'It is written, Your Majesty. And nobody may unwrite it.' },
+      { speaker: 'rajah', text: 'Edmund Harrow. You are dismissed from the office of Lord Chamberlain. Leave the seal with the Clerk on your way out.', setFlags: ['c3_harrow_dismissed'] },
+      { speaker: null, text: 'For a long moment Harrow does not move. Then he sets the seal on the Clerk\'s desk, and walks the whole length of the red carpet alone. Nobody stops him. Nobody follows him.' },
+      { speaker: 'rajah', text: 'Archivist. In 1921, Elias Vale was struck from the Paladin rolls for treason.' },
+      { speaker: 'archivist', text: 'He was, Your Majesty. His name is blacked out in every book in the vault.' },
+      { speaker: 'rajah', text: 'Then write it back in. He refused an order my great-grandfather never gave, and kept a promise my great-grandfather did.' },
+      { speaker: 'rajah', text: 'The Crown remembers its heroes.', setFlags: ['c3_name_restored'] },
+      { speaker: 'mara', text: '...Took you long enough.' },
+      { speaker: null, text: 'Nobody in the hall, not even the Clerk, tells her off.' },
+    ],
+    enterScene: { scene: 'village_epilogue', spawn: 'jetty' },
+  },
+  {
+    id: 'c3_rajah_rising',
+    lines: [{ speaker: null, text: 'The Rajah is on his feet, waiting for the petitioner to take his place and hear the ruling.' }],
   },
 
   // Before the hearing: a line from everyone in the hall.

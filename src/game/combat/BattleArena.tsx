@@ -36,15 +36,22 @@ const CAMERA_TARGET = new THREE.Vector3(0, 0, 0.2);
 const POPUP_Z: [number, number] = [5, 0];
 
 const HEIGHT_COMP = 1 / Math.cos(THREE.MathUtils.degToRad(CAMERA_PITCH_DEG));
-/** World size and texture of each enemy sprite (the Iron Warden's depends on its armour). */
-const ENEMY_SPRITES: Record<EncounterDef['sprite'], { width: number; height: number; texture: (armored: boolean) => THREE.Texture }> = {
+/** World size and texture of each enemy sprite (the Iron Warden's and the Crowned Sentinel's depend on their armour). */
+const ENEMY_SPRITES: Record<
+  EncounterDef['sprite'],
+  { width: number; height: number; texture: (armored: boolean, enc: EncounterDef | undefined, kneeling: boolean) => THREE.Texture }
+> = {
   guardian: { width: 2.3, height: 2.3 * (GUARDIAN_H / GUARDIAN_W) * HEIGHT_COMP, texture: getGuardianTexture },
   sentinel: { width: 2.2, height: 2.2 * (SENTINEL_H / SENTINEL_W) * HEIGHT_COMP, texture: getSentinelTexture },
   spirit: { width: 2.3, height: 2.3 * (GUARDIAN_H / GUARDIAN_W) * HEIGHT_COMP, texture: getSpiritTexture },
   warden: { width: 2.2, height: 2.2 * (SENTINEL_H / SENTINEL_W) * HEIGHT_COMP, texture: getWardenTexture },
   iron: { width: 2.45, height: 2.45 * (IRON_H / IRON_W) * HEIGHT_COMP, texture: getIronWardenTexture },
-  // The royal seal is on its chest until its armour comes off (Milestone 3.5).
-  crowned: { width: 2.3, height: 2.3 * (CROWNED_H / CROWNED_W) * HEIGHT_COMP, texture: () => getCrownedSentinelTexture(true) },
+  // The royal seal stays on its chest unless it is armoured and the armour comes off (the final battle, 3.5).
+  crowned: {
+    width: 2.3,
+    height: 2.3 * (CROWNED_H / CROWNED_W) * HEIGHT_COMP,
+    texture: (armored, enc, kneeling) => getCrownedSentinelTexture(!enc?.armor || armored, kneeling),
+  },
 };
 
 /** Colours of each battle backdrop. */
@@ -367,7 +374,9 @@ function BattleEnemy() {
   const encounter = useEncounter();
   const sprite = ENEMY_SPRITES[encounter?.sprite ?? 'guardian'];
   const armored = useGame((s) => !!s.battle?.state.armored);
-  const texture = sprite.texture(armored);
+  // An enemy that kneels when it yields stays on the field, kneeling, instead of fading away.
+  const kneeling = useGame((s) => !!s.battle?.encounter.kneels && s.battle.stage === 'victory');
+  const texture = sprite.texture(armored, encounter ?? undefined, kneeling);
   const chargeLight = useRef<THREE.PointLight>(null);
   const group = useRef<THREE.Group>(null);
   const mat = useRef<THREE.MeshBasicMaterial>(null);
@@ -409,7 +418,7 @@ function BattleEnemy() {
     mat.current.color.set(flash ? '#ff8a8a' : tint);
 
     // Victory: the Guardian sinks and fades into light.
-    fade.current = b.stage === 'victory' ? Math.min(1, fade.current + dt * 0.8) : 0;
+    fade.current = b.stage === 'victory' && !b.encounter.kneels ? Math.min(1, fade.current + dt * 0.8) : 0;
     mat.current.opacity = 1 - fade.current;
     mat.current.transparent = fade.current > 0;
     // Hard pixel edges normally; a low cutoff while fading so it doesn't pop out at 50%.

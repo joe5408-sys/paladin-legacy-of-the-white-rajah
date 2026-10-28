@@ -30,7 +30,8 @@ async function stick(page: Page, dir: 'up' | 'down' | 'left' | 'right', units: n
   const [dx, dy] = { up: [0, -r], down: [0, r], left: [-r, 0], right: [r, 0] }[dir];
   await page.mouse.move(cx, cy);
   await page.mouse.down();
-  await page.mouse.move(cx + dx, cy + dy, { steps: 3 });
+  // One step, so the walk starts when the timer does (several steps add walking time on slow machines).
+  await page.mouse.move(cx + dx, cy + dy);
   await page.waitForTimeout((units / SPEED) * 1000);
   await page.mouse.up();
   await page.waitForTimeout(150);
@@ -56,10 +57,12 @@ test('mobile: the opening, played with touch controls', async ({ page }) => {
   await expect(page.locator('.hud-controls')).toHaveCount(0);
   await page.screenshot({ path: 'test-results/mobile-explore.png' });
 
-  // Walk to the family home with the joystick (the same route as the keyboard test)
-  await stick(page, 'up', 1.6);
-  await stick(page, 'right', 12.8);
-  await stick(page, 'up', 2.4);
+  // Walk to the family home with the joystick (the keyboard test's route, with more room
+  // for a push that runs long on a slow machine: a short first push keeps clear of the
+  // bench, and the last one ends against the house stairs).
+  await stick(page, 'up', 0.9);
+  await stick(page, 'right', 12.4);
+  await stick(page, 'up', 3.0);
   await expect(testId(page, 'interaction-prompt')).toContainText('Tap');
   await expect(testId(page, 'touch-action')).toHaveClass(/ready/);
   await testId(page, 'touch-action').tap();

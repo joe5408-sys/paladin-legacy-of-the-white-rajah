@@ -22,6 +22,7 @@ const SCENE_AMBIENCE: Partial<Record<GameState['scene'], AmbienceName>> = {
   jamilah_room: 'home',
   palace_gate: 'waterfront', // the city waking up across the river
   audience_hall: 'archives', // a hushed, grand room
+  village_epilogue: 'village',
 };
 
 /**

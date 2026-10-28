@@ -4,6 +4,7 @@
  * T-shaped visor, a royal-blue tabard and a ceremonial halberd. On its chest the
  * royal seal is riveted over the old sword-and-river sign; with the seal gone,
  * the sign shows through and glows.
+ * It can also kneel (Milestone 3.5): the same figure lowered onto one knee.
  * Original placeholder pixel art drawn in code (36x52, single frame each).
  */
 import * as THREE from 'three';
@@ -37,7 +38,10 @@ function rect(g: CanvasRenderingContext2D, x: number, y: number, w: number, h: n
   g.fillRect(x, y, w, h);
 }
 
-function draw(g: CanvasRenderingContext2D, sealed: boolean) {
+function draw(g: CanvasRenderingContext2D, sealed: boolean, kneeling: boolean) {
+  // Kneeling: everything above the legs drops 9 px, and the legs fold (drawn last).
+  g.save();
+  if (kneeling) g.translate(0, 9);
   // Halberd, held upright in the right hand (behind the arm)
   rect(g, 32, 6, 2, 44, C.shaft);
   rect(g, 32, 6, 1, 44, C.goldDark);
@@ -47,7 +51,7 @@ function draw(g: CanvasRenderingContext2D, sealed: boolean) {
   rect(g, 31, 8, 4, 1, C.gold); // collar
 
   // Legs: ivory greaves with gold knee caps
-  for (const lx of [12, 20]) {
+  for (const lx of kneeling ? [] : [12, 20]) {
     rect(g, lx, 38, 4, 11, C.ivory);
     rect(g, lx, 38, 1, 11, C.ivoryLight);
     rect(g, lx + 3, 38, 1, 11, C.ivoryDark);
@@ -121,25 +125,38 @@ function draw(g: CanvasRenderingContext2D, sealed: boolean) {
   rect(g, 21, 0, 2, 3, C.gold);
   rect(g, 17, 3, 2, 1, C.blue); // gem
   rect(g, 16, 14, 4, 1, C.goldDark); // gorget
+  g.restore();
+
+  if (kneeling) {
+    // Left knee on the floor beside the tabard; right knee raised, foot planted.
+    rect(g, 8, 48, 5, 4, C.ivory);
+    rect(g, 8, 48, 1, 4, C.ivoryLight);
+    rect(g, 7, 50, 6, 2, C.gold);
+    rect(g, 24, 44, 4, 8, C.ivory);
+    rect(g, 27, 44, 1, 8, C.ivoryDark);
+    rect(g, 23, 44, 6, 2, C.gold);
+    rect(g, 23, 50, 7, 2, C.ivoryDark);
+  }
 }
 
-const cache = new Map<boolean, THREE.CanvasTexture>();
+const cache = new Map<string, THREE.CanvasTexture>();
 
-/** Shared Crowned Sentinel texture: with the royal seal on its chest, or the Paladin sign. Browser-only. */
-export function getCrownedSentinelTexture(sealed = true): THREE.CanvasTexture {
-  const hit = cache.get(sealed);
+/** Shared Crowned Sentinel texture: with the royal seal on its chest or the Paladin sign; standing or kneeling. Browser-only. */
+export function getCrownedSentinelTexture(sealed = true, kneeling = false): THREE.CanvasTexture {
+  const key = `${sealed}-${kneeling}`;
+  const hit = cache.get(key);
   if (hit) return hit;
   const canvas = document.createElement('canvas');
   canvas.width = CROWNED_W;
   canvas.height = CROWNED_H;
   const g = canvas.getContext('2d', { willReadFrequently: true })!;
-  draw(g, sealed);
+  draw(g, sealed, kneeling);
   addOutline(g, CROWNED_W, CROWNED_H, C.outline);
   const tex = new THREE.CanvasTexture(canvas);
   tex.magFilter = THREE.NearestFilter;
   tex.minFilter = THREE.NearestFilter;
   tex.generateMipmaps = false;
   tex.colorSpace = THREE.SRGBColorSpace;
-  cache.set(sealed, tex);
+  cache.set(key, tex);
   return tex;
 }
