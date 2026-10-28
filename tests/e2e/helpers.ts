@@ -23,6 +23,8 @@ export async function finishDialogue(page: Page) {
   const box = testId(page, 'dialogue-box');
   for (let i = 0; i < 150 && (await box.count()) > 0; i++) await press(page, 'Enter', 100);
   await expect(box).toHaveCount(0);
+  // Give the game a moment to return to exploring: on slow machines a walk started at once can be lost.
+  await page.waitForTimeout(400);
 }
 
 /** Waits until the given location label is showing (scene changes fade for ~0.7s). */
