@@ -1,6 +1,6 @@
 # Chapter 3 — The Crown's Word (working title)
 
-> Status: **Design agreed 2026-10-27** (all draft defaults accepted; see Decisions). **Complete: Milestones 3.1–3.5 playable.** Chapter 3 closes the first story.
+> Status: **Design agreed 2026-10-27** (all draft defaults accepted; see Decisions). **Complete: Milestones 3.1–3.5 playable and live** (3.5 deployed as `df5f134`; its live browser check is still to do). Chapter 3 closes the first story.
 > Setting reminder: an imagined, alternate-history Kuching and Sarawak. The Palace, its Rajah, the Petition Hour, the Register of Royal Grants, Royal Security, the Harrow family, Awan Riverlands Development and every official named here are invented. They do not depict real people, institutions, ceremonies or legal processes.
 
 ## Premise

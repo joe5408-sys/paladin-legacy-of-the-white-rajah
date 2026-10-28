@@ -1,7 +1,7 @@
 # Session Handoff
 
 ## Latest — 2026-10-28 (Claude Code, cloud session): Milestone 3.5, Chapter 3 complete
-**Result:** Milestone 3.5 (The Crown Remembers) is built: the ruling, Harrow's order, the final Crowned Sentinel battle (armour → heavy blows only River Ward blocks → it kneels), the Charter registered, Harrow dismissed, Elias Vale's name restored, the Sungai Awan epilogue (pull up the last survey peg) and a real **Chapter 3 Complete** card. **Chapter 3 and the first story are complete.** Status: **not deployed yet**: everything is on the branch `claude/epic-ptolemy-j8deki`, and the final local run of all browser tests was in progress. If this session stopped here: run `npm test`, `npx tsc -b` and `npm run e2e` on the PC, and if all pass, merge the branch into `master` and push (that deploys), then check the live site.
+**Result:** Milestone 3.5 (The Crown Remembers) is built: the ruling, Harrow's order, the final Crowned Sentinel battle (armour → heavy blows only River Ward blocks → it kneels), the Charter registered, Harrow dismissed, Elias Vale's name restored, the Sungai Awan epilogue (pull up the last survey peg) and a real **Chapter 3 Complete** card. **Chapter 3 and the first story are complete.** Status: **live** as `df5f134` (the live site serves the new build), but **not yet browser-tested live**: the cloud environment's network policy started refusing the Netlify host right after the deploy. **First thing on the PC:** run `E2E_BASE_URL=https://legacyofwhiterajah.netlify.app npx playwright test` and record the result in the docs.
 
 ### Key files
 - 3.5 story: `src/chapters/chapter3/audienceData.ts` (`c3_ruling`, `c3_sentinel_final_again`, `c3_sentinel_kneels`; `hallSentinelAt(flags)`; the petitioner's place resumes every 3.5 step), `AudienceHall.tsx` (the Sentinel beside the throne → on the floor → kneeling), `src/chapters/chapter3/{epilogueData.ts,VillageEpilogue.tsx}` (scene `village_epilogue`)
@@ -11,9 +11,10 @@
 - Tests: `tests/unit/crownedSentinel.test.ts`; `tests/e2e/chapter3.spec.ts` now plays to the Chapter 3 Complete card; `tests/e2e/helpers.ts` `walk()` walks by distance inside the page
 
 ### Tests run
-`npm test` 296/296 · `npx tsc -b` OK · browser tests (Chromium in the cloud container, `PW_EXECUTABLE=/opt/pw-browsers/chromium`): each test passed on its own (Chapter 3 6.0 min, full story 12.4 min, mobile and smoke); a run of all five together was in progress · live: not deployed yet
+`npm test` 296/296 · `npx tsc -b` OK · browser tests (Chromium in the cloud container, `PW_EXECUTABLE=/opt/pw-browsers/chromium`): every test passed on the final code: Chapter 3 (to the Chapter 3 Complete card, 6.0 min), mobile (25 s) and both smoke tests in one full run, and the full story (Chapters 0–2, 12.5 min) in a run of its own after its last route fix · live: deployed as `df5f134`; live browser suite **not run** (host blocked from the cloud environment)
 
 ### Next steps
+0. **Run the browser suite against the live site** from the PC: `E2E_BASE_URL=https://legacyofwhiterajah.netlify.app npx playwright test` (5 tests), then note the result in `PROGRESS.md` and here.
 1. A human play-through of Chapters 2–3 for pacing and difficulty (especially the final battle: 12/36 HP left with the intended play), and a real phone.
 2. Someone from the region could read Chapter 3's characters and dialogue (see the sensitivity notes in `CHAPTER_3.md`).
 3. A possible Chapter 4 would start from the open hooks in `CHAPTER_3.md` (the other erased families; who built the Crowned Sentinel; Harrow's half of the archive). Design first, as before.
