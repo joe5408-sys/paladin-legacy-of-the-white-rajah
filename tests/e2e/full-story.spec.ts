@@ -27,9 +27,11 @@ test('full story: Chapters 0, 1 and 2', async ({ page }) => {
   await testId(page, 'menu-new-game').click();
   await finishDialogue(page);
 
-  await walk(page, 'KeyW', 1.6);
-  await walk(page, 'KeyD', 12.8);
-  await walk(page, 'KeyW', 2.4);
+  // A short first step keeps clear of the bench even if a walk runs long on a slow machine;
+  // the last one ends against the house stairs.
+  await walk(page, 'KeyW', 0.9);
+  await walk(page, 'KeyD', 12.4);
+  await walk(page, 'KeyW', 3.0);
   await press(page, 'KeyE');
   await arriveIn(page, 'Vale Family Home');
 
