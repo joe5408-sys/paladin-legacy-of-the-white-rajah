@@ -1,6 +1,28 @@
 # Session Handoff
 
-## Latest — 2026-10-28 (Claude Code): phones and tablets
+## Latest — 2026-10-28 (Claude Code, cloud session): Milestone 3.5, Chapter 3 complete
+**Result:** Milestone 3.5 (The Crown Remembers) is built: the ruling, Harrow's order, the final Crowned Sentinel battle (armour → heavy blows only River Ward blocks → it kneels), the Charter registered, Harrow dismissed, Elias Vale's name restored, the Sungai Awan epilogue (pull up the last survey peg) and a real **Chapter 3 Complete** card. **Chapter 3 and the first story are complete.** Status: **not deployed yet**: everything is on the branch `claude/epic-ptolemy-j8deki`, and the final local run of all browser tests was in progress. If this session stopped here: run `npm test`, `npx tsc -b` and `npm run e2e` on the PC, and if all pass, merge the branch into `master` and push (that deploys), then check the live site.
+
+### Key files
+- 3.5 story: `src/chapters/chapter3/audienceData.ts` (`c3_ruling`, `c3_sentinel_final_again`, `c3_sentinel_kneels`; `hallSentinelAt(flags)`; the petitioner's place resumes every 3.5 step), `AudienceHall.tsx` (the Sentinel beside the throne → on the floor → kneeling), `src/chapters/chapter3/{epilogueData.ts,VillageEpilogue.tsx}` (scene `village_epilogue`)
+- Battle: `crowned_sentinel_final` in `src/data/encounters.ts` (new optional `kneels` on `EncounterDef`), `getCrownedSentinelTexture(sealed, kneeling)` in `game/combat/crownedSentinelSprite.ts`, `ENEMY_SPRITES.crowned` in `BattleArena.tsx` (unsealed once an armoured Sentinel's armour is off; kneels at the end instead of fading)
+- Chapter end: `isAtChapterEnd` in `game/quests/quests.ts` now uses `c3_pegs_pulled`; the Chapter 3 card in `game/ui/ChapterComplete.tsx`
+- Engine: `moveWithCollision` in `game/core/collision.ts` stops flush against obstacles at any frame rate; `window.__PALADIN__` (`game/core/playerTracker.ts`) in every build
+- Tests: `tests/unit/crownedSentinel.test.ts`; `tests/e2e/chapter3.spec.ts` now plays to the Chapter 3 Complete card; `tests/e2e/helpers.ts` `walk()` walks by distance inside the page
+
+### Tests run
+`npm test` 296/296 · `npx tsc -b` OK · browser tests (Chromium in the cloud container, `PW_EXECUTABLE=/opt/pw-browsers/chromium`): each test passed on its own (Chapter 3 6.0 min, full story 12.4 min, mobile and smoke); a run of all five together was in progress · live: not deployed yet
+
+### Next steps
+1. A human play-through of Chapters 2–3 for pacing and difficulty (especially the final battle: 12/36 HP left with the intended play), and a real phone.
+2. Someone from the region could read Chapter 3's characters and dialogue (see the sensitivity notes in `CHAPTER_3.md`).
+3. A possible Chapter 4 would start from the open hooks in `CHAPTER_3.md` (the other erased families; who built the Crowned Sentinel; Harrow's half of the archive). Design first, as before.
+
+### Watch out
+- The browser tests now walk by distance using `window.__PALADIN__`; they no longer depend on the machine's speed, but a slow machine still moves Adrian about one frame's worth (0.2 units at 15 fps) per step, so give new routes at least 0.3 units of clearance and prefer walking until blocked by a wall.
+- On a cloud machine, run the browser tests with `PW_EXECUTABLE=/opt/pw-browsers/chromium` (its Chromium doesn't match the project's Playwright version); on the owner's PC the default Edge channel still works. The full story takes about 12 min there (5 min on a fast PC).
+
+## Previous session — 2026-10-28 (Claude Code): phones and tablets
 **Result:** the game as it stands (Chapters 0–3.4) is playable on touch screens: a joystick, an action button and a ☰ Menu button while exploring (they send the keyboard's own key events, so no game logic changed), tap-to-continue dialogue, a tappable interaction prompt, sizing to the phone's visible height, a "turn your phone sideways" notice for phones held upright, and a Full Screen option on Android. **Live** as `f8ab31c`; all 5 browser tests (including the mobile one) pass against the live site. Tested only with Edge's phone emulation, not yet on a physical phone. **Next:** Milestone 3.5 (below). Key files: `src/game/input/touch.ts` (`pressKey`/`releaseKey`/`tapKey`, `useTouchDevice`, `joystickKey`), `src/game/ui/{TouchControls,RotateNotice}.tsx`, `public/manifest.webmanifest`, the touch section in `src/styles/global.css`; tests `tests/unit/touch.test.ts`, `tests/e2e/mobile.spec.ts`. **New scenes and UI should keep working by tap:** anything clickable inside the HUD needs `pointer-events: auto`, and new keyboard-only actions need a touch equivalent.
 
 ## Previous session — 2026-10-27 (Claude Code): Chapter 2 finished; Chapter 3 designed; Milestones 3.1–3.4
