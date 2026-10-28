@@ -62,15 +62,7 @@ export function Player({ start, startFacing = 'south', colliders, bounds, positi
     playerTracker.x = s.pos.x;
     playerTracker.z = s.pos.z;
     playerTracker.facing = s.facing;
-
-    if (import.meta.env.DEV) {
-      (window as unknown as Record<string, unknown>).__PALADIN__ = {
-        x: s.pos.x,
-        z: s.pos.z,
-        facing: s.facing,
-        moving: s.moving,
-      };
-    }
+    playerTracker.moving = s.moving;
   });
 
   return (

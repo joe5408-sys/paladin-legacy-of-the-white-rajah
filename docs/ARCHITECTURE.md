@@ -37,4 +37,4 @@ docs/                      Design, progress and handoff docs
 - **Sprites:** upright planes (not tilted toward the camera), stretched by `1/cos(pitch)` so on-screen proportions match the pixel art. `alphaTest` (not transparency) so sprites write depth and sort correctly against 3D geometry. Nearest filtering, no mipmaps.
 - **Placeholder art is generated in code** (`pixelSprite.ts`), so there are no binary assets to license yet. A real sprite sheet PNG can replace `createHeroSheet()` without changing `Player.tsx`, as long as it keeps the 4×4 frame layout.
 - **Per-frame state lives in refs**, not React state, to avoid re-renders at 60 FPS. The camera reads the player position through a shared `Vector3` ref.
-- **Debug hook:** in dev builds only, `window.__PALADIN__` exposes `{x, z, facing, moving}` for browser checks and future Playwright tests.
+- **Debug hook:** in every build, `window.__PALADIN__` is the live player tracker `{x, z, facing, moving}` (read-only use). The Playwright `walk()` helper uses it to walk an exact distance instead of timing key presses.

@@ -5,10 +5,44 @@ const SPEED = 3.2;
 
 export const testId = (page: Page, id: string) => page.locator(`[data-testid="${id}"]`);
 
-/** Holds a movement key long enough to cover `units` of distance. */
+type Pos = { x: number; z: number };
+const position = (page: Page) =>
+  page.evaluate(() => {
+    const p = (window as unknown as { __PALADIN__?: Pos }).__PALADIN__;
+    return p ? { x: p.x, z: p.z } : null;
+  });
+
+/**
+ * Holds a movement key until Adrian has walked `units` (or is blocked by something solid).
+ * Reads his position from the game's `window.__PALADIN__` hook, so slow machines walk
+ * the same distance as fast ones; falls back to timing the key press without it.
+ */
 export async function walk(page: Page, key: 'KeyW' | 'KeyA' | 'KeyS' | 'KeyD', units: number) {
+  const axis = key === 'KeyW' || key === 'KeyS' ? 'z' : 'x';
+  const start = await position(page);
   await page.keyboard.down(key);
-  await page.waitForTimeout((units / SPEED) * 1000);
+  if (!start) {
+    await page.waitForTimeout((units / SPEED) * 1000);
+  } else {
+    const began = Date.now();
+    const limit = (units / SPEED) * 3000 + 2000;
+    let last = start[axis];
+    let lastChange = began;
+    for (;;) {
+      await page.waitForTimeout(15);
+      const p = (await position(page)) ?? start;
+      const now = Date.now();
+      if (Math.abs(p[axis] - start[axis]) >= units - 0.08) break; // far enough
+      if (Math.abs(p[axis] - last) > 0.005) {
+        last = p[axis];
+        lastChange = now;
+      }
+      const started = last !== start[axis];
+      // Blocked: no progress for a while (allow longer before the first step, e.g. a fade).
+      if (now - lastChange > (started ? 500 : 2000)) break;
+      if (now - began > limit) break;
+    }
+  }
   await page.keyboard.up(key);
   await page.waitForTimeout(150);
 }
