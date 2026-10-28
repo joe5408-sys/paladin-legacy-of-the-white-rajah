@@ -11,7 +11,7 @@ import { expect, test } from '@playwright/test';
 import { arriveIn, expectLocation, finishDialogue, press, testId, trackErrors, walk } from './helpers';
 
 test('full story: Chapters 0, 1 and 2', async ({ page }) => {
-  test.setTimeout(480_000); // the whole game, played in real time
+  test.setTimeout(900_000); // the whole game, played in real time (about 5 min on a fast PC, longer on a slow one)
   const errors = trackErrors(page);
   const requested: string[] = [];
   page.on('request', (r) => requested.push(r.url()));
@@ -111,9 +111,10 @@ test('full story: Chapters 0, 1 and 2', async ({ page }) => {
   await expect(testId(page, 'objective')).toContainText('Go to the Royal Archives.');
 
   // To the Archives: back south a little, west along the plaza, then up to the doors.
-  await walk(page, 'KeyS', 3.2);
+  // (South far enough to pass well clear of the planter beside the Archives door.)
+  await walk(page, 'KeyS', 3.5);
   await walk(page, 'KeyA', 10.5);
-  await walk(page, 'KeyW', 1.5);
+  await walk(page, 'KeyW', 1.8);
   await expect(testId(page, 'interaction-prompt')).toContainText('Inspect Royal Archives');
   await press(page, 'KeyE');
   await finishDialogue(page);
@@ -244,8 +245,10 @@ test('full story: Chapters 0, 1 and 2', async ({ page }) => {
   await finishDialogue(page);
   await expect(testId(page, 'objective')).toContainText('Collect your things from the cabin.');
 
+  // West past the cargo first, then a step south (clear of Mara) and on to the cabin.
+  await walk(page, 'KeyA', 2.0);
   await walk(page, 'KeyS', 0.3);
-  await walk(page, 'KeyA', 7);
+  await walk(page, 'KeyA', 5.0);
   await expect(testId(page, 'interaction-prompt')).toContainText('Inspect Cabin');
   await press(page, 'KeyE');
   await finishDialogue(page);
@@ -294,11 +297,11 @@ test('full story: Chapters 0, 1 and 2', async ({ page }) => {
   await walk(page, 'KeyA', 1.8);
   await walk(page, 'KeyW', 1.6);
   await expect(testId(page, 'interaction-prompt')).toContainText("Inspect Elias's Portrait");
+  expect(waystationRequested()).toBe(false); // not downloaded until the trip upriver starts
   await press(page, 'KeyE');
   await finishDialogue(page); // the map, then straight on upriver with Ah Hock
 
   // ── Chapter 2.3: the waystation ───────────────────────
-  expect(waystationRequested()).toBe(false);
   await arriveIn(page, 'The Waystation Landing');
   expect(waystationRequested()).toBe(true);
   await expect(testId(page, 'objective')).toContainText('Wake the three stones in the right order.');
