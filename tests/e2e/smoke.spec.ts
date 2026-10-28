@@ -29,9 +29,11 @@ test('title screen, settings, new game, pause, save and continue', async ({ page
   await expect(testId(page, 'objective')).toContainText('Find the ancestral family home.');
 
   // Walk to the family home: north to the path, east, then up to the stairs.
-  await walk(page, 'KeyW', 1.6);
-  await walk(page, 'KeyD', 12.8);
-  await walk(page, 'KeyW', 2.4);
+  // A short first step keeps clear of the bench even if a walk runs long on a slow machine;
+  // the last one ends against the house stairs.
+  await walk(page, 'KeyW', 0.9);
+  await walk(page, 'KeyD', 12.4);
+  await walk(page, 'KeyW', 3.0);
   await expect(testId(page, 'interaction-prompt')).toContainText('Enter Vale Family Home');
   await press(page, 'KeyE');
   await arriveIn(page, 'Vale Family Home');
