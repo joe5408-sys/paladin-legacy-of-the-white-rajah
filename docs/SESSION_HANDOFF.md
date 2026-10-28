@@ -14,6 +14,7 @@
 `npm test` 296/296 · `npx tsc -b` OK · browser tests (Chromium in the cloud container, `PW_EXECUTABLE=/opt/pw-browsers/chromium`): every test passed on the final code: Chapter 3 (to the Chapter 3 Complete card, 6.0 min), mobile (25 s) and both smoke tests in one full run, and the full story (Chapters 0–2, 12.5 min) in a run of its own after its last route fix · live: deployed as `df5f134`; live browser suite **not run** (host blocked from the cloud environment)
 
 ### Next steps
+**Proposed next phase:** `docs/PHASE_10.md` (The First Story, Finished Properly: verify, play-test, phones, outside read, credits, all before a Chapter 4 design). Its decisions need the owner's agreement first. Items 0–2 below are its first steps.
 0. **Run the browser suite against the live site** from the PC: `E2E_BASE_URL=https://legacyofwhiterajah.netlify.app npx playwright test` (5 tests), then note the result in `PROGRESS.md` and here.
 1. A human play-through of Chapters 2–3 for pacing and difficulty (especially the final battle: 12/36 HP left with the intended play), and a real phone.
 2. Someone from the region could read Chapter 3's characters and dialogue (see the sensitivity notes in `CHAPTER_3.md`).
