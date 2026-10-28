@@ -51,7 +51,9 @@ function blocked(p: Vec2, radius: number, colliders: readonly Box[], bounds: Box
 /**
  * Move from `from` by `delta`, stopping at colliders and world bounds.
  * X and Z are resolved independently so movement slides along walls.
- * Large steps are split into sub-steps so fast frames cannot tunnel.
+ * Large steps are split into sub-steps so fast frames cannot tunnel. A blocked
+ * sub-step still moves as far as it can, so the player stops flush against an
+ * obstacle whatever the frame rate (not up to a whole frame's movement short of it).
  */
 export function moveWithCollision(
   from: Vec2,
@@ -67,10 +69,23 @@ export function moveWithCollision(
   const sz = delta.z / steps;
 
   for (let i = 0; i < steps; i++) {
-    const tryX = { x: pos.x + sx, z: pos.z };
-    if (!blocked(tryX, radius, colliders, bounds)) pos = tryX;
-    const tryZ = { x: pos.x, z: pos.z + sz };
-    if (!blocked(tryZ, radius, colliders, bounds)) pos = tryZ;
+    pos = advance(pos, sx, 0, radius, colliders, bounds);
+    pos = advance(pos, 0, sz, radius, colliders, bounds);
   }
   return pos;
+}
+
+/** Moves by (dx, dz) if that is free; otherwise as far along it as is free (to within 1/64 of it). */
+function advance(pos: Vec2, dx: number, dz: number, radius: number, colliders: readonly Box[], bounds: Box): Vec2 {
+  if (dx === 0 && dz === 0) return pos;
+  const at = (t: number) => ({ x: pos.x + dx * t, z: pos.z + dz * t });
+  if (!blocked(at(1), radius, colliders, bounds)) return at(1);
+  let free = 0;
+  let hit = 1;
+  for (let i = 0; i < 6; i++) {
+    const mid = (free + hit) / 2;
+    if (blocked(at(mid), radius, colliders, bounds)) hit = mid;
+    else free = mid;
+  }
+  return free > 0 ? at(free) : pos;
 }

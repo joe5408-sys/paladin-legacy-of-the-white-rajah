@@ -46,8 +46,22 @@ describe('moveWithCollision', () => {
   it('slides along a wall when moving diagonally into it', () => {
     const start = { x: 1.15, z: 0 };
     const p = moveWithCollision(start, { x: 0.5, z: 0.5 }, r, [wall], bounds);
-    expect(p.x).toBeCloseTo(1.15, 5); // blocked on X
+    expect(p.x).toBeLessThanOrEqual(wall.minX - r + 1e-9); // blocked on X, up against the wall
+    expect(p.x).toBeGreaterThan(wall.minX - r - 0.01);
     expect(p.z).toBeCloseTo(0.5, 5); // free on Z
+  });
+
+  it('stops flush against a wall whatever the frame rate', () => {
+    const walkTo = (dt: number) => {
+      let p = { x: 0, z: 0 };
+      for (let t = 0; t < 1; t += dt) p = moveWithCollision(p, { x: 3.2 * dt, z: 0 }, r, [wall], bounds);
+      return p.x;
+    };
+    const contact = wall.minX - r;
+    for (const dt of [1 / 144, 1 / 60, 1 / 15, 0.1]) {
+      expect(walkTo(dt), String(dt)).toBeLessThanOrEqual(contact + 1e-9);
+      expect(walkTo(dt), String(dt)).toBeGreaterThan(contact - 0.01);
+    }
   });
 
   it('keeps the player inside the world bounds', () => {
