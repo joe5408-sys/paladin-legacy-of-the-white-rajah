@@ -84,7 +84,7 @@ test('Chapter 3: the night boat, the waterfront, Pell\'s choice, the Palace gate
   await expect(testId(page, 'objective')).toContainText('Rest in the cabin until Kuching.');
 
   // The cabin → Kuching before dawn
-  await walk(page, 'KeyS', 0.3);
+  await walk(page, 'KeyS', 0.45); // into the lane between Mara's bench and Pell
   await walk(page, 'KeyA', 4.8);
   await expect(testId(page, 'interaction-prompt')).toContainText('Inspect Cabin');
   await press(page, 'KeyE');
@@ -95,7 +95,7 @@ test('Chapter 3: the night boat, the waterfront, Pell\'s choice, the Palace gate
   await expect(testId(page, 'objective')).toContainText("Get to Kak Jamilah's stall.");
   await page.screenshot({ path: 'test-results/waterfront-night.png' });
   // South off the boardwalk, then west across the plaza, well away from the pier.
-  await walk(page, 'KeyS', 4.6);
+  await walk(page, 'KeyS', 4.9);
   await walk(page, 'KeyA', 18.1);
   await expect(testId(page, 'interaction-prompt')).toContainText('Talk to Kak Jamilah');
   await press(page, 'KeyE');

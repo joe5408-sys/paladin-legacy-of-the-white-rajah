@@ -23,7 +23,7 @@ import { GATE_OBJECTIVES } from './palaceData';
 import { HEARING_OBJECTIVES } from './audienceData';
 import { EPILOGUE_OBJECTIVES } from './epilogueData';
 
-export const PELL_NIGHT = { x: 0.0, z: 1.0 };
+export const PELL_NIGHT = { x: 0.0, z: 1.25 }; // at the south rail, leaving a clear lane past Mara
 
 export const BOAT_NIGHT_NPCS: NpcPlacement[] = [
   { id: 'npc-mara-night', character: 'mara', x: -1.9, z: -0.55, facing: 'south' },
@@ -39,7 +39,7 @@ export const BOAT_NIGHT_INTERACTABLES: Interactable[] = [
     label: 'Julian Pell',
     x: PELL_NIGHT.x,
     z: PELL_NIGHT.z,
-    radius: 1.2,
+    radius: 1.4,
     npc: 'pell',
     dialogue: [
       { dialogue: 'c3_pell', unless: ['c3_talked_pell'] },
