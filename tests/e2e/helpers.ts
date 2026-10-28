@@ -28,11 +28,15 @@ export async function walk(page: Page, key: 'KeyW' | 'KeyA' | 'KeyS' | 'KeyD', u
     const limit = (units / SPEED) * 3000 + 2000;
     let last = start[axis];
     let lastChange = began;
+    let poll = 50; // how long one position check takes, in ms
     for (;;) {
-      await page.waitForTimeout(15);
+      await page.waitForTimeout(10);
+      const t0 = Date.now();
       const p = (await position(page)) ?? start;
       const now = Date.now();
-      if (Math.abs(p[axis] - start[axis]) >= units - 0.08) break; // far enough
+      poll = 0.5 * poll + 0.5 * (now - t0);
+      // Far enough, allowing for the distance covered while the key-up reaches the game.
+      if (Math.abs(p[axis] - start[axis]) >= units - 0.05 - (SPEED * poll) / 1000) break;
       if (Math.abs(p[axis] - last) > 0.005) {
         last = p[axis];
         lastChange = now;
